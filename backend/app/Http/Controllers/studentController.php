@@ -22,7 +22,7 @@ class studentController extends Controller
         // }
 
         $data = [
-            'students' => $students,
+            'student' => $students,
             'status' => 200
         ];
 
@@ -32,26 +32,43 @@ class studentController extends Controller
     public function store(Request $request)
     {
 
-            $validated = $request->validate([
-                'name'     => 'required',
-                'email'    => 'required',
-                'phone'    => 'required',
-                'language' => 'required',
-            ]);
+            $validator = Validator::make($request->all(), [
+            'name' => 'required|max:255',
+            'email' => 'required|email',
+            'phone' => 'required|digits:10',
+            'language' => 'required|in:English,Spanish,French'
+        ]);
 
-            $student = Student::create($validated);
+        if ($validator->fails()) {
+            $data = [
+                'message' => 'Error en la validación de los datos',
+                'errors' => $validator->errors(),
+                'status' => 400
+            ];
+            return response()->json($data, 400);
+        }
 
-            if (!$student) {
-                return response()->json([
-                    'message' => 'Error al crear el estudiante',
-                    'status' => 500
-                ], 500);
-            }
+        $student = Student::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'language' => $request->language
+        ]);
 
-            return response()->json([
-                'student' => $student,
-                'status' => 201
-            ], 201);
+        if (!$student) {
+            $data = [
+                'message' => 'Error al crear el estudiante',
+                'status' => 500
+            ];
+            return response()->json($data, 500);
+        }
+
+        $data = [
+            'student' => $student,
+            'status' => 201
+        ];
+
+        return response()->json($data, 201);
 
     }
 
