@@ -9,7 +9,7 @@ class EmpleadoController extends Controller
 {
     public function index()
     {
-        $empleados = Empleado::with(['documentaciones'])->get();
+        $empleados = Empleado::with(['documentaciones.tipoDocumento'])->get();
         $data = [
             'empleados' => $empleados,
             'status' => 200

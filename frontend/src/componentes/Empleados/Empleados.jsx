@@ -33,7 +33,6 @@ export default function Empleados() {
         <table className="">
           <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
             <tr>
-              <th className="px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500">ID</th>
               <th className="px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500">Nombre</th>
               <th className="px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500">Apellido</th>
               <th className="px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500">Grupo</th>
@@ -47,17 +46,16 @@ export default function Empleados() {
             {empleados.length > 0 ? (
               empleados.map((empleado) => (
                 <tr key={empleado.id} className="hover:bg-gray-200 transition-colors duration-150">
-                  <td className="px-6 py-4 whitespace-nowrap text-base text-gray-800 font-semibold">{empleado.id}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-base text-gray-800">{empleado.nombre}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-base text-gray-800">{empleado.apellido}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-base text-gray-800">{empleado.grupo}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-base text-gray-800">{empleado.telefono}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-base text-gray-800">{empleado.estado.toUpperCase()}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-base text-gray-800 bg-green-500 font-bold">{empleado.estado.toUpperCase()}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {empleado.documentaciones && empleado.documentaciones.length > 0 ? (
+                    {empleado.documentaciones.length > 0 ? (
                       empleado.documentaciones.map(doc => (
-                        <div key={doc.id} className="bg-gray-200 rounded px-2 py-1 mb-1 text-xs text-gray-800 shadow">
-                          {doc.path_archivo_documento}
+                        <div key={doc.id} className="bg-gray-200 rounded px-2 py-1 mb-3  text-gray-800 shadow font-bold" onClick={()=> window.location.href = `assets/documentacion_empleados/${doc.path_archivo_documento}`}>
+                          {doc.tipo_documento.descripcion.toUpperCase()}
                         </div>
                       ))
                     ) : (
