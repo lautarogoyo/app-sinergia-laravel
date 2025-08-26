@@ -1,16 +1,16 @@
-import ManoObra from "../ManoObra/ManoObra.jsx";
+import Empleados from "../Empleados/Empleados.jsx";
 import Home from "../Home/Home.jsx";
 import { Routes, Route } from "react-router-dom";
-import CreateEmpleado from "../ManoObra/CreateEmpleado.jsx";
-import Editor from "../ManoObra/EditeEmpleado.jsx";
-import RemoveEmpleado from "../ManoObra/RemoveEmpleado.jsx";
+import CreateEmpleado from "../Empleados/CreateEmpleado.jsx";
+import Editor from "../Empleados/EditeEmpleado.jsx";
+import RemoveEmpleado from "../Empleados/RemoveEmpleado.jsx";
 
 
 function AppRouter() {
     return (
         <Routes>
             <Route path="/home" element={<Home />} />
-            <Route path="/proveedores" element={<ManoObra />} />
+            <Route path="/empleados" element={<Empleados />} />
             <Route path="/crear-empleado" element={<CreateEmpleado />} />
             <Route path="/editar-empleado/:id" element={<Editor />} />
             <Route path="/remove-empleado/:id" element={<RemoveEmpleado />} />

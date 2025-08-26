@@ -19,8 +19,8 @@ class Empleado extends Model
     ];
     
     public function documentaciones()
-{
-    return $this->hasMany(Documentacion::class);
-}
+    {
+        return $this->hasMany(Documentacion::class, 'id_empleado');
+    }
 
 }
