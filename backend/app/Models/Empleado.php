@@ -17,5 +17,10 @@ class Empleado extends Model
         'telefono',
         'estado'
     ];
+    
+    public function documentaciones()
+{
+    return $this->hasMany(Documentacion::class);
+}
 
 }
