@@ -57,7 +57,7 @@ export default function Empleados() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
                     {empleado.documentaciones.length > 0 ? (
                       empleado.documentaciones.map(doc => (
-                        <div key={doc.id} className="bg-gray-200 rounded px-2 py-1 mb-3  text-gray-800 shadow font-bold" onClick={()=> window.location.href = `assets/documentacion_empleados/${doc.path_archivo_documento}`}>
+                        <div key={doc.id} className="bg-gray-200 rounded px-2 py-1 mb-3 text-xl text-gray-800 shadow font-bold" onClick={()=> window.location.href = `assets/documentacion_empleados/${doc.path_archivo_documento}`}>
                           {doc.tipo_documento.descripcion.toUpperCase()}
                         </div>
                       ))
@@ -66,7 +66,7 @@ export default function Empleados() {
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-base flex gap-2 justify-center">
-                    <button className={`bg-orange-500 hover:bg-orange-600 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150`} onClick={() => window.location.href = `/editar-empleado/${empleado.id}`}>Editar</button>
+                    <button className={`bg-orange-500 hover:bg-orange-600 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150`} onClick={() => window.location.href = `/editarempleado/${empleado.id}`}>Editar</button>
                     <button className={`bg-red-600 hover:bg-red-700 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150`} onClick={() => window.location.href = `/eliminar-empleado/${empleado.id}`}>Eliminar</button>
                   </td>
                 </tr>

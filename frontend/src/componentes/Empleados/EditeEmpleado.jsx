@@ -1,40 +1,42 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getOne } from "../Fetch/getOne.js";
+import { put } from "../Fetch/put.js";
 
-export default function Editor() {
+export default function EditeEmpleado() {
     const { id } = useParams();
     const [apellido, setApellido] = useState("");
     const [nombre, setNombre] = useState("");
+    const [grupo, setGrupo] = useState("");
+    const [telefono, setTelefono] = useState("");
+    const [estado, setEstado] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
         // Obtener datos actuales del empleado
-        fetch(`http://localhost:3000/api/empleados/${id}`)
-            .then(res => res.json())
+        getOne(`http://localhost:8000/api/empleados/${id}`, "empleado")
             .then(data => {
-                setApellido(data.data.apellido);
-                setNombre(data.data.nombre);
+                setApellido(data.apellido);
+                setNombre(data.nombre);
+                setGrupo(data.grupo);
+                setTelefono(data.telefono);
+                setEstado(data.estado);
             });
     }, [id]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const empleado = { apellido, nombre };
-
+        const empleado = { nombre, apellido, grupo, telefono, estado };
         try {
-            const res = await fetch(`http://localhost:3000/api/empleados/${id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(empleado),
-            });
-            if (res.ok) {
-                navigate("/proveedores");
-                window.location.reload();
-            } else {
+            const res = await put(`http://localhost:8000/api/empleados/${id}`, empleado);
+            if (res){
+            navigate("/empleados");
+            window.location.reload();}
+            else {
                 alert("Error al editar empleado");
             }
         } catch (err) {
-            alert("Error de conexión");
+            alert("Error al editar empleado");
         }
     };
 
@@ -43,41 +45,76 @@ export default function Editor() {
             <h1 className="text-3xl text-gray-800 mb-6 font-sans">Editar Empleado</h1>
             <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
                 <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nombre">
+                        Nombre
+                    </label>
+                    <input
+                        className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        id="nombre"
+                        type="text"
+                        value={nombre}
+                        onChange={e => setNombre(e.target.value)}
+                        required
+                    />
+                </div>
+                <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="apellido">
                         Apellido
                     </label>
                     <input
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                         id="apellido"
                         type="text"
-                        placeholder="Apellido"
                         value={apellido}
                         onChange={e => setApellido(e.target.value)}
                         required
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nombre">
-                        Nombre
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="grupo">
+                        Grupo
                     </label>
                     <input
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="nombre"
+                        className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        id="grupo"
                         type="text"
-                        placeholder="Nombre"
-                        value={nombre}
-                        onChange={e => setNombre(e.target.value)}
+                        value={grupo}
+                        onChange={e => setGrupo(e.target.value)}
                         required
                     />
                 </div>
-                <div className="flex items-center justify-between">
-                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-                        Guardar Cambios
-                    </button>
-                    <button className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button" onClick={() => navigate("/empleados")}>
-                        Cancelar
-                    </button>
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="telefono">
+                        Telefono
+                    </label>
+                    <input
+                        className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        id="telefono"
+                        type="text"
+                        value={telefono}
+                        onChange={e => setTelefono(e.target.value)}
+                        required
+                    />
                 </div>
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="estado">
+                        Estado
+                    </label>
+                    <select
+                        className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        id="estado"
+                        value={estado}
+                        onChange={e => setEstado(e.target.value)}
+                        required
+                    >
+                        <option value="">Seleccione estado</option>
+                        <option value="activo">Activo</option>
+                        <option value="inactivo">Inactivo</option>
+                    </select>
+                </div>
+                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Guardar
+                </button>
             </form>
         </div>
     );
