@@ -52,7 +52,7 @@ class EmpleadoController extends Controller
 
     public function show($id)
     {
-        $empleado = Empleado::find($id);
+        $empleado = Empleado::with(['documentaciones.tipoDocumento'])->find($id);
         if (!$empleado) {
             return response()->json([
                 'message' => 'Empleado no encontrado',
