@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Documentacion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentacionController extends Controller
 {
@@ -36,14 +38,14 @@ class DocumentacionController extends Controller
         $file = $request->file('archivo');
         $path = $file->store('documentos', 'public'); // storage/app/public/documentos/...
 
-        $documentacion = Documentacion::create([$documentacion = Documentacion::create([
+        $documentacion = Documentacion::create([
             'id_tipo_documento'     => $request->id_tipo_documento,
             'id_empleado'           => $request->id_empleado,
             'path_archivo_documento'=> $path, // guardamos el path real
             'mime'                  => $file->getClientMimeType() ?? null,
             'size'                  => $file->getSize() ?? null,
             'fecha_vencimiento'     => $request->fecha_vencimiento,
-        ])]);
+        ]);
 
         if (!$documentacion) {
             return response()->json([
