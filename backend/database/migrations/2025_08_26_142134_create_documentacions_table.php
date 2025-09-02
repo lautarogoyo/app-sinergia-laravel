@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('id_tipo_documento')->constrained('tipo_documentos')->onDelete('cascade');
             $table->foreignId('id_empleado')->constrained('empleados')->onDelete('cascade');
             $table->string('path_archivo_documento');
+            $table->string('mime')->nullable();
+            $table->unsignedBigInteger('size')->nullable();
             $table->date('fecha_vencimiento')->nullable();
             $table->timestamps();
         });

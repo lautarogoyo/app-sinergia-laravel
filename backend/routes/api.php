@@ -30,7 +30,6 @@ Route::put('/tipo_documentos/{id}', [TipoDocumentoController::class, 'update']);
 
 Route::delete('/tipo_documentos/{id}', [TipoDocumentoController::class, 'destroy']);
 
-// Rutas para Documentacion
 Route::get('/documentaciones', [DocumentacionController::class, 'index']);
 
 Route::get('/documentaciones/{id}', [DocumentacionController::class, 'show']);
