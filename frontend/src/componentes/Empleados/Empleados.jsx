@@ -9,6 +9,7 @@ export default function Empleados() {
   
   
   const [empleados, setempleados] = useState([]);
+  const [filtro, setFiltro] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const textHeader = "text-xl lg:text-2xl";
@@ -30,11 +31,30 @@ export default function Empleados() {
   if (loading) return <div className="text-center text-xl py-8">Cargando...</div>;
   if (error) return <div className="text-center text-xl py-8 text-red-500">Error: {error}</div>;
 
+  // Filtrado simple por nombre, apellido o grupo
+  const empleadosFiltrados = empleados.filter(e => {
+    const val = filtro.toLowerCase();
+    return (
+      e.nombre.toLowerCase().includes(val) ||
+      e.apellido.toLowerCase().includes(val) ||
+      (e.grupo ? e.grupo.toLowerCase().includes(val) : false)
+    );
+  });
+
   return (
-    
-    <div className="p-8 bg-gray-100  lg:w-full flex flex-col items-center">
+    <div className="p-8 bg-gray-100  lg:w-full flex flex-col ">
       <h2 className="text-3xl font-extrabold mb-6 text-gray-800 tracking-wide">Panel de Empleados</h2>
-      <div className="shadow-2xl rounded-xl border border-gray-300 bg-white flex flex-col items-center">
+      <div className="mb-6 w-full max-w-2xl flex flex-col ">
+        <label htmlFor="filtro" className="mb-2 text-lg font-medium text-gray-700">Filtrar:</label>
+        <input
+          type="text"
+          className="w-full px-4 py-2 rounded border border-gray-300 text-lg focus:outline-none focus:ring focus:border-blue-400 mb-2"
+          placeholder="Filtrar por nombre, apellido o grupo..."
+          value={filtro}
+          onChange={e => setFiltro(e.target.value)}
+        />
+      </div>
+      <div className="shadow-2xl rounded-xl border border-gray-300 bg-white flex flex-col">
         <table className="">
           <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
             <tr>
@@ -48,8 +68,8 @@ export default function Empleados() {
             </tr>
           </thead>
           <tbody className="bg-gray-50 divide-y divide-gray-200 text-center">
-            {empleados.length > 0 ? (
-              empleados.map((empleado) => (
+            {empleadosFiltrados.length > 0 ? (
+              empleadosFiltrados.map((empleado) => (
                 <tr key={empleado.id} className="hover:bg-gray-200 transition-colors duration-150">
                   <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.nombre}</td>
                   <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.apellido}</td>
