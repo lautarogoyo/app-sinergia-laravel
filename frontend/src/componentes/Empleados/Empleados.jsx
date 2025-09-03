@@ -55,7 +55,7 @@ export default function Empleados() {
                   <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.apellido}</td>
                   <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.grupo}</td>
                   <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.telefono}</td>
-                  <td className={`whitespace-nowrap ${textContent} text-gray-800 bg-green-500 font-bold`}>{empleado.estado.toUpperCase()}</td>
+                  <td className={`whitespace-nowrap ${textContent} text-gray-800 ${empleado.estado === 'activo' ? 'bg-green-500' : 'bg-red-500'} font-bold`}>{empleado.estado.toUpperCase()}</td>
                   <td className="px-2 py-2 whitespace-nowrap text-sm text-gray-700">
                     {empleado.documentaciones.length > 0 ? (
                       empleado.documentaciones.map(doc => (
@@ -67,12 +67,14 @@ export default function Empleados() {
                       <span className="text-gray-400 italic">Sin documentos</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-base flex flex-col gap-2 justify-center items-center">
-                    <div className="flex gap-2 w-full justify-center mt-15">
-                      <button className={`bg-orange-500 hover:bg-orange-600 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer`} onClick={() => window.location.href = `/editarempleado/${empleado.id}`}>Editar</button>
-                      <button className={`bg-red-600 hover:bg-red-700 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer`} onClick={() => window.location.href = `/eliminarempleado/${empleado.id}`}>Eliminar</button>
+                  <td className="px-6 py-4 flex-1 gap-2 ">
+                    <div className="">
+                    <div className="flex gap-2 w-full justify-center p-2">
+                      <button className="bg-orange-500 hover:bg-orange-600 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => window.location.href = `/editarempleado/${empleado.id}`}>Editar</button>
+                      <button className="bg-red-600 hover:bg-red-700 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => window.location.href = `/eliminarempleado/${empleado.id}`}>Eliminar</button>
                     </div>
-                    <button className={`bg-blue-600 hover:bg-blue-700 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150 w-full cursor-pointer`} onClick={() => window.location.href = `/documentacionempleado/${empleado.id}`}>Cambiar Documentacion</button>
+                    <button className="bg-blue-600 hover:bg-blue-700 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150 w-full cursor-pointer" onClick={() => window.location.href = `/documentacionempleado/${empleado.id}`}>Cambiar Documentacion</button>
+                    </div>
                   </td>
                 </tr>
               ))
