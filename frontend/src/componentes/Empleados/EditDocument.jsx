@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getOne } from "../Fetch/getOne.js";
 import { put } from "../Fetch/put.js";
+import { post } from "../Fetch/post.js";
 
 export default function EditDocument() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [exit, setExit] = useState(false);
     const [documentaciones, setDocumentaciones] = useState([]);
     useEffect(() => {
         getOne(`http://localhost:8000/api/empleados/${id}`, "empleado")
@@ -14,7 +16,9 @@ export default function EditDocument() {
                 
             });
     }, [id]);
-
+    const [file, setFile] = useState(false);
+    const [newFile, setNewFile] = useState(null);
+    const [newTipo, setNewTipo] = useState("");
     const handleTipoDocumentoChange = (docId, value) => {
         setDocumentaciones(prev =>
           prev.map(doc =>
@@ -58,6 +62,28 @@ export default function EditDocument() {
         }
     };
 
+    const handleAgregarNuevo = async () => {
+        if (!newFile || !newTipo) {
+            alert("Selecciona tipo y archivo");
+            return;
+        }
+        const formData = new FormData();
+        formData.append("id_empleado", Number(id));
+        formData.append("id_tipo_documento", Number(newTipo));
+        formData.append("archivo", newFile);
+        try {
+            const res = await post("http://localhost:8000/api/documentaciones", formData);
+            setDocumentaciones(prev => [...prev, res]);
+            setFile(false);
+            setNewFile(null);
+            setNewTipo("");
+            window.location.reload();
+        } catch (err) {
+            alert("Error al crear documento");
+            console.error(err);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -90,6 +116,9 @@ export default function EditDocument() {
         alert("Error al editar documentaciones");
         }
     };
+    if (exit) {
+        navigate("/empleados");
+    }
     return (
         <div className="">
             <div className="p-6 relative flex flex-col justify-start items-center">
@@ -123,15 +152,51 @@ export default function EditDocument() {
                                 <option value="7">Constancia AFIP</option>
                             </select>
                         </div>
+                        
                     ))
                 ) : (
                     <div>No hay documentaciones</div>
                 )}
+                {file && (
+                    <div className="flex items-center px-4 w-full justify-center">
+                        <span className="m-4 font-semibold border-1 text-white bg-orange-500 rounded-xl p-2">Nuevo documento</span>
+                        <input
+                            className="bg-gray-500 text-white rounded px-2 py-1"
+                            type="file"
+                            id="new-doc-file"
+                            name="new-doc-file"
+                            onChange={e => setNewFile(e.target.files[0])}
+                        />
+                        <select
+                            className="shadow appearance-none border rounded py-2 px-3 m-5 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            id="new_tipo_documento"
+                            value={newTipo || ""}
+                            onChange={e => setNewTipo(e.target.value)}
+                            required
+                        >
+                            <option value="">Seleccione estado</option>
+                            <option value="1">Seguro</option>
+                            <option value="2">Examen Medico</option>
+                            <option value="3">Monotributo</option>
+                            <option value="4">ART/SVO</option>
+                            <option value="5">Capacitacion</option>
+                            <option value="6">EPP</option>
+                            <option value="7">Constancia AFIP</option>
+                        </select>
+                        <button onClick={handleAgregarNuevo} className="ml-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Agregar</button>
+                        <button onClick={()=> { setFile(false); setNewFile(null); setNewTipo(""); }} className="ml-2 bg-gray-400 hover:bg-gray-500 text-black font-bold py-2 px-4 rounded">Cancelar</button>
+                        
+                    </div>
+                )}
                 
             </div>
-            <button onClick={handleSubmit} className="ml-5 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ">
-                    Guardar
-            </button>
+                <div className="flex w-full justify-end items-center gap-4 m-6">
+                    <button onClick={handleSubmit} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer">
+                        Guardar
+                    </button>
+                    <button onClick={()=>setExit(true)} className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded cursor-pointer">Cancelar</button>
+                    <button onClick={()=> setFile(true)} className="text-white flex items-center justify-center bg-green-600 rounded text-xl px-4 py-2 cursor-pointer hover:bg-green-700 ml-5">+</button>
+                </div>
         </div>
     );
 }

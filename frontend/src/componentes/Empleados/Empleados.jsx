@@ -11,8 +11,8 @@ export default function Empleados() {
   const [empleados, setempleados] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const textHeader = "text-3xl";
-  const textContent = "text-2xl";
+  const textHeader = "text-xl lg:text-2xl";
+  const textContent = "text-xl lg:text-2xl";
   const backendUrl = "http://localhost:8000";
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function Empleados() {
 
   return (
     
-    <div className="p-8 bg-gray-100 min-h-screen  flex flex-col items-center">
+    <div className="p-8 bg-gray-100  lg:w-full flex flex-col items-center">
       <h2 className="text-3xl font-extrabold mb-6 text-gray-800 tracking-wide">Panel de Empleados</h2>
       <div className="shadow-2xl rounded-xl border border-gray-300 bg-white flex flex-col items-center">
         <table className="">
@@ -51,15 +51,15 @@ export default function Empleados() {
             {empleados.length > 0 ? (
               empleados.map((empleado) => (
                 <tr key={empleado.id} className="hover:bg-gray-200 transition-colors duration-150">
-                  <td className={`px-6 py-4 whitespace-nowrap ${textContent} text-gray-800`}>{empleado.nombre}</td>
-                  <td className={`px-6 py-4 whitespace-nowrap ${textContent} text-gray-800`}>{empleado.apellido}</td>
-                  <td className={`px-6 py-4 whitespace-nowrap ${textContent} text-gray-800`}>{empleado.grupo}</td>
-                  <td className={`px-6 py-4 whitespace-nowrap ${textContent} text-gray-800`}>{empleado.telefono}</td>
-                  <td className={`px-6 py-4 whitespace-nowrap ${textContent} text-gray-800 bg-green-500 font-bold`}>{empleado.estado.toUpperCase()}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+                  <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.nombre}</td>
+                  <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.apellido}</td>
+                  <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.grupo}</td>
+                  <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.telefono}</td>
+                  <td className={`whitespace-nowrap ${textContent} text-gray-800 bg-green-500 font-bold`}>{empleado.estado.toUpperCase()}</td>
+                  <td className="px-2 py-2 whitespace-nowrap text-sm text-gray-700">
                     {empleado.documentaciones.length > 0 ? (
                       empleado.documentaciones.map(doc => (
-                        <div key={doc.id} className="bg-gray-200 rounded px-2 py-1 mb-3 text-xl text-gray-800 shadow font-bold" onClick={()=> window.location.href = `${backendUrl}/storage/${doc.path_archivo_documento}`}>
+                        <div key={doc.id} className="bg-gray-200 rounded px-2 py-1 mb-3 text-[17px] text-gray-800 shadow font-bold hover:bg-gray-300 cursor-pointer" onClick={() => window.open(`${backendUrl}/storage/${doc.path_archivo_documento}`, '_blank')}>
                           {doc.tipo_documento.descripcion.toUpperCase()}
                         </div>
                       ))
@@ -68,11 +68,11 @@ export default function Empleados() {
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-base flex flex-col gap-2 justify-center items-center">
-                    <div className="flex gap-2 w-full justify-center">
-                      <button className={`bg-orange-500 hover:bg-orange-600 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150`} onClick={() => window.location.href = `/editarempleado/${empleado.id}`}>Editar</button>
-                      <button className={`bg-red-600 hover:bg-red-700 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150`} onClick={() => window.location.href = `/eliminarempleado/${empleado.id}`}>Eliminar</button>
+                    <div className="flex gap-2 w-full justify-center mt-15">
+                      <button className={`bg-orange-500 hover:bg-orange-600 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer`} onClick={() => window.location.href = `/editarempleado/${empleado.id}`}>Editar</button>
+                      <button className={`bg-red-600 hover:bg-red-700 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer`} onClick={() => window.location.href = `/eliminarempleado/${empleado.id}`}>Eliminar</button>
                     </div>
-                    <button className={`bg-blue-600 hover:bg-blue-700 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150 w-full`} onClick={() => window.location.href = `/documentacionempleado/${empleado.id}`}>Cambiar Documentacion</button>
+                    <button className={`bg-blue-600 hover:bg-blue-700 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150 w-full cursor-pointer`} onClick={() => window.location.href = `/documentacionempleado/${empleado.id}`}>Cambiar Documentacion</button>
                   </td>
                 </tr>
               ))
