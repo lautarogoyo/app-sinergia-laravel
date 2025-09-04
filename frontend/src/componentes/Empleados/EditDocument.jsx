@@ -133,63 +133,66 @@ export default function EditDocument() {
         navigate("/empleados");
     }
     return (
-        <div className="">
-            <div className="p-6 relative flex flex-col justify-start items-center">
-                <h1 className="text-3xl text-gray-800 font-bold m-6">Documentaciones</h1>
+        <div className="min-h-screen flex flex-col flex-1 py-10">
+            <div className="w-full bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center">
+                <h1 className="text-4xl text-gray-800 font-extrabold mb-8 tracking-tight">Documentaciones</h1>
                 {documentaciones.length > 0 ? (
-                    documentaciones.map(doc => (
-                        <div key={doc.id} className="flex items-center px-4">
-                            <span className="m-4 font-semibold border-1 text-white bg-orange-500 rounded-xl p-2">{doc.tipo_documento.descripcion.toUpperCase()}</span>
-                            <label className="m-4 font-semibold text-gray-700">{doc.path_archivo_documento}</label>
-                            <input
-                                className="bg-gray-500 text-white rounded px-2 py-1"
-                                type="file"
-                                id={`doc-file-${doc.id}`}
-                                name={`doc-file-${doc.id}`}
-                                onChange={e => handleDocumentacionChange(doc.id, e.target.files[0])}
-                            />
-                            <select
-                            className="shadow appearance-none border rounded py-2 px-3 m-5 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="tipo_documento.id"
-                            value={doc.id_tipo_documento ?? doc.tipo_documento?.id ?? ""}
-                            onChange={e => handleTipoDocumentoChange(doc.id, e.target.value)}
-                            required
-                            >
-                                <option value="">Seleccione estado</option>
-                                <option value="1">Seguro</option>
-                                <option value="2">Examen Medico</option>
-                                <option value="3">Monotributo</option>
-                                <option value="4">ART/SVO</option>
-                                <option value="5">Capacitacion</option>
-                                <option value="6">EPP</option>
-                                <option value="7">Constancia AFIP</option>
-                            </select>
-                            <input
-                                className="bg-gray-500 text-white rounded px-2 py-1"
-                                type="date"
-                                id="fecha_vencimiento"
-                                value={doc.fecha_vencimiento ? doc.fecha_vencimiento.split('T')[0] : ''}
-                                name="fecha_vencimiento"
-                                onChange={e => handleFechaVencimientoChange(doc.id, e.target.value)}
-                            />
-                        </div>
-                        
-                    ))
+                    <div className="w-full flex flex-col gap-6">
+                        {documentaciones.map(doc => (
+                            <div key={doc.id} className="flex flex-col md:flex-row items-center justify-between bg-gray-50 rounded-xl shadow-md p-6 border border-gray-200">
+                                <div className="flex flex-col md:flex-row items-center gap-4 w-full">
+                                    <span className="font-semibold text-white bg-orange-500 rounded-xl px-4 py-2 text-lg shadow w-40">{doc.tipo_documento.descripcion.toUpperCase()}</span>
+                                    <label className="font-semibold text-gray-700 truncate max-w-xs">{doc.path_archivo_documento}</label>
+                                    <input
+                                        className="bg-gray-200 text-gray-800 rounded px-2 py-1 border border-gray-300 focus:ring-2 focus:ring-orange-400"
+                                        type="file"
+                                        id={`doc-file-${doc.id}`}
+                                        name={`doc-file-${doc.id}`}
+                                        onChange={e => handleDocumentacionChange(doc.id, e.target.files[0])}
+                                    />
+                                    <select
+                                        className="shadow border rounded py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                                        id="tipo_documento.id"
+                                        value={doc.id_tipo_documento ?? doc.tipo_documento?.id ?? ""}
+                                        onChange={e => handleTipoDocumentoChange(doc.id, e.target.value)}
+                                        required
+                                    >
+                                        <option value="">Seleccione estado</option>
+                                        <option value="1">Seguro</option>
+                                        <option value="2">Examen Medico</option>
+                                        <option value="3">Monotributo</option>
+                                        <option value="4">ART/SVO</option>
+                                        <option value="5">Capacitacion</option>
+                                        <option value="6">EPP</option>
+                                        <option value="7">Constancia AFIP</option>
+                                    </select>
+                                    <input
+                                        className="bg-gray-200 text-gray-800 rounded px-2 py-1 border border-gray-300 focus:ring-2 focus:ring-orange-400"
+                                        type="date"
+                                        id="fecha_vencimiento"
+                                        value={doc.fecha_vencimiento ? doc.fecha_vencimiento.split('T')[0] : ''}
+                                        name="fecha_vencimiento"
+                                        onChange={e => handleFechaVencimientoChange(doc.id, e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 ) : (
-                    <div>No hay documentaciones</div>
+                    <div className="text-gray-500 text-lg font-medium">No hay documentaciones</div>
                 )}
                 {file && (
-                    <div className="flex items-center px-4 w-full justify-center">
-                        <span className="m-4 font-semibold border-1 text-white bg-orange-500 rounded-xl p-2">Nuevo documento</span>
+                    <div className="flex flex-col md:flex-row items-center justify-center w-full gap-4 mt-8 bg-gray-50 rounded-xl shadow-md p-6 border border-gray-200">
+                        <span className="font-semibold text-white bg-gradient-to-r from-green-600 to-green-400 rounded-xl px-4 py-2 text-lg shadow">Nuevo documento</span>
                         <input
-                            className="bg-gray-500 text-white rounded px-2 py-1"
+                            className="bg-gray-200 text-gray-800 rounded px-2 py-1 border border-gray-300 focus:ring-2 focus:ring-green-400"
                             type="file"
                             id="new-doc-file"
                             name="new-doc-file"
                             onChange={e => setNewFile(e.target.files[0])}
                         />
                         <select
-                            className="shadow appearance-none border rounded py-2 px-3 m-5 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            className="shadow border rounded py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-400"
                             id="new_tipo_documento"
                             value={newTipo || ""}
                             onChange={e => setNewTipo(e.target.value)}
@@ -204,20 +207,20 @@ export default function EditDocument() {
                             <option value="6">EPP</option>
                             <option value="7">Constancia AFIP</option>
                         </select>
-                        <button onClick={handleAgregarNuevo} className="ml-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Agregar</button>
-                        <button onClick={()=> { setFile(false); setNewFile(null); setNewTipo(""); }} className="ml-2 bg-gray-400 hover:bg-gray-500 text-black font-bold py-2 px-4 rounded">Cancelar</button>
-                        
+                        <div className="flex gap-2 mt-4 md:mt-0">
+                            <button onClick={handleAgregarNuevo} className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow transition-all duration-150">Agregar</button>
+                            <button onClick={()=> { setFile(false); setNewFile(null); setNewTipo(""); }} className="bg-gray-400 hover:bg-gray-500 text-black font-bold py-2 px-4 rounded shadow transition-all duration-150">Cancelar</button>
+                        </div>
                     </div>
                 )}
-                
-            </div>
-                <div className="flex w-full justify-end items-center gap-4 m-6">
-                    <button onClick={handleSubmit} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer">
+                <div className="flex w-full justify-end items-center gap-4 mt-10">
+                    <button onClick={handleSubmit} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded shadow focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-150">
                         Guardar
                     </button>
-                    <button onClick={()=>setExit(true)} className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded cursor-pointer">Cancelar</button>
-                    <button onClick={()=> setFile(true)} className="text-white flex items-center justify-center bg-green-600 rounded text-xl px-4 py-2 cursor-pointer hover:bg-green-700 ml-5">+</button>
+                    <button onClick={()=>setExit(true)} className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-6 rounded shadow transition-all duration-150">Cancelar</button>
+                    <button onClick={()=> setFile(true)} className="flex items-center justify-center bg-green-600 hover:bg-green-700 text-white rounded text-xl px-6 py-2 font-bold shadow transition-all duration-150">+</button>
                 </div>
+            </div>
         </div>
     );
 }
