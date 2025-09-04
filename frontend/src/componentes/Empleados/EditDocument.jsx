@@ -13,7 +13,6 @@ export default function EditDocument() {
         getOne(`http://localhost:8000/api/empleados/${id}`, "empleado")
             .then(data => {
                 setDocumentaciones(data.documentaciones)
-                
             });
     }, [id]);
     const [file, setFile] = useState(false);
@@ -23,11 +22,10 @@ export default function EditDocument() {
         setDocumentaciones(prev =>
           prev.map(doc =>
             doc.id === docId
-              ? {
-                  ...doc,
-                  id_tipo_documento: Number(value), // actualiza el campo raíz
-                  tipo_documento: { ...doc.tipo_documento, id_tipo_documento: Number(value) }
-                }
+                            ? {
+                                    ...doc,
+                                    id_tipo_documento: Number(value)
+                                }
               : doc
           )
         );
@@ -41,13 +39,28 @@ export default function EditDocument() {
         );
       };
     
-    const updateDocumentacion = async ({ id, id_empleado, id_tipo_documento, file }) => {
+    const handleFechaVencimientoChange = (docId, value) => {
+        setDocumentaciones(prev =>
+            prev.map(doc =>
+                doc.id === docId
+                    ? { ...doc, fecha_vencimiento: value }
+                    : doc
+            )
+        );
+    };
+
+
+
+
+    const updateDocumentacion = async ({ id, id_empleado, id_tipo_documento, file, fecha_vencimiento }) => {
         const formData = new FormData();
-        formData.append('id_empleado', id_empleado);
-        formData.append('id_tipo_documento', id_tipo_documento);
+        formData.append('id_empleado', Number(id_empleado) ?? "");
+        formData.append('id_tipo_documento', Number(id_tipo_documento));
         if (file) formData.append('archivo', file);
-        // Si tienes fecha_vencimiento, también puedes agregarla
-        // formData.append('fecha_vencimiento', fecha_vencimiento);
+        if (fecha_vencimiento) {
+            const fechaOk = fecha_vencimiento.length > 10 ? fecha_vencimiento.slice(0, 10) : fecha_vencimiento;
+            formData.append('fecha_vencimiento', fechaOk);
+        }
         try {
             return await put(`http://localhost:8000/api/documentaciones/${id}`, formData, true);
         } catch (err) {
@@ -105,7 +118,7 @@ export default function EditDocument() {
             id_empleado: Number(id),
             id_tipo_documento: Number(doc.id_tipo_documento ?? doc.tipo_documento?.id_tipo_documento),
             file: doc.newFile || null,
-            // fecha_vencimiento: doc.fecha_vencimiento ?? null, // si lo editás en UI
+            fecha_vencimiento: doc.fecha_vencimiento ?? null
             })
         ));
 
@@ -137,9 +150,9 @@ export default function EditDocument() {
                             />
                             <select
                             className="shadow appearance-none border rounded py-2 px-3 m-5 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                            id="tipo_documento.descripcion"
-                            value={doc.tipo_documento.id_tipo_documento}
-                            onChange={(e) => handleTipoDocumentoChange(doc.id, e.target.value)}
+                            id="tipo_documento.id"
+                            value={doc.id_tipo_documento ?? doc.tipo_documento?.id ?? ""}
+                            onChange={e => handleTipoDocumentoChange(doc.id, e.target.value)}
                             required
                             >
                                 <option value="">Seleccione estado</option>
@@ -151,6 +164,14 @@ export default function EditDocument() {
                                 <option value="6">EPP</option>
                                 <option value="7">Constancia AFIP</option>
                             </select>
+                            <input
+                                className="bg-gray-500 text-white rounded px-2 py-1"
+                                type="date"
+                                id="fecha_vencimiento"
+                                value={doc.fecha_vencimiento ? doc.fecha_vencimiento.split('T')[0] : ''}
+                                name="fecha_vencimiento"
+                                onChange={e => handleFechaVencimientoChange(doc.id, e.target.value)}
+                            />
                         </div>
                         
                     ))
