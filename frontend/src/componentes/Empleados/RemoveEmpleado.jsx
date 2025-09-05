@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getOne } from "../Fetch/getOne.js";
+import { del } from "../Fetch/put.js";
 
 export default function RemoveEmpleado() {
     const { id } = useParams();
@@ -9,13 +11,11 @@ export default function RemoveEmpleado() {
 
     useEffect(() => {
         // Obtener datos actuales del empleado desde el backend Laravel
-        fetch(`http://localhost:8000/api/empleados/${id}`)
-            .then(res => res.json())
+        getOne(`http://localhost:8000/api/empleados/${id}`, "empleado")
             .then(data => {
-                // El backend devuelve { empleado: {...}, status: 200 }
-                if (data && data.empleado) {
-                    setApellido(data.empleado.apellido);
-                    setNombre(data.empleado.nombre);
+                if (data) {
+                    setApellido(data.apellido);
+                    setNombre(data.nombre);
                 }
             });
     }, [id]);
@@ -23,17 +23,11 @@ export default function RemoveEmpleado() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await fetch(`http://localhost:8000/api/empleados/${id}`, {
-                method: "DELETE"
-            });
-            if (res.ok) {
-                navigate("/empleados");
-                window.location.reload();
-            } else {
-                alert("Error al borrar empleado");
-            }
+            await del(`http://localhost:8000/api/empleados/${id}`);
+            navigate("/empleados");
+            window.location.reload();
         } catch (err) {
-            alert("Error de conexión");
+            alert("Error al borrar empleado");
         }
     };
 

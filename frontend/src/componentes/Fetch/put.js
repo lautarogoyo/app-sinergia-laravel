@@ -11,3 +11,7 @@ export function put(url, data, isFormData = false) {
       .then((response) => response.data);
   }
 }
+
+export function del(url) {
+  return axios.delete(url).then((response) => response.data);
+}
