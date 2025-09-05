@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('telefono');
             $table->enum('estado', ['activo', 'inactivo']);
             $table->timestamps();
+            $table->softDeletes(); 
         });
     }
 
