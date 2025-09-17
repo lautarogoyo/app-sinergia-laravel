@@ -26,7 +26,7 @@ export default function RemoveEmpleado() {
             await del(`http://localhost:8000/api/empleados/${id}`);
             navigate("/empleados");
             window.location.reload();
-        } catch (err) {
+        } catch {
             alert("Error al borrar empleado");
         }
     };

@@ -22,7 +22,7 @@ export default function CreateEmpleado() {
                 } else {
                     alert("Error al crear empleado");
                 }
-        } catch (err) {
+        } catch  {
             alert("Error de conexión");
         }
     };

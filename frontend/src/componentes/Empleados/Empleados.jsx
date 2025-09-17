@@ -61,6 +61,7 @@ export default function Empleados() {
               <th className={`px-6 py-3 text-center ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Apellido</th>
               <th className={`px-6 py-3 text-center ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Grupo</th>
               <th className={`px-6 py-3 text-center ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Teléfono</th>
+              <th className={`px-6 py-3 text-center ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Datos Bancarios</th>
               <th className={`px-6 py-3 text-center ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Estado</th>
               <th className={`px-6 py-3 text-center ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Documentaciones</th>
               <th className={`px-6 py-3 text-center ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Acciones</th>
@@ -74,6 +75,10 @@ export default function Empleados() {
                   <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.apellido}</td>
                   <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.grupo}</td>
                   <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.telefono}</td>
+                  <td className={`whitespace-nowrap text-[18px] text-gray-800 p-6`}>
+                    {empleado.cbu} <br />
+                    {empleado.alias}
+                  </td>
                   <td className={`whitespace-nowrap ${textContent} text-gray-800 ${empleado.estado === 'activo' ? 'bg-green-500' : 'bg-red-500'} font-bold`}>{empleado.estado.toUpperCase()}</td>
                   <td className="px-2 py-2 whitespace-nowrap text-sm text-gray-700">
                     {empleado.documentaciones.length > 0 ? (

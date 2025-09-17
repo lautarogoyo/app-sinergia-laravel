@@ -54,7 +54,7 @@ export default function EditDocument() {
 
     const updateDocumentacion = async ({ id, id_empleado, id_tipo_documento, file, fecha_vencimiento }) => {
         const formData = new FormData();
-        formData.append('id_empleado', Number(id_empleado) ?? "");
+        formData.append('id_empleado', (id_empleado) ?? "");
         formData.append('id_tipo_documento', Number(id_tipo_documento));
         if (file) formData.append('archivo', file);
         if (fecha_vencimiento) {
