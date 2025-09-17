@@ -24,6 +24,8 @@ class EmpleadoController extends Controller
             'apellido' => 'required|max:255',
             'grupo' => 'required|max:255',
             'telefono' => 'required|digits:10',
+            'cbu' => 'digits:22',
+            'alias' => 'max:30',
             'estado' => 'required|in:activo,inactivo'
         ]);
 
@@ -95,6 +97,8 @@ class EmpleadoController extends Controller
             'apellido' => 'required|max:255',
             'grupo' => 'required|max:255',
             'telefono' => 'required|digits:10',
+            'cbu' => 'digits:22',
+            'alias' => 'max:30',
             'estado' => 'required|in:activo,inactivo'
         ]);
         if ($validator->fails()) {
@@ -126,7 +130,9 @@ class EmpleadoController extends Controller
             'apellido' => 'max:255',
             'grupo' => 'max:255',
             'telefono' => 'digits:10',
-            'estado' => 'in:activo,inactivo'
+            'estado' => 'in:activo,inactivo',
+            'cbu' => 'digits:22',
+            'alias' => 'max:30'
         ]);
         if ($validator->fails()) {
             return response()->json([

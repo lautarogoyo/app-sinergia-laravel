@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('apellido');
             $table->string('grupo');
             $table->string('telefono');
+            $table->string('cbu')->nullable();
+            $table->string('alias')->nullable();
             $table->enum('estado', ['activo', 'inactivo']);
             $table->timestamps();
             $table->softDeletes(); 

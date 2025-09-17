@@ -19,6 +19,8 @@ class Empleado extends Model
         'apellido',
         'grupo',
         'telefono',
+        'cbu',
+        'alias',
         'estado'
     ];
     
