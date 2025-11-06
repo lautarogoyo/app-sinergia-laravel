@@ -9,7 +9,7 @@ class EmpleadoController extends Controller
 {
     public function index()
     {
-        $empleados = Empleado::with(['documentaciones.tipoDocumento'])->get();
+        $empleados = Empleado::with(['documentaciones.tipoDocumento', 'grupo'])->get();
         $data = [
             'empleados' => $empleados,
             'status' => 200
@@ -22,11 +22,11 @@ class EmpleadoController extends Controller
         $validator = \Validator::make($request->all(), [
             'nombre' => 'required|max:255',
             'apellido' => 'required|max:255',
-            'grupo' => 'required|max:255',
             'telefono' => 'required|digits:10',
             'cbu' => 'digits:22',
             'alias' => 'max:30',
-            'estado' => 'required|in:activo,inactivo'
+            'estado' => 'required|in:activo,inactivo,cancelado',
+            'id_grupo' => 'nullable|exists:grupos,id'
         ]);
 
         if ($validator->fails()) {
@@ -54,7 +54,7 @@ class EmpleadoController extends Controller
 
     public function show($id)
     {
-        $empleado = Empleado::with(['documentaciones.tipoDocumento'])->find($id);
+        $empleado = Empleado::with(['documentaciones.tipoDocumento', 'grupo'])->find($id);
         if (!$empleado) {
             return response()->json([
                 'message' => 'Empleado no encontrado',
@@ -95,11 +95,11 @@ class EmpleadoController extends Controller
         $validator = \Validator::make($request->all(), [
             'nombre' => 'required|max:255',
             'apellido' => 'required|max:255',
-            'grupo' => 'required|max:255',
             'telefono' => 'required|digits:10',
             'cbu' => 'digits:22',
             'alias' => 'max:30',
-            'estado' => 'required|in:activo,inactivo'
+            'estado' => 'required|in:activo,inactivo,cancelado',
+            'id_grupo' => 'nullable|exists:grupos,id'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -128,11 +128,11 @@ class EmpleadoController extends Controller
         $validator = \Validator::make($request->all(), [
             'nombre' => 'max:255',
             'apellido' => 'max:255',
-            'grupo' => 'max:255',
             'telefono' => 'digits:10',
-            'estado' => 'in:activo,inactivo',
+            'estado' => 'in:activo,inactivo,cancelado',
             'cbu' => 'digits:22',
-            'alias' => 'max:30'
+            'alias' => 'max:30',
+            'id_grupo' => 'nullable|exists:grupos,id'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -141,12 +141,11 @@ class EmpleadoController extends Controller
                 'status' => 400
             ], 400);
         }
-        $empleado->update($request->only(['nombre','apellido','grupo','telefono','estado']));
+        $empleado->update($request->only(['nombre', 'apellido', 'telefono', 'estado', 'cbu', 'alias', 'id_grupo']));
         return response()->json([
             'message' => 'Empleado actualizado',
             'empleado' => $empleado,
             'status' => 200
         ], 200);
     }
-
 }

@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('nombre');
             $table->string('apellido');
-            $table->string('grupo');
             $table->string('telefono');
             $table->string('cbu')->nullable();
             $table->string('alias')->nullable();
-            $table->enum('estado', ['activo', 'inactivo']);
+            $table->enum('estado', ['activo', 'inactivo', 'cancelado'])->default('activo');
+            $table->foreignId('id_grupo')->nullable()->constrained('grupos')->nullOnDelete();
             $table->timestamps();
             $table->softDeletes(); 
         });

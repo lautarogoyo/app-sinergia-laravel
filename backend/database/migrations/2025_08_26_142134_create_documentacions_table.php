@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('documentaciones', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_tipo_documento')->constrained('tipo_documentos')->onDelete('cascade');
-            $table->foreignId('id_empleado')->constrained('empleados')->onDelete('cascade');
-            $table->string('path_archivo_documento');
+            $table->foreignId('id_tipo_documento')->constrained('tipo_documentos')->onDelete('restrict');
+            $table->foreignId('id_empleado')->constrained('empleados')->onDelete('restrict');
+            $table->string('path');
+            $table->date('fecha_vencimiento')->nullable();
+            $table->enum('estado', ['vigente', 'vencido'])->default('vigente');
             $table->string('mime')->nullable();
             $table->unsignedBigInteger('size')->nullable();
-            $table->date('fecha_vencimiento')->nullable();
             $table->timestamps();
         });
     }

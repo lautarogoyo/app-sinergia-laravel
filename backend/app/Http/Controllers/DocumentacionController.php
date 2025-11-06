@@ -24,7 +24,8 @@ class DocumentacionController extends Controller
             'id_tipo_documento'    => 'required|exists:tipo_documentos,id',
             'id_empleado'          => 'required|exists:empleados,id',
             'archivo'              => 'required|file|max:10240', // 10MB
-            'fecha_vencimiento'    => 'nullable|date'
+            'fecha_vencimiento'    => 'nullable|date',
+            'estado'               => 'required|in:vigente, vencido'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -41,10 +42,11 @@ class DocumentacionController extends Controller
         $documentacion = Documentacion::create([
             'id_tipo_documento'     => $request->id_tipo_documento,
             'id_empleado'           => $request->id_empleado,
-            'path_archivo_documento'=> $path, // guardamos el path real
-            'mime'                  => $file->getClientMimeType() ?? null,
+            'path'=> $path, // guardamos el path real
+            'mime'       => $file->getClientMimeType() ?? null,
             'size'                  => $file->getSize() ?? null,
             'fecha_vencimiento'     => $request->fecha_vencimiento,
+            'estado'                => $request->estado,
         ]);
 
         if (!$documentacion) {
@@ -70,7 +72,7 @@ class DocumentacionController extends Controller
             ], 404);
         }
         // si tu modelo expone accessor getUrlAttribute(), podés devolverla directo
-        $documentacion->url = Storage::disk('public')->url($documentacion->path_archivo_documento);
+        $documentacion->url = Storage::disk('public')->url($documentacion->path);
 
         return response()->json([
             'documentacion' => $documentacion,
@@ -88,8 +90,8 @@ class DocumentacionController extends Controller
             ], 404);
         }
         // borrar archivo físico
-        if ($documentacion->path_archivo_documento) {
-            Storage::disk('public')->delete($documentacion->path_archivo_documento);
+        if ($documentacion->path) {
+            Storage::disk('public')->delete($documentacion->path);
         }
         $documentacion->delete();
         return response()->json([
@@ -111,7 +113,8 @@ class DocumentacionController extends Controller
             'id_tipo_documento'    => 'required|exists:tipo_documentos,id',
             'id_empleado'          => 'required|exists:empleados,id',
             'archivo'              => 'sometimes|file|max:10240',
-            'fecha_vencimiento'    => 'nullable|date'
+            'fecha_vencimiento'    => 'nullable|date',
+            'estado'               => 'required|in:vigente, vencido'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -122,14 +125,14 @@ class DocumentacionController extends Controller
         }
         // si viene archivo nuevo: borrar el anterior y reemplazar
         if ($request->hasFile('archivo')) {
-            if ($documentacion->path_archivo_documento) {
-                Storage::disk('public')->delete($documentacion->path_archivo_documento);
+            if ($documentacion->path) {
+                Storage::disk('public')->delete($documentacion->path);
             }
 
             $file = $request->file('archivo');
             $path = $file->store('documentos', 'public');
 
-            $documentacion->path_archivo_documento = $path;
+            $documentacion->path = $path;
             $documentacion->mime = $file->getClientMimeType() ?? null;
             $documentacion->size = $file->getSize() ?? null;
         }
@@ -138,6 +141,7 @@ class DocumentacionController extends Controller
         $documentacion->id_tipo_documento = $request->id_tipo_documento;
         $documentacion->id_empleado       = $request->id_empleado;
         $documentacion->fecha_vencimiento = $request->fecha_vencimiento;
+        $documentacion->estado            = $request->estado;
 
         $documentacion->save();
 
@@ -161,7 +165,8 @@ class DocumentacionController extends Controller
             'id_tipo_documento'    => 'sometimes|exists:tipo_documentos,id',
             'id_empleado'          => 'sometimes|exists:empleados,id',
             'archivo'              => 'sometimes|file|max:10240',
-            'fecha_vencimiento'    => 'sometimes|date'
+            'fecha_vencimiento'    => 'sometimes|date',
+            'estado'               => 'sometimes|in:vigente,vencido'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -172,12 +177,12 @@ class DocumentacionController extends Controller
         }
         // reemplazo de archivo si vino
         if ($request->hasFile('archivo')) {
-            if ($documentacion->path_archivo_documento) {
-                Storage::disk('public')->delete($documentacion->path_archivo_documento);
+            if ($documentacion->path) {
+                Storage::disk('public')->delete($documentacion->path);
             }
             $file = $request->file('archivo');
             $path = $file->store('documentos', 'public');
-            $documentacion->path_archivo_documento = $path;
+            $documentacion->path = $path;
             $documentacion->mime = $file->getClientMimeType() ?? null;
             $documentacion->size = $file->getSize() ?? null;
         }
@@ -191,6 +196,9 @@ class DocumentacionController extends Controller
         }
         if ($request->filled('fecha_vencimiento')) {
             $documentacion->fecha_vencimiento = $request->fecha_vencimiento;
+        }
+        if ($request->filled('estado')) {
+            $documentacion->estado = $request->estado;
         }
 
         $documentacion->save();

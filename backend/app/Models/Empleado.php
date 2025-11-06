@@ -17,11 +17,11 @@ class Empleado extends Model
     protected $fillable = [
         'nombre',
         'apellido',
-        'grupo',
         'telefono',
         'cbu',
         'alias',
-        'estado'
+        'estado',
+        'id_grupo',
     ];
     
     public function documentaciones()
@@ -29,4 +29,8 @@ class Empleado extends Model
         return $this->hasMany(Documentacion::class, 'id_empleado');
     }
 
+    public function grupo()
+    {
+        return $this->belongsTo(Grupo::class, 'id_grupo');
+    }
 }
