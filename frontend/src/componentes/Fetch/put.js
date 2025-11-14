@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export function put(url, data, isFormData = false) {
+export function put(url, data /*, isFormData = false*/) {
   if (data instanceof FormData) {
     data.append('_method', 'PUT');
     return axios.post(url, data, {

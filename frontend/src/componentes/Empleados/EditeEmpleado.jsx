@@ -37,6 +37,7 @@ export default function EditeEmpleado() {
             }
         } catch (err) {
             alert("Error al editar empleado");
+            console.log(err);
         }
     };
 

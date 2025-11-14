@@ -19,7 +19,9 @@ return new class extends Migration
             $table->string('cbu')->nullable();
             $table->string('alias')->nullable();
             $table->enum('estado', ['activo', 'inactivo', 'cancelado'])->default('activo');
-            $table->foreignId('id_grupo')->nullable()->constrained('grupos')->nullOnDelete();
+            // create the column without adding the foreign key constraint here so migration order
+            // won't fail if the `grupos` table doesn't exist yet
+            $table->unsignedBigInteger('id_grupo')->nullable();
             $table->timestamps();
             $table->softDeletes(); 
         });
