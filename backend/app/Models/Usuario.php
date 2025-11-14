@@ -31,4 +31,9 @@ class Usuario extends Model
             $this->attributes['contrasenia'] = Hash::needsRehash($value) ? Hash::make($value) : $value;
         }
     }
+
+    public function proveedores() : HasMany
+    {
+        return $this->hasMany(Proveedor::class);
+    }
 }

@@ -13,8 +13,8 @@ class Grupo extends Model
      protected $fillable = [
         'denominacion'
     ];
-    public function empleados()
+    public function empleados() : HasMany
     {
-        return $this->hasMany(Empleado::class, 'id_grupo');
+        return $this->hasMany(Empleado::class);
     }
 }

@@ -39,13 +39,13 @@ class Documentacion extends Model
     }
 
     // Relaciones
-    public function tipoDocumento()
+    public function tipoDocumento():BelongsTo
     {
-        return $this->belongsTo(TipoDocumento::class, 'id_tipoDocumento');
+        return $this->belongsTo(TipoDocumento::class);
     }
 
-    public function empleado()
+    public function empleado() : BelongsTo
     {
-        return $this->belongsTo(Empleado::class, 'id_empleado');
+        return $this->belongsTo(Empleado::class);
     }
 }

@@ -14,8 +14,8 @@ class TipoDocumento extends Model
         'descripcion'
     ];
 
-    public function documentaciones()
+    public function documentaciones() : HasMany
     {
-        return $this->hasMany(Documentacion::class, 'id_tipoDocumento');
+        return $this->hasMany(Documentacion::class);
     }
 }
