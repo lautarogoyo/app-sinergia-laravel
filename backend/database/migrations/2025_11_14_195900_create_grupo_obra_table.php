@@ -18,7 +18,7 @@ return new class extends Migration
             $table -> string('path_archivo')->nullable();
             $table-> date('fecha_cierre_cotizacion')->nullable();
             $table-> enum('estado_cotizacion', ['pasada', 'debe pasar', 'otro']);
-            $table-> enum('estado_cotizacion', ['pasado', 'hacer planilla', 'no lleva planilla']);
+            $table-> enum('estado_comparativa', ['pasado', 'hacer planilla', 'no lleva planilla']);
 
             $table->timestamps();
 
