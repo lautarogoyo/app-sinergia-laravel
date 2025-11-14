@@ -30,7 +30,15 @@ class Obra extends Model
         'fecha_recepcion_definitiva' => 'date',
     ];
 
-    
+    public function grupos() : belongsToMany
+    {
+        return $this->belongsToMany(Grupo::class);
+    }
+
+    public function orden_compra() : hasOne
+    {
+        return $this->hasOne(Orden_Compra::class);
+    }
 }
 
 
