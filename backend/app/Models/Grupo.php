@@ -17,4 +17,9 @@ class Grupo extends Model
     {
         return $this->hasMany(Empleado::class);
     }
+
+    public function obras() : belongsToMany
+    {
+        return $this->belongsToMany(Obra::class);
+    }
 }
