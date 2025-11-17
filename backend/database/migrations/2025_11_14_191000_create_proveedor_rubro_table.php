@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('proveedor_rubro', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('proveedor_id')->constrained('proveedores')->cascadeOnDelete();
-            $table->foreignId('rubro_id')->constrained('rubros')->cascadeOnDelete();
+            $table->foreignId('proveedor_id')->constrained('proveedores')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('rubro_id')->constrained('rubros')->cascadeOnUpdate()->restrictOnDelete();
             $table ->string('descripcion')->nullable();
             $table->timestamps();
 

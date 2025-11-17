@@ -13,8 +13,6 @@ class Documentacion extends Model
     protected $table = 'documentaciones';
 
     protected $fillable = [
-        'id_tipo_documento',
-        'id_empleado',
         'path',
         'fecha_vencimiento',
         'estado',

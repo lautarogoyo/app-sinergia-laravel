@@ -19,7 +19,6 @@ class Proveedor extends Model
         'direccion',
         'comentario',
         'fecha_ingreso',
-        'id_usuario',    
 
     ];
     

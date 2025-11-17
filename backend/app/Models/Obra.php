@@ -39,6 +39,11 @@ class Obra extends Model
     {
         return $this->hasOne(Orden_Compra::class);
     }
+
+    public function comentarios () : hasMany
+    {
+        return $this->hasMany(Comentario::class);
+    }
 }
 
 

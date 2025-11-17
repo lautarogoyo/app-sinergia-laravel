@@ -10,7 +10,7 @@ return new class extends Migration
     {
         if (!Schema::hasColumn('empleados', 'id_grupo')) {
             Schema::table('empleados', function (Blueprint $table) {
-                $table->foreignId('id_grupo')->nullable()->constrained('grupos')->nullOnDelete();
+                $table->foreignId('id_grupo')->nullable()->constrained('grupos')->cascadeOnUpdate()->restrictOnDelete();
             });
         }
     }

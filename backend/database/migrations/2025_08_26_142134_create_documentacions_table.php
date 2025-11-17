@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('documentaciones', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_tipo_documento')->constrained('tipo_documentos')->onDelete('restrict');
-            $table->foreignId('id_empleado')->constrained('empleados')->onDelete('restrict');
+            $table->foreignId('id_tipo_documento')->constrained('tipo_documentos')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('id_empleado')->constrained('empleados')->cascadeOnUpdate()->restrictOnDelete();
             $table->string('path');
             $table->date('fecha_vencimiento')->nullable();
             $table->enum('estado', ['vigente', 'vencido'])->default('vigente');

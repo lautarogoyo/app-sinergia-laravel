@@ -22,7 +22,7 @@ return new class extends Migration
         if (Schema::hasTable('empleados') && Schema::hasColumn('empleados', 'id_grupo')) {
             Schema::table('empleados', function (Blueprint $table) {
                 // only add the foreign key if it does not already exist
-                $table->foreign('id_grupo')->references('id')->on('grupos')->nullOnDelete();
+                $table->foreign('id_grupo')->references('id')->on('grupos')->onUpdate('cascade')->onDelete('restrict');
             });
         }
     }

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('direccion')->nullable();
             $table->text('comentario')->nullable();
             $table->date('fecha_ingreso')->nullable();
-            $table->foreignId('id_usuario')->nullable()->constrained('usuarios')->nullOnDelete();
+            $table->foreignId('id_usuario')->nullable()->constrained('usuarios')->cascadeOnUpdate()->restrictOnDelete();
             $table->timestamps();
         });
     }

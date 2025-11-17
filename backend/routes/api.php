@@ -5,6 +5,13 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\EmpleadoController;
 use App\Http\Controllers\TipoDocumentoController;
+use App\Http\Controllers\GrupoController;
+use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\RubroController;
+use App\Http\Controllers\ObraController;
+use App\Http\Controllers\OrdenCompraController;
+use App\Http\Controllers\ComentarioController;
+use App\Http\Controllers\UsuarioController;
 
 use App\Http\Controllers\DocumentacionController;
 
@@ -41,3 +48,52 @@ Route::put('/documentaciones/{id}', [DocumentacionController::class, 'update']);
 Route::patch('/documentaciones/{id}', [DocumentacionController::class, 'updatePartial']);
 
 Route::delete('/documentaciones/{id}', [DocumentacionController::class, 'destroy']);
+
+// Grupos
+Route::get('/grupos', [GrupoController::class, 'index']);
+Route::get('/grupos/{id}', [GrupoController::class, 'show']);
+Route::post('/grupos', [GrupoController::class, 'store']);
+Route::put('/grupos/{id}', [GrupoController::class, 'update']);
+Route::delete('/grupos/{id}', [GrupoController::class, 'destroy']);
+
+// Proveedores
+Route::get('/proveedores', [ProveedorController::class, 'index']);
+Route::get('/proveedores/{id}', [ProveedorController::class, 'show']);
+Route::post('/proveedores', [ProveedorController::class, 'store']);
+Route::put('/proveedores/{id}', [ProveedorController::class, 'update']);
+Route::delete('/proveedores/{id}', [ProveedorController::class, 'destroy']);
+
+// Rubros
+Route::get('/rubros', [RubroController::class, 'index']);
+Route::get('/rubros/{id}', [RubroController::class, 'show']);
+Route::post('/rubros', [RubroController::class, 'store']);
+Route::put('/rubros/{id}', [RubroController::class, 'update']);
+Route::delete('/rubros/{id}', [RubroController::class, 'destroy']);
+
+// Obras
+Route::get('/obras', [ObraController::class, 'index']);
+Route::get('/obras/{id}', [ObraController::class, 'show']);
+Route::post('/obras', [ObraController::class, 'store']);
+Route::put('/obras/{id}', [ObraController::class, 'update']);
+Route::delete('/obras/{id}', [ObraController::class, 'destroy']);
+
+// Ordenes de compra
+Route::get('/ordenes_compra', [OrdenCompraController::class, 'index']);
+Route::get('/ordenes_compra/{id}', [OrdenCompraController::class, 'show']);
+Route::post('/ordenes_compra', [OrdenCompraController::class, 'store']);
+Route::put('/ordenes_compra/{id}', [OrdenCompraController::class, 'update']);
+Route::delete('/ordenes_compra/{id}', [OrdenCompraController::class, 'destroy']);
+
+// Comentarios
+Route::get('/comentarios', [ComentarioController::class, 'index']);
+Route::get('/comentarios/{id}', [ComentarioController::class, 'show']);
+Route::post('/comentarios', [ComentarioController::class, 'store']);
+Route::put('/comentarios/{id}', [ComentarioController::class, 'update']);
+Route::delete('/comentarios/{id}', [ComentarioController::class, 'destroy']);
+
+// Usuarios
+Route::get('/usuarios', [UsuarioController::class, 'index']);
+Route::get('/usuarios/{id}', [UsuarioController::class, 'show']);
+Route::post('/usuarios', [UsuarioController::class, 'store']);
+Route::put('/usuarios/{id}', [UsuarioController::class, 'update']);
+Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy']);

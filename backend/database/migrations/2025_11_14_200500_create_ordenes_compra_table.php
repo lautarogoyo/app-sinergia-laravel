@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->text('detalle')->nullable();
             // foreign key to obras
-            $table->foreignId('id_obra')->nullable()->constrained('obras')->nullOnDelete();
+            $table->foreignId('id_obra')->nullable()->constrained('obras')->cascadeOnUpdate()->restrictOnDelete();
             $table->date('fecha_inicio_orden_compra')->nullable();
             $table->date('fecha_fin_orden_compra')->nullable();
             $table->timestamps();

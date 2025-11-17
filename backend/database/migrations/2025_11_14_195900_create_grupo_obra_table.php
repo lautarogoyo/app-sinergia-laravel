@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('pedido_cotizacion', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('grupo_id')->constrained('grupos')->cascadeOnDelete();
-            $table->foreignId('obra_id')->constrained('obras')->cascadeOnDelete();
+            $table->foreignId('grupo_id')->constrained('grupos')->cascadeOnUpdate()->restrictOnDelete();
+            $table->foreignId('obra_id')->constrained('obras')->cascadeOnUpdate()->restrictOnDelete();
             $table -> string('path_archivo')->nullable();
             $table-> date('fecha_cierre_cotizacion')->nullable();
             $table-> enum('estado_cotizacion', ['pasada', 'debe pasar', 'otro']);

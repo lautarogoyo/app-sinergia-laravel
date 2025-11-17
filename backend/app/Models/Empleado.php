@@ -21,7 +21,6 @@ class Empleado extends Model
         'cbu',
         'alias',
         'estado',
-        'id_grupo',
     ];
     
     public function documentaciones() : HasMany
