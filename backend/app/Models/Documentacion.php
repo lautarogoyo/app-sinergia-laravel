@@ -17,7 +17,9 @@ class Documentacion extends Model
         'fecha_vencimiento',
         'estado',
         'mime',              // opcional si lo agregás en la migración
-        'size',              // opcional si lo agregás en la migración
+        'size',
+        'id_empleado',
+        'id_tipoDocumento'              // opcional si lo agregás en la migración
     ];
 
     protected $casts = [
