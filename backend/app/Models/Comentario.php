@@ -11,7 +11,8 @@ class Comentario extends Model
     use HasFactory;
     protected $table = 'comentarios';
     protected $fillable = [
-        'denominacion'
+        'denominacion',
+        'id_obra'
     ];
 
     public function obra () : BelongsTo
