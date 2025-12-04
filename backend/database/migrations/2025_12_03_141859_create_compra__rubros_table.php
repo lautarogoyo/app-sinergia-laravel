@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('compra_rubro', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('rubro_id')->constrained()->onDelete('cascade');
-            $table->foreignId('pedido_compra_id')->constrained()->onDelete('cascade');
+            $table->foreignId('rubro_id')->constrained()->onDelete('restrict');
+            $table->foreignId('pedido_compra_id')->constrained()->onDelete('restrict');
+            $table->foreignId('proveedor_id')->constrained()->onDelete('restrict');
             $table->string('path_material')->nullable();
-            $table->string('proveedor')->nullable(); // o usar foreignId si apunta a una tabla real
             $table->timestamps();
         });
     }
