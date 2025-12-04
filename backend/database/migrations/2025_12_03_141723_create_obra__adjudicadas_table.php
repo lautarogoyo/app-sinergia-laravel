@@ -11,10 +11,34 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('obra__adjudicadas', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('obras_adjudicadas')) {
+            Schema::create('obras_adjudicadas', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('id_pedido_cotizacion')->nullable();
+                $table->unsignedBigInteger('id_pedido_compra')->nullable();
+                $table->timestamps();
+            });
+
+            if (Schema::hasTable('pedido_cotizacion')) {
+                Schema::table('obras_adjudicadas', function (Blueprint $table) {
+                    $table->foreign('id_pedido_cotizacion')
+                        ->references('id')
+                        ->on('pedido_cotizacion')
+                        ->onUpdate('cascade')
+                        ->onDelete('restrict');
+                });
+            }
+
+            if (Schema::hasTable('pedido_compra')) {
+                Schema::table('obras_adjudicadas', function (Blueprint $table) {
+                    $table->foreign('id_pedido_compra')
+                        ->references('id')
+                        ->on('pedido_compra')
+                        ->onUpdate('cascade')
+                        ->onDelete('restrict');
+                });
+            }
+        }
     }
 
     /**
@@ -22,6 +46,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('obra__adjudicadas');
+        Schema::dropIfExists('obras_adjudicadas');
     }
 };
