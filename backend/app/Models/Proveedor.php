@@ -30,12 +30,7 @@ class Proveedor extends Model
         return $this->belongsTo(Usuario::class);
     }
 
-    public function rubros() : BelongsToMany
-    {
-        return $this->belongsToMany(Rubro::class);
-    }
-
-    public function proveedor_rubro_grupo() : hasMany
+    public function proveedor_rubro_grupo() : HasMany
     {
         return $this->hasMany(Proveedor_Rubro_Grupo::class);
     }
