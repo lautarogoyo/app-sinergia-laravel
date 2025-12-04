@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Compra_Rubro;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class CompraRubroController extends Controller
 {
@@ -33,7 +34,7 @@ class CompraRubroController extends Controller
     public function store(Request $request)
     {
         $validator = \Validator::make($request->all(), [
-            'path_material' => 'required|string|max:1024',
+            'archivo' => 'required|file|max:10240',
             'id_rubro' => 'required|exists:rubros,id',
             'id_pedido_compra' => 'required|exists:pedido_compra,id'
         ]);
@@ -46,7 +47,16 @@ class CompraRubroController extends Controller
             ], 400);
         }
 
-        $item = Compra_Rubro::create($request->all());
+        $data = [];
+        if ($request->hasFile('archivo')) {
+            $file = $request->file('archivo');
+            $path = $file->store('compra_rubros', 'public');
+            $data['path_material'] = $path;
+        }
+        $data['id_rubro'] = $request->input('id_rubro');
+        $data['id_pedido_compra'] = $request->input('id_pedido_compra');
+
+        $item = Compra_Rubro::create($data);
         if (!$item) {
             return response()->json([
                 'message' => 'Error al crear el registro',
@@ -71,6 +81,10 @@ class CompraRubroController extends Controller
                 'message' => 'Registro no encontrado',
                 'status' => 404
             ], 404);
+        }
+        // add public URL if file stored in public disk
+        if ($item->path_material) {
+            $item->url = Storage::disk('public')->url($item->path_material);
         }
         return response()->json([
             'compra_rubro' => $item,
@@ -100,7 +114,7 @@ class CompraRubroController extends Controller
         }
 
         $validator = \Validator::make($request->all(), [
-            'path_material' => 'required|string|max:1024',
+            'archivo' => 'sometimes|file|max:10240',
             'id_rubro' => 'required|exists:rubros,id',
             'id_pedido_compra' => 'required|exists:pedido_compra,id'
         ]);
@@ -113,7 +127,20 @@ class CompraRubroController extends Controller
             ], 400);
         }
 
-        $item->update($request->all());
+        $data = [];
+        if ($request->hasFile('archivo')) {
+            // delete previous file if exists
+            if ($item->path_material) {
+                Storage::disk('public')->delete($item->path_material);
+            }
+            $file = $request->file('archivo');
+            $path = $file->store('compra_rubros', 'public');
+            $data['path_material'] = $path;
+        }
+        $data['id_rubro'] = $request->input('id_rubro');
+        $data['id_pedido_compra'] = $request->input('id_pedido_compra');
+
+        $item->update($data);
         return response()->json([
             'message' => 'Registro actualizado',
             'compra_rubro' => $item,
@@ -132,6 +159,10 @@ class CompraRubroController extends Controller
                 'message' => 'Registro no encontrado',
                 'status' => 404
             ], 404);
+        }
+        // delete stored file if exists
+        if ($item->path_material) {
+            Storage::disk('public')->delete($item->path_material);
         }
         $item->delete();
         return response()->json([

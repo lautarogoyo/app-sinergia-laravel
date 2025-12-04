@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pedido_Compra;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class PedidoCompraController extends Controller
 {
@@ -34,7 +35,7 @@ class PedidoCompraController extends Controller
     {
         $validator = \Validator::make($request->all(), [
             'rol' => 'required|string|max:255',
-            'path_presupuesto' => 'nullable|string|max:1024',
+            'archivo' => 'required|file|max:10240',
             'fecha_pedido' => 'required|date',
             'fecha_entrega_estimada' => 'nullable|date',
             'estado_contratista' => 'nullable|string|max:50',
@@ -51,7 +52,22 @@ class PedidoCompraController extends Controller
             ], 400);
         }
 
-        $pedido = Pedido_Compra::create($request->all());
+        $data = [
+            'rol' => $request->input('rol'),
+            'fecha_pedido' => $request->input('fecha_pedido'),
+            'fecha_entrega_estimada' => $request->input('fecha_entrega_estimada'),
+            'estado_contratista' => $request->input('estado_contratista'),
+            'estado_pedido' => $request->input('estado_pedido'),
+            'estado' => $request->input('estado'),
+            'observaciones' => $request->input('observaciones'),
+        ];
+
+        // manejar archivo (requerido) y guardar path en DB
+        $file = $request->file('archivo');
+        $path = $file->store('presupuestos', 'public');
+        $data['path_presupuesto'] = $path;
+
+        $pedido = Pedido_Compra::create($data);
         if (!$pedido) {
             return response()->json([
                 'message' => 'Error al crear el pedido',
@@ -106,7 +122,7 @@ class PedidoCompraController extends Controller
 
         $validator = \Validator::make($request->all(), [
             'rol' => 'required|string|max:255',
-            'path_presupuesto' => 'nullable|string|max:1024',
+            'archivo' => 'sometimes|file|max:10240',
             'fecha_pedido' => 'required|date',
             'fecha_entrega_estimada' => 'nullable|date',
             'estado_contratista' => 'nullable|string|max:50',
@@ -123,7 +139,27 @@ class PedidoCompraController extends Controller
             ], 400);
         }
 
-        $pedido->update($request->all());
+        $data = [
+            'rol' => $request->input('rol'),
+            'fecha_pedido' => $request->input('fecha_pedido'),
+            'fecha_entrega_estimada' => $request->input('fecha_entrega_estimada'),
+            'estado_contratista' => $request->input('estado_contratista'),
+            'estado_pedido' => $request->input('estado_pedido'),
+            'estado' => $request->input('estado'),
+            'observaciones' => $request->input('observaciones'),
+        ];
+
+        if ($request->hasFile('archivo')) {
+            // borrar anterior si existe
+            if ($pedido->path_presupuesto) {
+                Storage::disk('public')->delete($pedido->path_presupuesto);
+            }
+            $file = $request->file('archivo');
+            $path = $file->store('presupuestos', 'public');
+            $data['path_presupuesto'] = $path;
+        }
+
+        $pedido->update($data);
         return response()->json([
             'message' => 'Pedido actualizado',
             'pedido_compra' => $pedido,
@@ -142,6 +178,10 @@ class PedidoCompraController extends Controller
                 'message' => 'Pedido no encontrado',
                 'status' => 404
             ], 404);
+        }
+        // borrar archivo asociado si existe
+        if ($pedido->path_presupuesto) {
+            Storage::disk('public')->delete($pedido->path_presupuesto);
         }
         $pedido->delete();
         return response()->json([
@@ -162,7 +202,7 @@ class PedidoCompraController extends Controller
 
         $validator = \Validator::make($request->all(), [
             'rol' => 'sometimes|string|max:255',
-            'path_presupuesto' => 'sometimes|string|max:1024',
+            'archivo' => 'sometimes|file|max:10240',
             'fecha_pedido' => 'sometimes|date',
             'fecha_entrega_estimada' => 'sometimes|date',
             'estado_contratista' => 'sometimes|string|max:50',
@@ -179,7 +219,27 @@ class PedidoCompraController extends Controller
             ], 400);
         }
 
-        $pedido->update($request->all());
+        $data = [];
+        if ($request->filled('rol')) $data['rol'] = $request->input('rol');
+        if ($request->filled('fecha_pedido')) $data['fecha_pedido'] = $request->input('fecha_pedido');
+        if ($request->filled('fecha_entrega_estimada')) $data['fecha_entrega_estimada'] = $request->input('fecha_entrega_estimada');
+        if ($request->filled('estado_contratista')) $data['estado_contratista'] = $request->input('estado_contratista');
+        if ($request->filled('estado_pedido')) $data['estado_pedido'] = $request->input('estado_pedido');
+        if ($request->filled('estado')) $data['estado'] = $request->input('estado');
+        if ($request->filled('observaciones')) $data['observaciones'] = $request->input('observaciones');
+
+        if ($request->hasFile('archivo')) {
+            if ($pedido->path_presupuesto) {
+                Storage::disk('public')->delete($pedido->path_presupuesto);
+            }
+            $file = $request->file('archivo');
+            $path = $file->store('presupuestos', 'public');
+            $data['path_presupuesto'] = $path;
+        }
+
+        if (!empty($data)) {
+            $pedido->update($data);
+        }
         return response()->json([
             'message' => 'Pedido actualizado parcialmente',
             'pedido_compra' => $pedido,
