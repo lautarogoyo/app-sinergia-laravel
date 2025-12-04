@@ -14,11 +14,6 @@ class Rubro extends Model
         'descripcion'
     ];
 
-    public function proveedores() : BelongsToMany
-    {
-        return $this->belongsToMany(Proveedor::class);
-    }
-
     public function compraRubros() : HasMany
     {
         return $this->hasMany(Compra_Rubro::class);
