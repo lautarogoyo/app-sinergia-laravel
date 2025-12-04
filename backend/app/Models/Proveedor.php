@@ -34,4 +34,9 @@ class Proveedor extends Model
     {
         return $this->belongsToMany(Rubro::class);
     }
+
+    public function proveedor_rubro_grupo() : hasMany
+    {
+        return $this->hasMany(Proveedor_Rubro_Grupo::class);
+    }
 }

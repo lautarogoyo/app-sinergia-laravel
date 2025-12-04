@@ -18,8 +18,13 @@ class Grupo extends Model
         return $this->hasMany(Empleado::class);
     }
 
-    public function obras() : belongsToMany
+    public function pedido_cotizacion() : belongsToMany
     {
-        return $this->belongsToMany(Obra::class);
+        return $this->belongsToMany(Pedido_Cotizacion::class, 'grupo_pedido_cotizacion')->withTimestamps();
+    }
+
+    public function proveedor_rubro_grupo() : hasMany
+    {
+        return $this->hasMany(Proveedor_Rubro_Grupo::class);
     }
 }

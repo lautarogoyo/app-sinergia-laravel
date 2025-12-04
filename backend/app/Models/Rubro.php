@@ -23,4 +23,9 @@ class Rubro extends Model
     {
         return $this->hasMany(Compra_Rubro::class);
     }
+
+    public function proveedor_rubro_grupo() : HasMany
+    {
+        return $this->hasMany(Proveedor_Rubro_Grupo::class);
+    }
 }
