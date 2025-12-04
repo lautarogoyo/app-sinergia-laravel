@@ -11,10 +11,46 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('proveedor__rubro__grupos', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('proveedor_rubro_grupo')) {
+            Schema::create('proveedor_rubro_grupo', function (Blueprint $table) {
+                $table->id();
+                $table->text('descripcion')->nullable();
+                $table->unsignedBigInteger('id_rubro');
+                $table->unsignedBigInteger('id_proveedor');
+                $table->unsignedBigInteger('id_grupo')->nullable();
+                $table->timestamps();
+            });
+
+            if (Schema::hasTable('rubros')) {
+                Schema::table('proveedor_rubro_grupo', function (Blueprint $table) {
+                    $table->foreign('id_rubro')
+                        ->references('id')
+                        ->on('rubros')
+                        ->onUpdate('cascade')
+                        ->onDelete('restrict');
+                });
+            }
+
+            if (Schema::hasTable('proveedors')) {
+                Schema::table('proveedor_rubro_grupo', function (Blueprint $table) {
+                    $table->foreign('id_proveedor')
+                        ->references('id')
+                        ->on('proveedors')
+                        ->onUpdate('cascade')
+                        ->onDelete('restrict');
+                });
+            }
+
+            if (Schema::hasTable('grupos')) {
+                Schema::table('proveedor_rubro_grupo', function (Blueprint $table) {
+                    $table->foreign('id_grupo')
+                        ->references('id')
+                        ->on('grupos')
+                        ->onUpdate('cascade')
+                        ->onDelete('restrict');
+                });
+            }
+        }
     }
 
     /**
@@ -22,6 +58,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('proveedor__rubro__grupos');
+        Schema::dropIfExists('proveedor_rubro_grupo');
     }
 };
