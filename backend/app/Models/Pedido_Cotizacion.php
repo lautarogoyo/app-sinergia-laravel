@@ -21,6 +21,7 @@ class Pedido_Cotizacion extends Model
         'fecha_cierre_cotizacion',
         'estado_cotizacion',
         'estado_comparativa',
+        'id_obra'
     ];
 
     protected $casts = [
@@ -36,5 +37,10 @@ class Pedido_Cotizacion extends Model
     public function obra(): BelongsTo
     {
         return $this->belongsTo(Obra::class);
+    }
+
+    public function obra_adjudicada(): HasOne
+    {
+        return $this->hasOne(Obra_Adjudicada::class);
     }
 }
