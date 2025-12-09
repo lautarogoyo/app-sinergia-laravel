@@ -31,15 +31,14 @@ Route::patch('/empleados/{id}', [EmpleadoController::class, 'updatePartial']);
 
 Route::delete('/empleados/{id}', [EmpleadoController::class, 'destroy']);
 
-Route::get('/tipo_documentos', [TipoDocumentoController::class, 'index']);
+Route::get('/tipos_documento', [TipoDocumentoController::class, 'index']);
 
-Route::get('/tipo_documentos/{id}', [TipoDocumentoController::class, 'show']);
+Route::get('/tipos_documento/{id}', [TipoDocumentoController::class, 'show']);
 
-Route::post('/tipo_documentos', [TipoDocumentoController::class, 'store']);
+Route::post('/tipos_documento', [TipoDocumentoController::class, 'store']);
+Route::put('/tipos_documento/{id}', [TipoDocumentoController::class, 'update']);
 
-Route::put('/tipo_documentos/{id}', [TipoDocumentoController::class, 'update']);
-
-Route::delete('/tipo_documentos/{id}', [TipoDocumentoController::class, 'destroy']);
+Route::delete('/tipos_documento/{id}', [TipoDocumentoController::class, 'destroy']);
 
 Route::get('/documentaciones', [DocumentacionController::class, 'index']);
 
@@ -100,6 +99,7 @@ Route::get('/usuarios', [UsuarioController::class, 'index']);
 Route::get('/usuarios/{id}', [UsuarioController::class, 'show']);
 Route::post('/usuarios', [UsuarioController::class, 'store']);
 Route::put('/usuarios/{id}', [UsuarioController::class, 'update']);
+Route::patch('/usuarios/{id}', [UsuarioController::class, 'updatePartial']);
 Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy']);
 
 // Pedidos de cotización
@@ -119,12 +119,12 @@ Route::patch('/pedidos_compra/{id}', [PedidoCompraController::class, 'updatePart
 Route::delete('/pedidos_compra/{id}', [PedidoCompraController::class, 'destroy']);
 
 // Compra rubros
-Route::get('/compra_rubros', [CompraRubroController::class, 'index']);
-Route::get('/compra_rubros/{id}', [CompraRubroController::class, 'show']);
-Route::post('/compra_rubros', [CompraRubroController::class, 'store']);
-Route::put('/compra_rubros/{id}', [CompraRubroController::class, 'update']);
-Route::patch('/compra_rubros/{id}', [CompraRubroController::class, 'updatePartial']);
-Route::delete('/compra_rubros/{id}', [CompraRubroController::class, 'destroy']);
+Route::get('/compras_rubro', [CompraRubroController::class, 'index']);
+Route::get('/compras_rubro/{id}', [CompraRubroController::class, 'show']);
+Route::post('/compras_rubro', [CompraRubroController::class, 'store']);
+Route::put('/compras_rubro/{id}', [CompraRubroController::class, 'update']);
+Route::patch('/compras_rubro/{id}', [CompraRubroController::class, 'updatePartial']);
+Route::delete('/compras_rubro/{id}', [CompraRubroController::class, 'destroy']);
 
 // Proveedor rubro grupo
 Route::get('/proveedor_rubro_grupo', [ProveedorRubroGrupoController::class, 'index']);
@@ -135,9 +135,9 @@ Route::patch('/proveedor_rubro_grupo/{id}', [ProveedorRubroGrupoController::clas
 Route::delete('/proveedor_rubro_grupo/{id}', [ProveedorRubroGrupoController::class, 'destroy']);
 
 // Obras adjudicadas
-Route::get('/obras_adjudicadas', [ObraAdjudicadaController::class, 'index']);
-Route::get('/obras_adjudicadas/{id}', [ObraAdjudicadaController::class, 'show']);
-Route::post('/obras_adjudicadas', [ObraAdjudicadaController::class, 'store']);
-Route::put('/obras_adjudicadas/{id}', [ObraAdjudicadaController::class, 'update']);
-Route::patch('/obras_adjudicadas/{id}', [ObraAdjudicadaController::class, 'updatePartial']);
-Route::delete('/obras_adjudicadas/{id}', [ObraAdjudicadaController::class, 'destroy']);
+Route::get('/obras_adjudicada', [ObraAdjudicadaController::class, 'index']);
+Route::get('/obras_adjudicada/{id}', [ObraAdjudicadaController::class, 'show']);
+Route::post('/obras_adjudicada', [ObraAdjudicadaController::class, 'store']);
+Route::put('/obras_adjudicada/{id}', [ObraAdjudicadaController::class, 'update']);
+Route::patch('/obras_adjudicada/{id}', [ObraAdjudicadaController::class, 'updatePartial']);
+Route::delete('/obras_adjudicada/{id}', [ObraAdjudicadaController::class, 'destroy']);
