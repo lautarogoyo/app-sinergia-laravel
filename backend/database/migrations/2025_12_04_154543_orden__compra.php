@@ -11,7 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('ordenes_compra', function (Blueprint $table) {
+            $table->id();
+            $table->text('detalle')->nullable();
+            $table->date('fecha_inicio_orden_compra')->nullable();
+            $table->date('fecha_fin_orden_compra')->nullable();
+            $table->unsignedBigInteger('id_obra')->nullable();
+            $table->timestamps();
+        });
+
+        if (Schema::hasTable('obras')) {
+            Schema::table('ordenes_compra', function (Blueprint $table) {
+                $table->foreign('id_obra')->references('id')->on('obras')->onUpdate('cascade')->onDelete('restrict');
+            });
+        }
     }
 
     /**
@@ -19,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('ordenes_compra');
     }
 };

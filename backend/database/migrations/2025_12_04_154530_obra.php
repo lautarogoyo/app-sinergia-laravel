@@ -11,7 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('obras', function (Blueprint $table) {
+            $table->id();
+            $table->string('nro_obra')->nullable();
+            $table->text('detalle')->nullable();
+            $table->string('estado')->nullable();
+            $table->date('fecha_visto')->nullable();
+            $table->string('direccion')->nullable();
+            $table->date('fecha_ingreso')->nullable();
+            $table->date('fecha_programacion_inicio')->nullable();
+            $table->date('fecha_recepcion_provisoria')->nullable();
+            $table->date('fecha_recepcion_definitiva')->nullable();
+            $table->text('detalle_caratula')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**
@@ -19,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('obras');
     }
 };

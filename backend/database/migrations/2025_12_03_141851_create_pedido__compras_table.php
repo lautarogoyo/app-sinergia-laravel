@@ -11,8 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pedido__compras', function (Blueprint $table) {
+        Schema::create('pedido_compra', function (Blueprint $table) {
             $table->id();
+            $table->string('rol')->nullable();
+            $table->string('path_presupuesto')->nullable();
+            $table->date('fecha_pedido')->nullable();
+            $table->date('fecha_entrega_estimada')->nullable();
+            $table->string('estado_contratista')->nullable();
+            $table->string('estado_pedido')->nullable();
+            $table->string('estado')->nullable();
+            $table->text('observaciones')->nullable();
             $table->timestamps();
         });
     }
@@ -22,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pedido__compras');
+        Schema::dropIfExists('pedido_compra');
     }
 };

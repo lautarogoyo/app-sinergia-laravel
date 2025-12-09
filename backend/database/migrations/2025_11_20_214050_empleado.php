@@ -23,6 +23,12 @@ return new class extends Migration
                 $table->timestamps();
                 $table->softDeletes();
             });
+
+            if (Schema::hasTable('grupos')) {
+                Schema::table('empleados', function (Blueprint $table) {
+                    $table->foreign('id_grupo')->references('id')->on('grupos')->onUpdate('cascade')->onDelete('restrict');
+                });
+            }
     }
 
     /**

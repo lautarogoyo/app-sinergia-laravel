@@ -31,11 +31,11 @@ return new class extends Migration
                 });
             }
 
-            if (Schema::hasTable('proveedors')) {
+            if (Schema::hasTable('proveedores')) {
                 Schema::table('proveedor_rubro_grupo', function (Blueprint $table) {
                     $table->foreign('id_proveedor')
                         ->references('id')
-                        ->on('proveedors')
+                        ->on('proveedores')
                         ->onUpdate('cascade')
                         ->onDelete('restrict');
                 });

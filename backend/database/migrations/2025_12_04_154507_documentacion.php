@@ -11,7 +11,29 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('documentaciones', function (Blueprint $table) {
+            $table->id();
+            $table->string('path')->nullable();
+            $table->date('fecha_vencimiento')->nullable();
+            $table->string('estado')->nullable();
+            $table->string('mime')->nullable();
+            $table->bigInteger('size')->nullable();
+            $table->unsignedBigInteger('id_empleado')->nullable();
+            $table->unsignedBigInteger('id_tipoDocumento')->nullable();
+            $table->timestamps();
+        });
+
+        if (Schema::hasTable('empleados')) {
+            Schema::table('documentaciones', function (Blueprint $table) {
+                $table->foreign('id_empleado')->references('id')->on('empleados')->onUpdate('cascade')->onDelete('restrict');
+            });
+        }
+
+        if (Schema::hasTable('tipo_documentos')) {
+            Schema::table('documentaciones', function (Blueprint $table) {
+                $table->foreign('id_tipoDocumento')->references('id')->on('tipo_documentos')->onUpdate('cascade')->onDelete('restrict');
+            });
+        }
     }
 
     /**
@@ -19,6 +41,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('documentaciones');
     }
 };

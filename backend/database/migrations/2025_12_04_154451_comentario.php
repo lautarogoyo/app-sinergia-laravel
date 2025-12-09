@@ -11,7 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('comentarios', function (Blueprint $table) {
+            $table->id();
+            $table->string('denominacion')->nullable();
+            $table->unsignedBigInteger('id_obra')->nullable();
+            $table->timestamps();
+        });
+
+        if (Schema::hasTable('obras')) {
+            Schema::table('comentarios', function (Blueprint $table) {
+                $table->foreign('id_obra')->references('id')->on('obras')->onUpdate('cascade')->onDelete('restrict');
+            });
+        }
     }
 
     /**
@@ -19,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('comentarios');
     }
 };
