@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 
 class Documentacion extends Model
 {
@@ -41,11 +43,11 @@ class Documentacion extends Model
     // Relaciones
     public function tipoDocumento():BelongsTo
     {
-        return $this->belongsTo(TipoDocumento::class);
+        return $this->belongsTo(TipoDocumento::class, 'id_tipoDocumento');
     }
 
     public function empleado() : BelongsTo
     {
-        return $this->belongsTo(Empleado::class);
+        return $this->belongsTo(Empleado::class, 'id_empleado');
     }
 }

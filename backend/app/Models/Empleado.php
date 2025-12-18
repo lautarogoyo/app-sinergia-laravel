@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Empleado extends Model
 {
@@ -26,11 +28,11 @@ class Empleado extends Model
     
     public function documentaciones() : HasMany
     {
-        return $this->hasMany(Documentacion::class);
+        return $this->hasMany(Documentacion::class, 'id_empleado');
     }
 
     public function grupo() : BelongsTo
     {
-        return $this->belongsTo(Grupo::class);
+        return $this->belongsTo(Grupo::class, 'id_grupo');
     }
 }
