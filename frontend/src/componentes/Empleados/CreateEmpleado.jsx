@@ -6,6 +6,7 @@ import axios from "axios";
 
 export default function CreateEmpleado() {
     const [apellido, setApellido] = useState("");
+    const backendUrl = import.meta.env.VITE_API_URL;
     const [nombre, setNombre] = useState("");
     const navigate = useNavigate();
 
@@ -14,9 +15,9 @@ export default function CreateEmpleado() {
         const empleado = { apellido, nombre };
 
         try {
-                const res = await axios.post("http://localhost:3000/api/empleados", empleado);
+                const res = await axios.post(`${backendUrl}/api/empleados`, empleado);
                 if (res.status === 201) {
-                    navigate("/proveedores"); // Redirige al listado
+                    navigate("/empleados"); // Redirige al listado
                     window.location.reload(); // Recarga la página para mostrar el nuevo empleado
                     alert("Empleado creado:", res.data);
                 } else {

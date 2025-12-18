@@ -5,6 +5,7 @@ import { put } from "../Fetch/put.js";
 
 export default function EditeEmpleado() {
     const { id } = useParams();
+    const backendUrl = import.meta.env.VITE_API_URL;
     const [apellido, setApellido] = useState("");
     const [nombre, setNombre] = useState("");
     const [grupo, setGrupo] = useState("");
@@ -14,7 +15,7 @@ export default function EditeEmpleado() {
 
     useEffect(() => {
         // Obtener datos actuales del empleado
-        getOne(`http://localhost:8000/api/empleados/${id}`, "empleado")
+        getOne(`${backendUrl}/api/empleados/${id}`, "empleado")
             .then(data => {
                 setApellido(data.apellido);
                 setNombre(data.nombre);
@@ -28,7 +29,7 @@ export default function EditeEmpleado() {
         e.preventDefault();
         const empleado = { nombre, apellido, grupo, telefono, estado };
         try {
-            const res = await put(`http://localhost:8000/api/empleados/${id}`, empleado);
+            const res = await put(`${backendUrl}/api/empleados/${id}`, empleado);
             if (res){
             navigate("/empleados");
             window.location.reload();}

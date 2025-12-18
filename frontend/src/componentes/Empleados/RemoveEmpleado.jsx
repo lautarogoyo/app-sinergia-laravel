@@ -5,13 +5,14 @@ import { del } from "../Fetch/put.js";
 
 export default function RemoveEmpleado() {
     const { id } = useParams();
+    const backendUrl = import.meta.env.VITE_API_URL;
     const [apellido, setApellido] = useState("");
     const [nombre, setNombre] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
         // Obtener datos actuales del empleado desde el backend Laravel
-        getOne(`http://localhost:8000/api/empleados/${id}`, "empleado")
+        getOne(`${backendUrl}/api/empleados/${id}`, "empleado")
             .then(data => {
                 if (data) {
                     setApellido(data.apellido);
@@ -23,7 +24,7 @@ export default function RemoveEmpleado() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await del(`http://localhost:8000/api/empleados/${id}`);
+            await del(`${backendUrl}/api/empleados/${id}`);
             navigate("/empleados");
             window.location.reload();
         } catch {

@@ -6,11 +6,12 @@ import { post } from "../Fetch/post.js";
 
 export default function EditDocument() {
     const { id } = useParams();
+    const backendUrl = import.meta.env.VITE_API_URL;
     const navigate = useNavigate();
     const [exit, setExit] = useState(false);
     const [documentaciones, setDocumentaciones] = useState([]);
     useEffect(() => {
-        getOne(`http://localhost:8000/api/empleados/${id}`, "empleado")
+        getOne(`${backendUrl}/api/empleados/${id}`, "empleado")
             .then(data => {
                 setDocumentaciones(data.documentaciones)
             });
@@ -24,7 +25,8 @@ export default function EditDocument() {
             doc.id === docId
                             ? {
                                     ...doc,
-                                    id_tipo_documento: Number(value)
+                                    id_tipoDocumento: Number(value),
+                                    hasChanges: true
                                 }
               : doc
           )
@@ -33,7 +35,7 @@ export default function EditDocument() {
     const handleDocumentacionChange = (docId, file) => {
         setDocumentaciones(prev => prev.map(doc =>
             doc.id === docId
-              ? { ...doc, newFile: file }  // Aquí solo actualizamos el nombre del archivo
+              ? { ...doc, newFile: file, hasChanges: true }
               : doc
           )
         );
@@ -43,7 +45,7 @@ export default function EditDocument() {
         setDocumentaciones(prev =>
             prev.map(doc =>
                 doc.id === docId
-                    ? { ...doc, fecha_vencimiento: value }
+                    ? { ...doc, fecha_vencimiento: value, hasChanges: true }
                     : doc
             )
         );
@@ -52,17 +54,18 @@ export default function EditDocument() {
 
 
 
-    const updateDocumentacion = async ({ id, id_empleado, id_tipo_documento, file, fecha_vencimiento }) => {
+    const updateDocumentacion = async ({ id, id_empleado, id_tipoDocumento, file, fecha_vencimiento }) => {
         const formData = new FormData();
         formData.append('id_empleado', (id_empleado) ?? "");
-        formData.append('id_tipo_documento', Number(id_tipo_documento));
+        formData.append('id_tipoDocumento', Number(id_tipoDocumento));
         if (file) formData.append('archivo', file);
+        formData.append('estado', 'vigente');
         if (fecha_vencimiento) {
             const fechaOk = fecha_vencimiento.length > 10 ? fecha_vencimiento.slice(0, 10) : fecha_vencimiento;
             formData.append('fecha_vencimiento', fechaOk);
         }
         try {
-            return await put(`http://localhost:8000/api/documentaciones/${id}`, formData, true);
+            return await put(`${backendUrl}/api/documentaciones/${id}`, formData, true);
         } catch (err) {
             if (err.response && err.response.data) {
                 console.error('Backend error:', err.response.data);
@@ -82,10 +85,11 @@ export default function EditDocument() {
         }
         const formData = new FormData();
         formData.append("id_empleado", Number(id));
-        formData.append("id_tipo_documento", Number(newTipo));
+        formData.append("id_tipoDocumento", Number(newTipo));
         formData.append("archivo", newFile);
+        formData.append("estado", "vigente");
         try {
-            const res = await post("http://localhost:8000/api/documentaciones", formData);
+            const res = await post(`${backendUrl}/api/documentaciones`, formData);
             setDocumentaciones(prev => [...prev, res]);
             setFile(false);
             setNewFile(null);
@@ -100,11 +104,7 @@ export default function EditDocument() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const changes = documentaciones.filter(doc =>
-        doc.newFile ||
-        (typeof doc.id_tipo_documento !== "undefined" &&
-         doc.id_tipo_documento !== doc.tipo_documento.id_tipo_documento)
-        );
+        const changes = documentaciones.filter(doc => doc.hasChanges);
 
         if (changes.length === 0) {
         alert("No hay cambios para guardar.");
@@ -116,7 +116,7 @@ export default function EditDocument() {
             updateDocumentacion({
             id: doc.id,
             id_empleado: Number(id),
-            id_tipo_documento: Number(doc.id_tipo_documento ?? doc.tipo_documento?.id_tipo_documento),
+            id_tipoDocumento: Number(doc.id_tipoDocumento ?? doc.tipo_documento?.id),
             file: doc.newFile || null,
             fecha_vencimiento: doc.fecha_vencimiento ?? null
             })
@@ -141,8 +141,8 @@ export default function EditDocument() {
                         {documentaciones.map(doc => (
                             <div key={doc.id} className="flex flex-col md:flex-row items-center justify-between bg-gray-50 rounded-xl shadow-md p-6 border border-gray-200">
                                 <div className="flex flex-col md:flex-row items-center gap-4 w-full">
-                                    <span className="font-semibold text-white bg-orange-500 rounded-xl px-4 py-2 text-lg shadow w-40">{doc.tipo_documento.descripcion.toUpperCase()}</span>
-                                    <label className="font-semibold text-gray-700 truncate max-w-xs">{doc.path_archivo_documento}</label>
+                                    <span className="font-semibold text-white bg-gray-600 rounded-xl p-2 text-lg shadow w-40">{doc.tipo_documento.descripcion.toUpperCase()}</span>
+                                    <label className="font-semibold text-gray-700 truncate max-w-xs">{doc.path}</label>
                                     <input
                                         className="bg-gray-200 text-gray-800 rounded px-2 py-1 border border-gray-300 focus:ring-2 focus:ring-orange-400"
                                         type="file"
@@ -153,7 +153,7 @@ export default function EditDocument() {
                                     <select
                                         className="shadow border rounded py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-400"
                                         id="tipo_documento.id"
-                                        value={doc.id_tipo_documento ?? doc.tipo_documento?.id ?? ""}
+                                        value={doc.id_tipoDocumento ?? doc.tipo_documento?.id ?? ""}
                                         onChange={e => handleTipoDocumentoChange(doc.id, e.target.value)}
                                         required
                                     >

@@ -11,12 +11,12 @@ export default function Empleados() {
   const [filtro, setFiltro] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const textHeader = "text-xl lg:text-2xl";
-  const textContent = "text-xl lg:text-2xl";
-  const backendUrl = "http://localhost:8000";
+  const textHeader = "text-xl lg:text-xl";
+  const textContent = "text-xl lg:text-xl";
+  const backendUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    getData("http://localhost:8000/api/empleados", "empleados")
+    getData(`${backendUrl}/api/empleados`, "empleados")
       .then((data) => {
         setempleados(data);
         setLoading(false);
@@ -29,6 +29,25 @@ export default function Empleados() {
   }, []);
   if (loading) return <div className="text-center text-xl py-8">Cargando...</div>;
   if (error) return <div className="text-center text-xl py-8 text-red-500">Error: {error}</div>;
+
+  // Función para calcular días restantes hasta el vencimiento
+  const calcularDiasRestantes = (fechaVencimiento) => {
+    if (!fechaVencimiento) return null;
+    const hoy = new Date();
+    const fechaVenc = new Date(fechaVencimiento);
+    const diferencia = fechaVenc - hoy;
+    const dias = Math.ceil(diferencia / (1000 * 60 * 60 * 24));
+    return dias;
+  };
+
+  // Función para determinar las clases CSS según días restantes
+  const getDocumentClasses = (fechaVencimiento) => {
+    const dias = calcularDiasRestantes(fechaVencimiento);
+    if (dias === null) return "bg-gray-200 text-gray-800";
+    if (dias <= 30 && dias > 0) return "bg-red-800 text-white";
+    if (dias <= 0) return "bg-black text-white";
+    return "bg-gray-200 text-gray-800";
+  };
 
   // Filtrado simple por nombre, apellido o grupo
   const empleadosFiltrados = empleados.filter(e => {
@@ -82,11 +101,29 @@ export default function Empleados() {
                   <td className={`whitespace-nowrap ${textContent} text-gray-800 ${empleado.estado === 'activo' ? 'bg-green-500' : 'bg-red-500'} font-bold`}>{empleado.estado.toUpperCase()}</td>
                   <td className="px-2 py-2 whitespace-nowrap text-sm text-gray-700">
                     {empleado.documentaciones.length > 0 ? (
-                      empleado.documentaciones.map(doc => (
-                        <div key={doc.id} className="bg-gray-200 rounded px-2 py-1 mb-3 text-[17px] text-gray-800 shadow font-bold hover:bg-gray-300 cursor-pointer" onClick={() => window.open(`${backendUrl}/storage/${doc.path_archivo_documento}`, '_blank')}>
-                          {doc.tipo_documento.descripcion.toUpperCase()}
-                        </div>
-                      ))
+                      empleado.documentaciones.map(doc => {
+                        const diasRestantes = calcularDiasRestantes(doc.fecha_vencimiento);
+                        const clases = getDocumentClasses(doc.fecha_vencimiento);
+                        const mensaje = diasRestantes !== null 
+                          ? diasRestantes > 0 
+                            ? `Vence en ${diasRestantes} día${diasRestantes !== 1 ? 's' : ''}`
+                            : `Vencido hace ${Math.abs(diasRestantes)} día${Math.abs(diasRestantes) !== 1 ? 's' : ''}`
+                          : 'Sin fecha de vencimiento';
+                        
+                        return (
+                          <div 
+                            key={doc.id} 
+                            className={`${clases} rounded px-2 py-1 mb-3 text-[17px] shadow font-bold hover:bg-opacity-80 cursor-pointer relative group`} 
+                            onClick={() => window.open(`${backendUrl}/storage/${doc.path}`, '_blank')}
+                            title={mensaje}
+                          >
+                            {doc.tipo_documento.descripcion.toUpperCase()}
+                            <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-1 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+                              {mensaje}
+                            </span>
+                          </div>
+                        );
+                      })
                     ) : (
                       <span className="text-gray-400 italic">Sin documentos</span>
                     )}
@@ -94,10 +131,10 @@ export default function Empleados() {
                   <td className="px-6 py-4 flex-1 gap-2 ">
                     <div className="">
                     <div className="flex gap-2 w-full justify-center p-2">
-                      <button className="bg-orange-500 hover:bg-orange-600 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => window.location.href = `/editarempleado/${empleado.id}`}>Editar</button>
-                      <button className="bg-red-600 hover:bg-red-700 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => window.location.href = `/eliminarempleado/${empleado.id}`}>Eliminar</button>
+                      <button className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => window.location.href = `/editarempleado/${empleado.id}`}>Editar</button>
+                      <button className="bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => window.location.href = `/eliminarempleado/${empleado.id}`}>Eliminar</button>
                     </div>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white text-xl font-bold py-2 px-4 rounded shadow transition duration-150 w-full cursor-pointer" onClick={() => window.location.href = `/documentacionempleado/${empleado.id}`}>Cambiar Documentacion</button>
+                    <button className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 w-full cursor-pointer" onClick={() => window.location.href = `/documentacionempleado/${empleado.id}`}>Cambiar Documentacion</button>
                     </div>
                   </td>
                 </tr>
