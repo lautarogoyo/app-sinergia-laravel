@@ -71,7 +71,11 @@ export default function Empleados() {
           value={filtro}
           onChange={e => setFiltro(e.target.value)}
         />
+        <div className="mt-2">
+          <button className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => window.location.href = `/crear-empleado`}>Agregar Empleado</button>
+        </div>
       </div>
+      
       <div className="shadow-2xl rounded-xl border border-gray-300 bg-white flex flex-col">
         <table className="">
           <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
