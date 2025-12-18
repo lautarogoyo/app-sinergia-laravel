@@ -23,8 +23,8 @@ class EmpleadoController extends Controller
             'nombre' => 'required|max:255',
             'apellido' => 'required|max:255',
             'telefono' => 'required|digits:10',
-            'cbu' => 'digits:22',
-            'alias' => 'max:30',
+            'cbu' => 'nullable|digits:22',
+            'alias' => 'nullable|max:30',
             'estado' => 'required|in:activo,inactivo,cancelado',
             'id_grupo' => 'nullable|exists:grupos,id'
         ]);
