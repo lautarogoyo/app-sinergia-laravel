@@ -5,6 +5,8 @@ import CreateEmpleado from "../Empleados/CreateEmpleado.jsx";
 import EditeEmpleado from "../Empleados/EditeEmpleado.jsx";
 import RemoveEmpleado from "../Empleados/RemoveEmpleado.jsx";
 import EditDocument from "../Empleados/EditDocument.jsx";
+import Obras from "../Obras/Obras.jsx";
+import Grupos from "../Grupos/Grupos.jsx";
 
 
 function AppRouter() {
@@ -12,6 +14,8 @@ function AppRouter() {
         <Routes>
             <Route path="/home" element={<Home />} />
             <Route path="/empleados" element={<Empleados />} />
+            <Route path="/obras" element={<Obras />} />
+            <Route path="/grupos" element={<Grupos />} />
             <Route path="/crear-empleado" element={<CreateEmpleado />} />
             <Route path="/editarempleado/:id" element={<EditeEmpleado />} />
             <Route path="/eliminarempleado/:id" element={<RemoveEmpleado />} />
