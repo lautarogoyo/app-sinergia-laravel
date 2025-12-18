@@ -21,11 +21,11 @@ class DocumentacionController extends Controller
     public function store(Request $request)
     {
          $validator = Validator::make($request->all(), [
-            'id_tipo_documento'    => 'required|exists:tipo_documentos,id',
+            'id_tipoDocumento'    => 'required|exists:tipo_documentos,id',
             'id_empleado'          => 'required|exists:empleados,id',
             'archivo'              => 'required|file|max:10240', // 10MB
             'fecha_vencimiento'    => 'nullable|date',
-            'estado'               => 'required|in:vigente, vencido'
+            'estado'               => 'required|in:vigente,vencido'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -40,7 +40,7 @@ class DocumentacionController extends Controller
         $path = $file->store('documentos', 'public'); // storage/app/public/documentos/...
 
         $documentacion = Documentacion::create([
-            'id_tipo_documento'     => $request->id_tipo_documento,
+            'id_tipoDocumento'     => $request->id_tipoDocumento,
             'id_empleado'           => $request->id_empleado,
             'path'=> $path, // guardamos el path real
             'mime'       => $file->getClientMimeType() ?? null,
@@ -110,11 +110,11 @@ class DocumentacionController extends Controller
             ], 404);
         }
         $validator = Validator::make($request->all(), [
-            'id_tipo_documento'    => 'required|exists:tipo_documentos,id',
+            'id_tipoDocumento'    => 'required|exists:tipo_documentos,id',
             'id_empleado'          => 'required|exists:empleados,id',
             'archivo'              => 'sometimes|file|max:10240',
             'fecha_vencimiento'    => 'nullable|date',
-            'estado'               => 'required|in:vigente, vencido'
+            'estado'               => 'required|in:vigente,vencido'
         ]);
         if ($validator->fails()) {
             return response()->json([
@@ -138,7 +138,7 @@ class DocumentacionController extends Controller
         }
 
         // actualizar demás campos
-        $documentacion->id_tipo_documento = $request->id_tipo_documento;
+        $documentacion->id_tipoDocumento = $request->id_tipoDocumento;
         $documentacion->id_empleado       = $request->id_empleado;
         $documentacion->fecha_vencimiento = $request->fecha_vencimiento;
         $documentacion->estado            = $request->estado;
@@ -162,7 +162,7 @@ class DocumentacionController extends Controller
             ], 404);
         }
         $validator = Validator::make($request->all(), [
-            'id_tipo_documento'    => 'sometimes|exists:tipo_documentos,id',
+            'id_tipoDocumento'    => 'sometimes|exists:tipo_documentos,id',
             'id_empleado'          => 'sometimes|exists:empleados,id',
             'archivo'              => 'sometimes|file|max:10240',
             'fecha_vencimiento'    => 'sometimes|date',
@@ -188,8 +188,8 @@ class DocumentacionController extends Controller
         }
 
         // partial fields
-        if ($request->filled('id_tipo_documento')) {
-            $documentacion->id_tipo_documento = $request->id_tipo_documento;
+        if ($request->filled('id_tipoDocumento')) {
+            $documentacion->id_tipoDocumento = $request->id_tipoDocumento;
         }
         if ($request->filled('id_empleado')) {
             $documentacion->id_empleado = $request->id_empleado;
