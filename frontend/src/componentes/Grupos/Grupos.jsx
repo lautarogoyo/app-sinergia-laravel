@@ -20,8 +20,31 @@ export default function Grupos() {
 			});
 	}, [backendUrl]);
 
-	if (loading) return <div className="text-center text-xl py-8">Cargando...</div>;
-	if (error) return <div className="text-center text-xl py-8 text-red-500">Error: {error}</div>;
+	if (loading) return (
+    <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
+      <div className="relative">
+        
+        {/* Texto de carga */}
+        <div className="mt-8 text-center">
+          <h2 className="text-3xl font-bold text-white mb-4 animate-pulse">Cargando Grupos</h2>
+          
+          {/* Barra de progreso */}
+          <div className="w-80 h-3 bg-gray-700 rounded-full overflow-hidden shadow-lg">
+            <div className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-full animate-loading-bar"></div>
+          </div>
+          
+          {/* Puntos animados */}
+          <div className="mt-4 flex justify-center gap-2">
+            <span className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></span>
+            <span className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></span>
+            <span className="w-3 h-3 bg-blue-300 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+  
+  if (error) return <div className="text-center text-xl py-8 text-red-500">Error: {error}</div>;
 
 	const gruposFiltrados = grupos.filter((g) => {
 		const val = filtro.toLowerCase();
@@ -47,6 +70,9 @@ export default function Grupos() {
 					value={filtro}
 					onChange={(e) => setFiltro(e.target.value)}
 				/>
+				<div className="mt-2">
+					<button className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => window.location.href = `/crear-grupo`}>Agregar Grupo</button>
+				</div>
 			</div>
 
 			<div className="shadow-2xl rounded-xl border border-gray-300 bg-white flex flex-col overflow-x-auto">
@@ -78,12 +104,7 @@ export default function Grupos() {
 											>
 												Eliminar
 											</button>
-											<button
-												className="bg-gray-700 hover:bg-gray-800 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-												onClick={() => (window.location.href = `/grupo/${grupo.id}`)}
-											>
-												Ver detalle
-											</button>
+											
 										</div>
 									</td>
 								</tr>
