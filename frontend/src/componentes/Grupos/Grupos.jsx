@@ -1,37 +1,11 @@
-import { useEffect, useState } from "react";
+import {useState } from "react";
+import { useGrupos } from "../hooks/useGrupos.jsx";
 
 export default function Grupos() {
-	const backendUrl = import.meta.env.VITE_API_URL;
-	const [grupos, setGrupos] = useState([]);
 	const [filtro, setFiltro] = useState("");
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
+	const { isLoading, isError, data: grupos = [] } = useGrupos();
 
-	const fetchGrupos = () => {
-		return fetch(`${backendUrl}/api/grupos`)
-			.then(async (res) => {
-				if (!res.ok) throw new Error("Error al cargar los grupos");
-				return await res.json();
-			})
-			.then((res) => res.grupos);
-	};
-
-	useEffect(() => {
-		setLoading(true);
-		setError(null);
-
-		fetchGrupos()
-			.then((data) => {
-				setGrupos(Array.isArray(data) ? data : []);
-			})
-			.catch((err) => {
-				setError(err.message);
-				setGrupos([]);
-			})
-			.finally(() => setLoading(false));
-	}, [backendUrl]);
-
-	if (loading) return (
+	if (isLoading) return (
     <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
       <div className="relative">
         
@@ -55,7 +29,7 @@ export default function Grupos() {
     </div>
   );
   
-  if (error) return <div className="text-center text-xl py-8 text-red-500">Error: {error}</div>;
+  if (isError) return <div className="text-center text-xl py-8 text-red-500">Error al cargar los grupos</div>;
 
 	const gruposFiltrados = grupos.filter((g) => {
 		const val = filtro.toLowerCase();
