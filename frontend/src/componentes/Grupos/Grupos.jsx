@@ -90,7 +90,6 @@ export default function Grupos() {
 				<table className="min-w-full">
 					<thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
 						<tr>
-							<th className="px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500">ID</th>
 							<th className="px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500">Denominación</th>
 							<th className="px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500">Acciones</th>
 						</tr>
@@ -99,7 +98,6 @@ export default function Grupos() {
 						{gruposFiltrados.length > 0 ? (
 							gruposFiltrados.map((grupo) => (
 								<tr key={grupo.id} className="hover:bg-gray-200 transition-colors duration-150">
-									<td className="whitespace-nowrap text-xl text-gray-800">{grupo.id}</td>
 									<td className="text-lg text-gray-800 px-4 py-3">{grupo.denominacion ?? "Sin nombre"}</td>
 									<td className="px-6 py-4">
 										<div className="flex gap-2 justify-center flex-wrap">
@@ -122,7 +120,7 @@ export default function Grupos() {
 							))
 						) : (
 							<tr>
-								<td colSpan="3" className="px-6 py-4 text-center text-gray-500">
+								<td colSpan="2" className="px-6 py-4 text-center text-gray-500">
 									No hay grupos
 								</td>
 							</tr>
