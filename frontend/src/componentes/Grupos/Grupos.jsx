@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { getData } from "../Fetch/get.js";
 
 export default function Grupos() {
 	const backendUrl = import.meta.env.VITE_API_URL;
@@ -8,16 +7,28 @@ export default function Grupos() {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 
+	const fetchGrupos = () => {
+		return fetch(`${backendUrl}/api/grupos`)
+			.then(async (res) => {
+				if (!res.ok) throw new Error("Error al cargar los grupos");
+				return await res.json();
+			})
+			.then((res) => res.grupos);
+	};
+
 	useEffect(() => {
-		getData(`${backendUrl}/api/grupos`, "grupos")
+		setLoading(true);
+		setError(null);
+
+		fetchGrupos()
 			.then((data) => {
-				setGrupos(data);
-				setLoading(false);
+				setGrupos(Array.isArray(data) ? data : []);
 			})
 			.catch((err) => {
 				setError(err.message);
-				setLoading(false);
-			});
+				setGrupos([]);
+			})
+			.finally(() => setLoading(false));
 	}, [backendUrl]);
 
 	if (loading) return (

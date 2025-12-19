@@ -9,23 +9,23 @@ export default function Empleados() {
   
   const [empleados, setempleados] = useState([]);
   const [filtro, setFiltro] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const textHeader = "text-xl lg:text-xl";
   const textContent = "text-xl lg:text-xl";
   const backendUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
+    setLoading(true);
     getData(`${backendUrl}/api/empleados`, "empleados")
       .then((data) => {
         setempleados(data);
-        setLoading(false);
         console.log(data);
       })
       .catch((err) => {
         setError(err.message);
-        setLoading(false);
-      });
+      })
+      .finally(() => setLoading(false));
   }, []);
   
   if (loading) return (
