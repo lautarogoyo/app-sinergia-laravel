@@ -54,10 +54,10 @@ Route::delete('/documentaciones/{id}', [DocumentacionController::class, 'destroy
 
 // Grupos
 Route::get('/grupos', [GrupoController::class, 'index']);
-Route::get('/grupos/{id}', [GrupoController::class, 'show']);
+Route::get('/grupos/{grupo}', [GrupoController::class, 'show']);
 Route::post('/grupos', [GrupoController::class, 'store']);
-Route::put('/grupos/{id}', [GrupoController::class, 'update']);
-Route::delete('/grupos/{id}', [GrupoController::class, 'destroy']);
+Route::put('/grupos/{grupo}', [GrupoController::class, 'update']);
+Route::delete('/grupos/{grupo}', [GrupoController::class, 'destroy']);
 
 // Proveedores
 Route::get('/proveedores', [ProveedorController::class, 'index']);
