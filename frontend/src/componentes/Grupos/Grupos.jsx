@@ -1,6 +1,7 @@
 import {useState } from "react";
 import { useGrupos } from "../hooks/useGrupos.jsx";
 
+
 export default function Grupos() {
 	const [filtro, setFiltro] = useState("");
 	const { isLoading, isError, data: grupos = [] } = useGrupos();
