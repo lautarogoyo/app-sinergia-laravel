@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchGrupos } from '../api/grupos';
+import { fetchGrupoById, fetchGrupos } from '../api/grupos';
 
 export const useGrupos = () => {
   return useQuery({
@@ -8,3 +8,11 @@ export const useGrupos = () => {
     refetchOnWindowFocus: false
   });
 };
+
+export const useGrupoById = (id) => {
+  return useQuery({
+    queryKey: ['grupo', id],
+    queryFn : () => fetchGrupoById(id),
+    refetchOnWindowFocus: false
+  });
+}

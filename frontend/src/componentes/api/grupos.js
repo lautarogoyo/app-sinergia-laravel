@@ -6,6 +6,11 @@ export const fetchGrupos = async () => {
   return data.grupos;
 };
 
+export const fetchGrupoById = async (id) => {
+  const { data } = await axios.get(`${backendUrl}/api/grupos/${id}`);
+  return data.grupo;
+};
+
 export const PostGrupo = async (grupo) => {
     const { data } = await axios.post(`${backendUrl}/api/grupos`, grupo);
     return data;
