@@ -1,42 +1,61 @@
-import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getOne } from "../Fetch/getOne.js";
-import { del } from "../Fetch/put.js";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { useEmpleadoById } from "../hooks/useEmpleados.jsx";
+import { DeleteEmpleado } from "../api/empleados.js";
+
 
 export default function RemoveEmpleado() {
     const { id } = useParams();
-    const backendUrl = import.meta.env.VITE_API_URL;
-    const [apellido, setApellido] = useState("");
-    const [nombre, setNombre] = useState("");
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
+    const { data, isLoading } = useEmpleadoById(id);
+    const {handleSubmit } = useForm();
 
-    useEffect(() => {
-        // Obtener datos actuales del empleado desde el backend Laravel
-        getOne(`${backendUrl}/api/empleados/${id}`, "empleado")
-            .then(data => {
-                if (data) {
-                    setApellido(data.apellido);
-                    setNombre(data.nombre);
-                }
-            });
-    }, [id]);
+    const { mutate } = useMutation({
+    mutationFn: (data) => DeleteEmpleado(id, data),
+    onSuccess: () => {
+        queryClient.invalidateQueries(["empleados"]);
+        navigate("/empleados");
+    },
+    onError: (error) => {
+        console.error("Error al eliminar el empleado", error);
+    },
+    });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            await del(`${backendUrl}/api/empleados/${id}`);
-            navigate("/empleados");
-            window.location.reload();
-        } catch {
-            alert("Error al borrar empleado");
-        }
-    };
+    const onSubmit = handleSubmit((data) => {
+        mutate(data);
+    });
 
     return (
+        <>
+        {isLoading && 
+        <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
+            <div className="relative">
+            
+            {/* Texto de carga */}
+                <div className="mt-8 text-center">
+                    <h2 className="text-3xl font-bold text-white mb-4 animate-pulse">Cargando Empleado</h2>
+                    
+                    {/* Barra de progreso */}
+                    <div className="w-80 h-3 bg-gray-700 rounded-full overflow-hidden shadow-lg">
+                        <div className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-full animate-loading-bar"></div>
+                    </div>
+                    
+                    {/* Puntos animados */}
+                    <div className="mt-4 flex justify-center gap-2">
+                        <span className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></span>
+                        <span className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></span>
+                        <span className="w-3 h-3 bg-blue-300 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></span>
+                    </div>
+                </div>
+            </div>
+        </div>}
+        {!isLoading &&
         <div className="p-6 relative mb-[100%] flex-1">
             <h1 className="text-3xl text-gray-800 mb-6 font-sans">Eliminar Empleado</h1>
-            <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={handleSubmit}>
-                <p className="mb-4 text-red-600">¿Está seguro que desea eliminar al empleado <strong>{nombre} {apellido}</strong>? Esta acción no se puede deshacer.</p>
+            <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={onSubmit}>
+                <p className="mb-4 text-red-600">¿Está seguro que desea eliminar al empleado <strong>{data?.nombre} {data?.apellido}</strong>? Esta acción no se puede deshacer.</p>
                 <div className="flex items-center">
                     <button 
                         className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline m-5 cursor-pointer"
@@ -54,5 +73,8 @@ export default function RemoveEmpleado() {
                 </div>
             </form>
         </div>
+        }
+    </>
     );
+    
 }
