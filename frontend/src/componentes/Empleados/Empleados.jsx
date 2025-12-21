@@ -3,9 +3,6 @@ import { useEmpleados } from "../hooks/useEmpleados.jsx";
 
 const backendUrl = import.meta.env.VITE_API_URL;
 
-
-
-
 export default function Empleados() {
   
   
@@ -107,7 +104,7 @@ export default function Empleados() {
                 <tr key={empleado.id} className="hover:bg-gray-200 transition-colors duration-150">
                   <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.nombre}</td>
                   <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.apellido}</td>
-                  <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.grupo}</td>
+                  <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.grupo?.denominacion}</td>
                   <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.telefono}</td>
                   <td className={`whitespace-nowrap text-[18px] text-gray-800 p-6`}>
                     {empleado.cbu} <br />
