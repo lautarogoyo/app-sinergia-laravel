@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
-import { getData } from "../Fetch/get.js";
+import { useState } from "react";
+import { useEmpleados } from "../hooks/useEmpleados.jsx";
+
+const backendUrl = import.meta.env.VITE_API_URL;
 
 
 
@@ -7,28 +9,13 @@ import { getData } from "../Fetch/get.js";
 export default function Empleados() {
   
   
-  const [empleados, setempleados] = useState([]);
   const [filtro, setFiltro] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const textHeader = "text-xl lg:text-xl";
   const textContent = "text-xl lg:text-xl";
-  const backendUrl = import.meta.env.VITE_API_URL;
-
-  useEffect(() => {
-    setLoading(true);
-    getData(`${backendUrl}/api/empleados`, "empleados")
-      .then((data) => {
-        setempleados(data);
-        console.log(data);
-      })
-      .catch((err) => {
-        setError(err.message);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+  const { data: empleados = [], isLoading, isError } = useEmpleados();
   
-  if (loading) return (
+  
+  if (isLoading) return (
     <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
       <div className="relative">
         
@@ -52,7 +39,7 @@ export default function Empleados() {
     </div>
   );
   
-  if (error) return <div className="text-center text-xl py-8 text-red-500">Error: {error}</div>;
+  if (isError) return <div className="text-center text-xl py-8 text-red-500">Error: {isError.message}</div>;
 
   // Función para calcular días restantes hasta el vencimiento
   const calcularDiasRestantes = (fechaVencimiento) => {
