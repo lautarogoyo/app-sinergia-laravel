@@ -43,10 +43,14 @@ export default function CreateEmpleado() {
                         id="apellido"
                         type="text"
                         placeholder="Apellido"
-                        {...register("apellido", { required: true })}
+                        {...register("apellido", { required: {value:true, message: "El apellido es obligatorio"} })}
                         
                     />
+                    {errors?.apellido?.message && (
+					<p className="text-red-600 text-sm font-semibold ">{errors.apellido.message}</p>
+				)}
                 </div>
+                
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nombre">
                         Nombre
@@ -56,9 +60,13 @@ export default function CreateEmpleado() {
                         id="nombre"
                         type="text"
                         placeholder="Nombre"
-                        {...register("nombre", { required: true })}
+                        {...register("nombre", { required: {value:true, message: "El nombre es obligatorio" }})}
                     />
+                    {errors?.nombre?.message && (
+					<p className="text-red-600 text-sm font-semibold">{errors.nombre.message}</p>
+				)}
                 </div>
+                
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="telefono">
                         Teléfono (10 dígitos)
@@ -68,12 +76,17 @@ export default function CreateEmpleado() {
                         id="telefono"
                         type="text"
                         placeholder="Ej: 3511234567"
-                        {...register("telefono", { required: true, maxLength: 10, minLength: 10 , pattern: {
-                        value: /^[0-9]{10}$/,
-                        message: "Debe tener 10 dígitos numéricos",}
-                        ,}
-                        )}
+                        {...register("telefono", {
+                            required: { value: true, message: "El teléfono es obligatorio" },
+                            pattern: {
+                                value: /^[0-9]{10}$/,
+                                message: "Debe tener 10 dígitos numéricos"
+                            }
+                        })}
                     />
+                    {errors?.telefono?.message && (
+					<p className="text-red-600 text-sm font-semibold">{errors.telefono.message}</p>
+				)}
                 </div>
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cbu">
@@ -104,7 +117,7 @@ export default function CreateEmpleado() {
                     <select
                         id="estado"
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        {...register("estado", { required: true })}
+                        {...register("estado", { required: true})}
                     >
                         <option value="activo">Activo</option>
                         <option value="inactivo">Inactivo</option>
@@ -118,7 +131,9 @@ export default function CreateEmpleado() {
                     <select
                         id="id_grupo"
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        {...register("id_grupo", { setValueAs: v => Number(v) })}
+                        {...register("id_grupo", {
+                        setValueAs: v => (v === "" ? null : Number(v)),
+                        })}
                         disabled={isLoadingGrupos || !!isErrorGrupos}
                     >
                         <option value="">Sin grupo</option>

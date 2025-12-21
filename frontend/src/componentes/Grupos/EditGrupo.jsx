@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UpdateGrupo } from "../api/grupos.js";
 import { useGrupoById } from "../hooks/useGrupos.jsx";
+import { useEffect } from "react";
 
 
 export default function EditGrupo() {
@@ -12,6 +13,15 @@ export default function EditGrupo() {
     
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+
+    // Cargar los datos del grupo cuando se obtienen
+    useEffect(() => {
+        if (data) {
+            reset({
+                denominacion: data.denominacion
+            });
+        }
+    }, [data, reset]);
 
     const { mutate } = useMutation({
     mutationFn: (data) => UpdateGrupo(id, data),
@@ -69,11 +79,9 @@ export default function EditGrupo() {
 					<input
 						id="denominacion"
 						type="text"
-                        {...register("denominacion", { required: "La denominación es obligatoria", message: "Ingrese una denominación válida",
-                            value:data.denominacion
-                         })}
+                        {...register("denominacion", { required: "La denominación es obligatoria" })}
 						className="w-full px-4 py-2 rounded border border-gray-300 text-lg focus:outline-none focus:ring focus:border-blue-400"
-						
+						placeholder="Ej: Grupo A"
 					/>
 				</div>
 

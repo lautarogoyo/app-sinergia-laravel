@@ -44,7 +44,6 @@ export default function CreateGrupo() {
 						{...register("denominacion", { required: "La denominación es obligatoria", message: "Ingrese una denominación válida" })}
 						className="w-full px-4 py-2 rounded border border-gray-300 text-lg focus:outline-none focus:ring focus:border-blue-400"
 						placeholder="Ej: Grupo A"
-						required
 					/>
 				</div>
 
