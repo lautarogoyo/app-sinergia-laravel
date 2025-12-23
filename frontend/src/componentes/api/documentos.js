@@ -8,7 +8,9 @@ export const fetchEmpleadoDocumentaciones = async (id) => {
 };
 
 export const updateDocumentacionAPI = async (id, formData) => {
-    const { data } = await axios.put(`${backendUrl}/api/documentaciones/${id}`, formData);
+    // Laravel processes file uploads on POST; use method override for PUT
+    formData.append("_method", "PUT");
+    const { data } = await axios.post(`${backendUrl}/api/documentaciones/${id}`, formData);
     return data;
 };
 

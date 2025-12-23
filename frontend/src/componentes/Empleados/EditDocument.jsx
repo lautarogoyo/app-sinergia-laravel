@@ -1,37 +1,40 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getOne } from "../Fetch/getOne.js";
-import { put } from "../Fetch/put.js";
-import { post } from "../Fetch/post.js";
-
+import { useEmpleadoById } from "../hooks/useEmpleados.jsx";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateDocumentacionAPI, createDocumentacionAPI } from "../api/documentos.js";
 export default function EditDocument() {
     const { id } = useParams();
-    const backendUrl = import.meta.env.VITE_API_URL;
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const [exit, setExit] = useState(false);
     const [documentaciones, setDocumentaciones] = useState([]);
+    
+    const {data: empleado, isLoading: isLoadingEmpleado, isError: isErrorEmpleado} = useEmpleadoById(id);
+
     useEffect(() => {
-        getOne(`${backendUrl}/api/empleados/${id}`, "empleado")
-            .then(data => {
-                setDocumentaciones(data.documentaciones)
-            });
-    }, [id]);
+        if (empleado) {
+                setDocumentaciones(empleado.documentaciones)
+        }
+    }, [empleado]);
+
     const [file, setFile] = useState(false);
     const [newFile, setNewFile] = useState(null);
     const [newTipo, setNewTipo] = useState("");
-    const handleTipoDocumentoChange = (docId, value) => {
-        setDocumentaciones(prev =>
-          prev.map(doc =>
-            doc.id === docId
-                            ? {
-                                    ...doc,
-                                    id_tipoDocumento: Number(value),
-                                    hasChanges: true
-                                }
-              : doc
-          )
-        );
-      }
+        const handleTipoDocumentoChange = (docId, value) => {
+                setDocumentaciones(prev =>
+                    prev.map(doc =>
+                        doc.id === docId
+                                                        ? {
+                                                                        ...doc,
+                                                                        id_tipoDocumento: value,
+                                                                        hasChanges: true
+                                                                }
+                            : doc
+                    )
+                );
+            }
+
     const handleDocumentacionChange = (docId, file) => {
         setDocumentaciones(prev => prev.map(doc =>
             doc.id === docId
@@ -51,22 +54,12 @@ export default function EditDocument() {
         );
     };
 
-
-
-
-    const updateDocumentacion = async ({ id, id_empleado, id_tipoDocumento, file, fecha_vencimiento }) => {
-        const formData = new FormData();
-        formData.append('id_empleado', (id_empleado) ?? "");
-        formData.append('id_tipoDocumento', Number(id_tipoDocumento));
-        if (file) formData.append('archivo', file);
-        formData.append('estado', 'vigente');
-        if (fecha_vencimiento) {
-            const fechaOk = fecha_vencimiento.length > 10 ? fecha_vencimiento.slice(0, 10) : fecha_vencimiento;
-            formData.append('fecha_vencimiento', fechaOk);
-        }
-        try {
-            return await put(`${backendUrl}/api/documentaciones/${id}`, formData, true);
-        } catch (err) {
+    const updateMutation = useMutation({
+        mutationFn: ({ docId, formData }) => updateDocumentacionAPI(docId, formData),
+        onSuccess: () => {
+            queryClient.invalidateQueries(["empleado", id]);
+        },
+        onError: (err) => {
             if (err.response && err.response.data) {
                 console.error('Backend error:', err.response.data);
                 alert('Error backend: ' + JSON.stringify(err.response.data));
@@ -74,31 +67,34 @@ export default function EditDocument() {
                 console.error('Error desconocido:', err);
                 alert('Error desconocido: ' + err.message);
             }
-            throw err;
         }
-    };
+    });
 
-    const handleAgregarNuevo = async () => {
+    const createMutation = useMutation({
+        mutationFn: (formData) => createDocumentacionAPI(formData),
+        onSuccess: () => {
+            queryClient.invalidateQueries(["empleado", id]);
+            setFile(false);
+            setNewFile(null);
+            setNewTipo("");
+        },
+        onError: (err) => {
+            alert("Error al crear documento");
+            console.error(err);
+        }
+    });
+
+    const handleAgregarNuevo = () => {
         if (!newFile || !newTipo) {
             alert("Selecciona tipo y archivo");
             return;
         }
         const formData = new FormData();
-        formData.append("id_empleado", Number(id));
-        formData.append("id_tipoDocumento", Number(newTipo));
-        formData.append("archivo", newFile);
+            formData.append("id_empleado", String(id));
+            formData.append("id_tipoDocumento", String(newTipo));
         formData.append("estado", "vigente");
-        try {
-            const res = await post(`${backendUrl}/api/documentaciones`, formData);
-            setDocumentaciones(prev => [...prev, res]);
-            setFile(false);
-            setNewFile(null);
-            setNewTipo("");
-            window.location.reload();
-        } catch (err) {
-            alert("Error al crear documento");
-            console.error(err);
-        }
+            formData.append("archivo", newFile);
+        createMutation.mutate(formData);
     };
 
     const handleSubmit = async (e) => {
@@ -107,32 +103,68 @@ export default function EditDocument() {
         const changes = documentaciones.filter(doc => doc.hasChanges);
 
         if (changes.length === 0) {
-        alert("No hay cambios para guardar.");
-        return;
+            alert("No hay cambios para guardar.");
+            return;
         }
 
         try {
-        await Promise.all(changes.map(doc =>
-            updateDocumentacion({
-            id: doc.id,
-            id_empleado: Number(id),
-            id_tipoDocumento: Number(doc.id_tipoDocumento ?? doc.tipo_documento?.id),
-            file: doc.newFile || null,
-            fecha_vencimiento: doc.fecha_vencimiento ?? null
-            })
-        ));
+            await Promise.all(changes.map(doc => {
+                const formData = new FormData();
+                const tipoId = doc.id_tipoDocumento ?? doc.tipo_documento?.id;
 
-        navigate("/empleados");
-        window.location.reload();
+                if (!id || !tipoId) {
+                    console.error('Faltan campos requeridos:', { id, tipoId, docId: doc.id });
+                    throw new Error('Faltan campos requeridos');
+                }
+
+                formData.append('id_empleado', String(id));
+                formData.append('id_tipoDocumento', String(tipoId));
+                formData.append('estado', 'vigente');
+
+                if (doc.newFile) formData.append('archivo', doc.newFile);
+
+                if (doc.fecha_vencimiento) {
+                    const fechaOk = doc.fecha_vencimiento.length > 10 ? doc.fecha_vencimiento.slice(0, 10) : doc.fecha_vencimiento;
+                    formData.append('fecha_vencimiento', fechaOk);
+                }
+
+                return updateMutation.mutateAsync({ docId: doc.id, formData });
+            }));
+
+            navigate("/empleados");
         } catch (err) {
-        console.error(err);
-        alert("Error al editar documentaciones");
+            console.error(err);
+            alert("Error al editar documentaciones");
         }
     };
     if (exit) {
         navigate("/empleados");
     }
     return (
+        <>
+        {isLoadingEmpleado && 
+        <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
+            <div className="relative">
+            
+            {/* Texto de carga */}
+            <div className="mt-8 text-center">
+            <h2 className="text-3xl font-bold text-white mb-4 animate-pulse">Cargando Empleado</h2>
+            
+            {/* Barra de progreso */}
+            <div className="w-80 h-3 bg-gray-700 rounded-full overflow-hidden shadow-lg">
+                <div className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-full animate-loading-bar"></div>
+            </div>
+            
+            {/* Puntos animados */}
+            <div className="mt-4 flex justify-center gap-2">
+                <span className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></span>
+                <span className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></span>
+                <span className="w-3 h-3 bg-blue-300 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></span>
+            </div>
+            </div>
+        </div>
+    </div>}
+        {!isLoadingEmpleado && !isErrorEmpleado &&
         <div className="min-h-screen flex flex-col flex-1 py-10">
             <div className="w-full bg-white rounded-2xl shadow-2xl p-8 flex flex-col items-center">
                 <h1 className="text-4xl text-gray-800 font-extrabold mb-8 tracking-tight">Documentaciones</h1>
@@ -153,7 +185,7 @@ export default function EditDocument() {
                                     <select
                                         className="shadow border rounded py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-400"
                                         id="tipo_documento.id"
-                                        value={doc.id_tipoDocumento ?? doc.tipo_documento?.id ?? ""}
+                                        value={(doc.id_tipoDocumento ?? doc.tipo_documento?.id ?? "")?.toString?.() ?? ""}
                                         onChange={e => handleTipoDocumentoChange(doc.id, e.target.value)}
                                         required
                                     >
@@ -222,5 +254,7 @@ export default function EditDocument() {
                 </div>
             </div>
         </div>
+        }
+        </>
     );
 }
