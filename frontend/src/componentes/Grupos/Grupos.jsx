@@ -11,7 +11,7 @@ export default function Grupos() {
 	const {data: empleados = [], isLoading: empleadoLoading, isError: empleadoError} = useEmpleados();
 	
 	// Filtrar todos los empleados del grupo seleccionado
-	const empleadosDelGrupo = vista ? empleados.filter((e) => e.grupo && e.grupo.id === id) : [];
+	const empleadosDelGrupo = vista ? empleados.filter((e) => e.grupo.id === id) : [];
 
 	if (isLoading) return (
     <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
