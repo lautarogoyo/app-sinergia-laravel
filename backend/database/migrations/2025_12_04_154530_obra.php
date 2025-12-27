@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('obras', function (Blueprint $table) {
             $table->id();
-            $table->string('nro_obra')->nullable();
-            $table->text('detalle')->nullable();
-            $table->string('estado')->nullable();
-            $table->date('fecha_visto')->nullable();
-            $table->string('direccion')->nullable();
-            $table->date('fecha_ingreso')->nullable();
+            $table->string('nro_obra');
+            $table->text('detalle');
+            $table->enum('estado', ['pedida', 'cotizada', 'enCurso', 'finalizada'])->default('pedida');
+            $table->date('fecha_visto');
+            $table->string('direccion');
+            $table->date('fecha_ingreso');
             $table->date('fecha_programacion_inicio')->nullable();
             $table->date('fecha_recepcion_provisoria')->nullable();
             $table->date('fecha_recepcion_definitiva')->nullable();

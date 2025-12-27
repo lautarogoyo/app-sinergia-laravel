@@ -74,11 +74,11 @@ Route::put('/rubros/{id}', [RubroController::class, 'update']);
 Route::delete('/rubros/{id}', [RubroController::class, 'destroy']);
 
 // Obras
-Route::get('/obras', [ObraController::class, 'index']);
-Route::get('/obras/{id}', [ObraController::class, 'show']);
-Route::post('/obras', [ObraController::class, 'store']);
-Route::put('/obras/{id}', [ObraController::class, 'update']);
-Route::delete('/obras/{id}', [ObraController::class, 'destroy']);
+Route::apiResource('obras', ObraController::class);
+Route::post('/obras/{obra}/pedidos', [ObraController::class, 'agregarPedido']);
+Route::post('/obras/{obra}/comentarios', [ObraController::class, 'agregarComentario']);
+Route::post('/obras/{obra}/ordenes', [ObraController::class, 'agregarOrden']);
+
 
 // Ordenes de compra
 Route::get('/ordenes_compra', [OrdenCompraController::class, 'index']);

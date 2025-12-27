@@ -7,24 +7,12 @@ use Illuminate\Http\Request;
 
 class ObraController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    /**GET
+    */
     public function index()
     {
-        $obras = Obra::with('grupos')->get();
-        return response()->json([
-            'obras' => $obras,
-            'status' => 200
-        ], 200);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        // Not used in API
+        $obras = Obra::with('pedidosCotizacion.grupos', 'ordenCompra', 'comentarios')->get();
+        return response()->json($obras, 200);
     }
 
     /**
@@ -32,128 +20,92 @@ class ObraController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = \Validator::make($request->all(), [
-            'nro_obra' => 'nullable|max:255',
-            'detalle' => 'nullable',
-            'estado' => 'nullable|in: pedida_cotizacion, cotizada, en curso, finalizada',
-            'fecha_visto' => 'nullable|date',
-            'direccion' => 'nullable|max:255',
-            'fecha_ingreso' => 'nullable|date',
+        $validated = $request -> validate([
+            'nro_obra' => 'required|max:255',
+            'detalle' => 'required|max:255',
+            'estado' => 'required|in:pedida,cotizada,enCurso,finalizada',
+            'fecha_visto' => 'required|date',
+            'direccion' => 'required|max:255',
+            'fecha_ingreso' => 'required|date',
             'fecha_programacion_inicio' => 'nullable|date',
             'fecha_recepcion_provisoria' => 'nullable|date',
             'fecha_recepcion_definitiva' => 'nullable|date',
             'detalle_caratula' => 'nullable',
-            'grupos' => 'nullable|array',
-            'grupos.*' => 'exists:grupos,id'
         ]);
+        $obra = Obra::create($validated);
+        return response()->json($obra, 201);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Error en la validación de los datos',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ], 400);
-        }
-
-        $obra = Obra::create($request->only([
-            'nro_obra','detalle','estado','fecha_visto','direccion','fecha_ingreso',
-            'fecha_programacion_inicio','fecha_recepcion_provisoria','fecha_recepcion_definitiva','detalle_caratula'
-        ]));
-
-        if (!$obra) {
-            return response()->json([
-                'message' => 'Error al crear la obra',
-                'status' => 500
-            ], 500);
-        }
-
-        if ($request->filled('grupos')) {
-            $obra->grupos()->sync($request->input('grupos'));
-        }
-
-        return response()->json([
-            'message' => 'Obra creada',
-            'obra' => $obra->load('grupos'),
-            'status' => 201
-        ], 201);
+    }
+    public function agregarComentario(Request $request, Obra $obra)
+    {
+        $validated = $request -> validate([
+            'denominacion' => 'required|string',
+        ]);
+        $comentario = $obra->comentarios()->create($validated);
+        return response()->json($comentario, 201);
     }
 
+    public function agregarOrden(Request $request, Obra $obra)
+    {
+        $validated = $request -> validate([
+            'fecha_inicio_orden_compra' => 'required|date',
+            'fecha_fin_orden_compra' => 'required|date',
+        ]);
+        $orden = $obra->ordenCompra()->create($validated);
+        return response()->json($orden, 201);
+    }
+
+     public function agregarPedido(Request $request, Obra $obra)
+    {
+        if ($obra->estado !== 'pedida') {
+        return response()->json([
+            'message' => 'La obra no está en estado de pedido de cotización'
+        ], 409);
+    }
+
+        $validated = $request -> validate([
+            'path' => 'required|string',
+            'fecha_cierre_cotizacion' => 'required|date',
+            'estado_cotizacion' => 'required|in:pasada,debePasar,otro',
+            'estado_comparativa' => 'required|in:pasado,hacerPlanilla,noLleva',
+        ]);
+        $pedido = $obra->pedidosCotizacion()->create($validated);
+        return response()->json($pedido, 201);
+        
+    }
     /**
      * Display the specified resource.
      */
     public function show(Obra $obra)
     {
-        $obra = Obra::with('grupos')->find($obra->id);
-        if (!$obra) {
-            return response()->json([
-                'message' => 'Obra no encontrada',
-                'status' => 404
-            ], 404);
-        }
-        return response()->json([
-            'obra' => $obra,
-            'status' => 200
-        ], 200);
+        return response()->json(
+            $obra->load('pedidosCotizacion.grupos', 'comentarios', 'ordenCompra'),
+            200
+        );
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Obra $obra)
-    {
-        // Not used in API
-    }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Obra $obra)
     {
-        $o = Obra::find($obra->id);
-        if (!$o) {
-            return response()->json([
-                'message' => 'Obra no encontrada',
-                'status' => 404
-            ], 404);
-        }
-
-        $validator = \Validator::make($request->all(), [
-            'nro_obra' => 'nullable|max:255',
-            'detalle' => 'nullable',
-            'estado' => 'nullable|in: pedida_cotizacion, cotizada, en curso, finalizada',
-            'fecha_visto' => 'nullable|date',
-            'direccion' => 'nullable|max:255',
-            'fecha_ingreso' => 'nullable|date',
-            'fecha_programacion_inicio' => 'nullable|date',
-            'fecha_recepcion_provisoria' => 'nullable|date',
-            'fecha_recepcion_definitiva' => 'nullable|date',
-            'detalle_caratula' => 'nullable',
-            'grupos' => 'nullable|array',
-            'grupos.*' => 'exists:grupos,id'
+        $validated = $request->validate([
+            'nro_obra' => 'sometimes|required|max:255',
+            'detalle' => 'sometimes|required|max:255',
+            'estado' => 'sometimes|required|in:pedida,cotizada,enCurso,finalizada',
+            'fecha_visto' => 'sometimes|required|date',
+            'direccion' => 'sometimes|required|max:255',
+            'fecha_ingreso' => 'sometimes|required|date',
+            'fecha_programacion_inicio' => 'sometimes|nullable|date',
+            'fecha_recepcion_provisoria' => 'sometimes|nullable|date',
+            'fecha_recepcion_definitiva' => 'sometimes|nullable|date',
+            'detalle_caratula' => 'sometimes|nullable',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Error en la validación de los datos',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ], 400);
-        }
+        $obra->update($validated);
 
-        $o->update($request->only([
-            'nro_obra','detalle','estado','fecha_visto','direccion','fecha_ingreso',
-            'fecha_programacion_inicio','fecha_recepcion_provisoria','fecha_recepcion_definitiva','detalle_caratula'
-        ]));
-
-        if ($request->has('grupos')) {
-            $o->grupos()->sync($request->input('grupos'));
-        }
-
-        return response()->json([
-            'message' => 'Obra actualizada',
-            'obra' => $o->load('grupos'),
-            'status' => 200
-        ], 200);
+        return response()->json($obra->load('pedidosCotizacion'), 200);
     }
 
     /**
@@ -161,25 +113,9 @@ class ObraController extends Controller
      */
     public function destroy(Obra $obra)
     {
-        $o = Obra::find($obra->id);
-        if (!$o) {
-            return response()->json([
-                'message' => 'Obra no encontrada',
-                'status' => 404
-            ], 404);
-        }
+        $obra->delete();
 
-        $deleted = $o->delete();
-        if (!$deleted) {
-            return response()->json([
-                'message' => 'Error al eliminar la obra',
-                'status' => 500
-            ], 500);
-        }
-
-        return response()->json([
-            'message' => 'Obra eliminada',
-            'status' => 200
-        ], 200);
+        return response()->json(null, 204);
     }
+        
 }

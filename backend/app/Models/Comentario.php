@@ -13,7 +13,6 @@ class Comentario extends Model
     protected $table = 'comentarios';
     protected $fillable = [
         'denominacion',
-        'id_obra'
     ];
 
     public function obra () : BelongsTo

@@ -13,8 +13,6 @@ class Compra_Rubro extends Model
     protected $table = 'compra_rubro';
     protected $fillable = [
         'path_material',
-        'id_rubro',
-        'id_pedido_compra'
     ];
 
     public function rubro () : BelongsTo

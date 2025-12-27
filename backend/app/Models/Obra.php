@@ -33,19 +33,19 @@ class Obra extends Model
     ];
 
 
-    public function orden_compra() : hasOne
+    public function ordenCompra() : HasOne
     {
         return $this->hasOne(Orden_Compra::class);
     }
 
-    public function comentarios () : hasMany
+    public function comentarios () : HasMany
     {
         return $this->hasMany(Comentario::class);
     }
     
-    public function pedido_cotizacion () : hasMany
+    public function pedidosCotizacion () : HasMany
     {
-        return $this->hasMany(Pedido_Cotizacion::class);
+        return $this->hasMany(PedidoCotizacion::class);
     }
 }
 

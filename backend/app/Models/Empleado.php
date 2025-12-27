@@ -23,16 +23,15 @@ class Empleado extends Model
         'cbu',
         'alias',
         'estado',
-        'id_grupo'
     ];
     
     public function documentaciones() : HasMany
     {
-        return $this->hasMany(Documentacion::class, 'id_empleado');
+        return $this->hasMany(Documentacion::class);
     }
 
     public function grupo() : BelongsTo
     {
-        return $this->belongsTo(Grupo::class, 'id_grupo');
+        return $this->belongsTo(Grupo::class);
     }
 }

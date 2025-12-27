@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Pedido_Cotizacion;
+use App\Models\PedidoCotizacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -13,7 +13,7 @@ class PedidoCotizacionController extends Controller
      */
     public function index()
     {
-        $pedidos = Pedido_Cotizacion::with(['grupos','obra'])->get();
+        $pedidos = PedidoCotizacion::with(['grupos','obra'])->get();
         return response()->json([
             'pedidos' => $pedidos,
             'status' => 200

@@ -13,9 +13,6 @@ class Proveedor_Rubro_Grupo extends Model
     protected $table = 'proveedor_rubro_grupo';
     protected $fillable = [
         'descripcion',
-        'id_rubro',
-        'id_proveedor',
-        'id_grupo'
     ];
 
     public function rubro() : BelongsTo

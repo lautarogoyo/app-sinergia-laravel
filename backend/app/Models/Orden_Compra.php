@@ -28,6 +28,6 @@ class Orden_Compra extends Model
      */
     public function obra(): BelongsTo
     {
-        return $this->belongsTo(Obra::class, 'id_obra');
+        return $this->belongsTo(Obra::class);
     }
 }

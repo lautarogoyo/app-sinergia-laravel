@@ -11,19 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pedido_cotizacion', function (Blueprint $table) {
+        Schema::create('pedidos_cotizacion', function (Blueprint $table) {
             $table->id();
-            $table->string('path')->nullable();
-            $table->date('fecha_cierre_cotizacion')->nullable();
-            $table->string('estado_cotizacion')->nullable();
-            $table->string('estado_comparativa')->nullable();
-            $table->unsignedBigInteger('id_obra')->nullable();
+            $table->string('path');
+            $table->date('fecha_cierre_cotizacion');
+            $table->enum('estado_cotizacion', ['pasada', 'debePasar', 'otro'])->nullable();
+            $table->enum('estado_comparativa', ['pasado', 'hacerPlanilla', 'noLleva'])->nullable();
+            $table->unsignedBigInteger('obra_id');
             $table->timestamps();
         });
 
         if (Schema::hasTable('obras')) {
-            Schema::table('pedido_cotizacion', function (Blueprint $table) {
-                $table->foreign('id_obra')->references('id')->on('obras')->onUpdate('cascade')->onDelete('restrict');
+            Schema::table('pedidos_cotizacion', function (Blueprint $table) {
+                $table->foreign('obra_id')->references('id')->on('obras')->onUpdate('cascade')->onDelete('restrict');
             });
         }
     }

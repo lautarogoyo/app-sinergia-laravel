@@ -10,19 +10,18 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Models\Grupo;
 use App\Models\Obra;
 
-class Pedido_Cotizacion extends Model
+class PedidoCotizacion extends Model
 {
     use HasFactory;
 
     // The migration creates the table `pedido_cotizacion` (singular), keep model aligned.
-    protected $table = 'pedido_cotizacion';
+    protected $table = 'pedidos_cotizacion';
 
     protected $fillable = [
         'path',
         'fecha_cierre_cotizacion',
         'estado_cotizacion',
         'estado_comparativa',
-        'id_obra'
     ];
 
     protected $casts = [
@@ -32,7 +31,12 @@ class Pedido_Cotizacion extends Model
     public function grupos() : BelongsToMany
     {
 
-        return $this->belongsToMany(Grupo::class, 'grupo_pedido_cotizacion')->withTimestamps();
+        return $this->belongsToMany(
+            Grupo::class,
+            'grupos_pedido_cotizacion',
+            'pedido_id', 
+            'grupo_id'  
+        )->withTimestamps();
     }
 
     public function obra(): BelongsTo

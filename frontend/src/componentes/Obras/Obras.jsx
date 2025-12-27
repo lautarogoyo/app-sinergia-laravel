@@ -1,28 +1,36 @@
-import { useEffect, useState } from "react";
-import { getData } from "../Fetch/get.js";
+import { useState } from "react";
+import { useObras } from "../hooks/useObras.jsx";
 
 // Panel de Obras inspirado en el panel de Empleados
 export default function Obras() {
-	const backendUrl = import.meta.env.VITE_API_URL;
-	const [obras, setObras] = useState([]);
+
 	const [filtro, setFiltro] = useState("");
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState(null);
 
-	useEffect(() => {
-		getData(`${backendUrl}/api/obras`, "obras")
-			.then((data) => {
-				setObras(data);
-				setLoading(false);
-			})
-			.catch((err) => {
-				setError(err.message);
-				setLoading(false);
-			});
-	}, [backendUrl]);
-
-	if (loading) return <div className="text-center text-xl py-8">Cargando...</div>;
-	if (error) return <div className="text-center text-xl py-8 text-red-500">Error: {error}</div>;
+	const {data: obras = [], isLoading, isError} = useObras();
+	console.log(obras)
+	if (isLoading) return (
+    <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
+      <div className="relative">
+        
+        {/* Texto de carga */}
+        <div className="mt-8 text-center">
+          <h2 className="text-3xl font-bold text-white mb-4 animate-pulse">Cargando Obras</h2>
+          
+          {/* Barra de progreso */}
+          <div className="w-80 h-3 bg-gray-700 rounded-full overflow-hidden shadow-lg">
+            <div className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-full animate-loading-bar"></div>
+          </div>
+          
+          {/* Puntos animados */}
+          <div className="mt-4 flex justify-center gap-2">
+            <span className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></span>
+            <span className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></span>
+            <span className="w-3 h-3 bg-blue-300 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
 	const obrasFiltradas = obras.filter((o) => {
 		const val = filtro.toLowerCase();
@@ -45,7 +53,10 @@ export default function Obras() {
 	};
 
 	return (
+		<>
+		{!isLoading && !isError &&
 		<div className="p-8 bg-gray-100 lg:w-full flex flex-col">
+			
 			<h2 className="text-3xl font-extrabold mb-6 text-gray-800 tracking-wide">Panel de Obras</h2>
 
 			<div className="mb-6 w-full max-w-2xl flex flex-col">
@@ -127,5 +138,7 @@ export default function Obras() {
 				</table>
 			</div>
 		</div>
+		}
+		</>
 	);
 }
