@@ -76,7 +76,6 @@ Route::delete('/rubros/{id}', [RubroController::class, 'destroy']);
 // Obras
 Route::apiResource('obras', ObraController::class);
 Route::post('/obras/{obra}/pedidos', [ObraController::class, 'agregarPedido']);
-Route::post('/obras/{obra}/comentarios', [ObraController::class, 'agregarComentario']);
 Route::post('/obras/{obra}/ordenes', [ObraController::class, 'agregarOrden']);
 
 
@@ -88,11 +87,7 @@ Route::put('/ordenes_compra/{id}', [OrdenCompraController::class, 'update']);
 Route::delete('/ordenes_compra/{id}', [OrdenCompraController::class, 'destroy']);
 
 // Comentarios
-Route::get('/comentarios', [ComentarioController::class, 'index']);
-Route::get('/comentarios/{id}', [ComentarioController::class, 'show']);
-Route::post('/comentarios', [ComentarioController::class, 'store']);
-Route::put('/comentarios/{id}', [ComentarioController::class, 'update']);
-Route::delete('/comentarios/{id}', [ComentarioController::class, 'destroy']);
+Route::apiResource('obras.comentarios', ComentarioController::class);
 
 // Usuarios
 Route::get('/usuarios', [UsuarioController::class, 'index']);

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comentario;
+use App\Models\Obra;
 use Illuminate\Http\Request;
 
 class ComentarioController extends Controller
@@ -20,44 +21,16 @@ class ComentarioController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        // Not used in API
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Obra $obra)
     {
-        $validator = \Validator::make($request->all(), [
-            'denominacion' => 'required',
-            'obra_id' => 'required|exists:obras,id'
+        $validated = $request -> validate([
+            'denominacion' => 'required|string',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Error en la validación de los datos',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ], 400);
-        }
-
-        $comentario = Comentario::create($request->only(['denominacion','obra_id']));
-
-        if (!$comentario) {
-            return response()->json([
-                'message' => 'Error al crear el comentario',
-                'status' => 500
-            ], 500);
-        }
-
-        return response()->json([
-            'comentario' => $comentario->load('obra'),
-            'status' => 201
-        ], 201);
+        $comentario = $obra->comentarios()->create($validated);
+        return response()->json($comentario->load('obra'), 201);
     }
 
     /**
@@ -79,44 +52,26 @@ class ComentarioController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Comentario $comentario)
-    {
-        // Not used in API
-    }
-
-    /**
      * Update the specified resource in storage.
-     */
-    public function update(Request $request, Comentario $comentario)
+        */
+    public function update(Request $request, Obra $obra, Comentario $comentario)
     {
-        $c = Comentario::find($comentario->id);
-        if (!$c) {
+        if ($comentario->obra_id !== $obra->id) {
             return response()->json([
-                'message' => 'Comentario no encontrado',
-                'status' => 404
-            ], 404);
+                'message' => 'Este comentario no pertenece a la obra indicada',
+                'status' => 403
+            ], 403);
         }
 
-        $validator = \Validator::make($request->all(), [
-            'denominacion' => 'required',
-            'obra_id' => 'required|exists:obras,id'
+        $validated = $request->validate([
+            'denominacion' => 'required|string|max:1000',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Error en la validación de los datos',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ], 400);
-        }
-
-        $c->update($request->only(['denominacion','obra_id']));
+        $comentario->update($validated);
 
         return response()->json([
-            'comentario' => $c->load('obra'),
-            'message' => 'Comentario actualizado',
+            'comentario' => $comentario->load('obra'),
+            'message' => 'Comentario actualizado correctamente',
             'status' => 200
         ], 200);
     }
@@ -124,19 +79,21 @@ class ComentarioController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Comentario $comentario)
-    {
-        $c = Comentario::find($comentario->id);
-        if (!$c) {
-            return response()->json([
-                'message' => 'Comentario no encontrado',
-                'status' => 404
-            ], 404);
-        }
-        $c->delete();
+    public function destroy(Obra $obra, Comentario $comentario)
+{
+    if ($comentario->obra_id !== $obra->id) {
         return response()->json([
-            'message' => 'Comentario eliminado',
-            'status' => 200
-        ], 200);
+            'message' => 'Este comentario no pertenece a la obra indicada',
+            'status' => 403
+        ], 403);
     }
+
+    $comentario->delete();
+
+    return response()->json([
+        'message' => 'Comentario eliminado correctamente',
+        'status' => 200
+    ], 200);
+}
+
 }

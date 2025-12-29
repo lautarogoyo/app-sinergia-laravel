@@ -36,15 +36,6 @@ class ObraController extends Controller
         return response()->json($obra, 201);
 
     }
-    public function agregarComentario(Request $request, Obra $obra)
-    {
-        $validated = $request -> validate([
-            'denominacion' => 'required|string',
-        ]);
-        $comentario = $obra->comentarios()->create($validated);
-        return response()->json($comentario, 201);
-    }
-
     public function agregarOrden(Request $request, Obra $obra)
     {
         $validated = $request -> validate([
