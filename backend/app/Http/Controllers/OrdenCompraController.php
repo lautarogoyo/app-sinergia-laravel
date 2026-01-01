@@ -19,24 +19,16 @@ class OrdenCompraController extends Controller
         ], 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        // Not used in API
-    }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Obra $obra)
     {
         $validator = \Validator::make($request->all(), [
             'detalle' => 'nullable',
             'fecha_inicio_orden_compra' => 'nullable|date',
             'fecha_fin_orden_compra' => 'nullable|date',
-            'id_obra' => 'nullable|exists:obras,id'
         ]);
 
         if ($validator->fails()) {
@@ -47,8 +39,7 @@ class OrdenCompraController extends Controller
             ], 400);
         }
 
-        $orden = Orden_Compra::create($request->only(['detalle','fecha_inicio_orden_compra','fecha_fin_orden_compra','id_obra']));
-
+        $orden = $obra->ordenes_compra()->create($validator);
         if (!$orden) {
             return response()->json([
                 'message' => 'Error al crear la orden de compra',
@@ -81,45 +72,28 @@ class OrdenCompraController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Orden_Compra $orden_Compra)
-    {
-        // Not used in API
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Orden_Compra $orden_Compra)
+    public function update(Request $request, Orden_Compra $orden_Compra, Obra $obra)
     {
-        $o = Orden_Compra::find($orden_Compra->id);
-        if (!$o) {
-            return response()->json([
-                'message' => 'Orden no encontrada',
-                'status' => 404
-            ], 404);
+        
+        if ($orden_Compra -> obra_id !== $obra->id) {
+            return response () ->json([
+                'message' => 'Esta orden de compra no pertenece a esta obra',
+                'status' => 403
+            ]);
         }
 
-        $validator = \Validator::make($request->all(), [
+        $validated = $request->validate([
             'detalle' => 'nullable',
             'fecha_inicio_orden_compra' => 'nullable|date',
             'fecha_fin_orden_compra' => 'nullable|date',
-            'id_obra' => 'nullable|exists:obras,id'
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Error en la validación de los datos',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ], 400);
-        }
-
-        $o->update($request->only(['detalle','fecha_inicio_orden_compra','fecha_fin_orden_compra','id_obra']));
+        $orden_Compra->update($validated);
 
         return response()->json([
-            'orden' => $o->load('obra'),
+            'orden' => $orden_Compra->load('obra'),
             'message' => 'Orden actualizada',
             'status' => 200
         ], 200);
