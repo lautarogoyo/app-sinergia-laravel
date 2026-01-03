@@ -102,24 +102,17 @@ class OrdenCompraController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Orden_Compra $orden_Compra)
+    public function destroy(Orden_Compra $orden_Compra, Obra $obra)
     {
-        $o = Orden_Compra::find($orden_Compra->id);
-        if (!$o) {
+        if ($orden_Compra->obra_id !== $obra->id) {
             return response()->json([
                 'message' => 'Orden no encontrada',
                 'status' => 404
             ], 404);
         }
 
-        $deleted = $o->delete();
-        if (!$deleted) {
-            return response()->json([
-                'message' => 'Error al eliminar la orden',
-                'status' => 500
-            ], 500);
-        }
-
+        $orden_Compra->delete();
+        
         return response()->json([
             'message' => 'Orden eliminada',
             'status' => 200
