@@ -28,10 +28,10 @@ class PedidoCotizacionController extends Controller
     public function store(Request $request, Obra $obra)
     {
         $validated = $request->validate([
-            'archivo' => 'sometimes|file|max:10240',
+            'archivo' => 'nullable|file|max:10240',
             'fecha_cierre_cotizacion' => 'nullable|date',
-            'estado_cotizacion' => 'nullable|in:pasada,debe pasar,otro',
-            'estado_comparativa' => 'nullable|in:pasado,hacer planilla,no lleva planilla',
+            'estado_cotizacion' => 'nullable|in:pasada,debePasar,otro',
+            'estado_comparativa' => 'nullable|in:pasado,hacerPlanilla,noLleva',
         ]);
 
         $data = $validated;

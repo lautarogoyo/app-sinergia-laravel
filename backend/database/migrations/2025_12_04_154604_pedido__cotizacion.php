@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('pedidos_cotizacion', function (Blueprint $table) {
             $table->id();
-            $table->string('path');
+            $table->string('path') ->nullable();
             $table->date('fecha_cierre_cotizacion');
             $table->enum('estado_cotizacion', ['pasada', 'debePasar', 'otro'])->nullable();
             $table->enum('estado_comparativa', ['pasado', 'hacerPlanilla', 'noLleva'])->nullable();
