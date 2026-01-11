@@ -33,9 +33,9 @@ class PedidoCotizacion extends Model
 
         return $this->belongsToMany(
             Grupo::class,
-            'grupos_pedido_cotizacion',
-            'pedido_id', 
-            'grupo_id'  
+            'pedido_grupo',
+            'pedido_id',
+            'grupo_id'
         )->withTimestamps();
     }
 

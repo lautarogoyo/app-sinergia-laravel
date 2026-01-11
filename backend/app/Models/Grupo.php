@@ -20,13 +20,15 @@ class Grupo extends Model
         return $this->hasMany(Empleado::class);
     }
 
-    public function pedido_cotizacion() : belongsToMany
+    public function pedido_cotizacion() : BelongsToMany
     {
-        return $this->belongsToMany(Pedido_Cotizacion::class, 'grupo_pedido_cotizacion')->withTimestamps();
+        return $this->belongsToMany(PedidoCotizacion::class,'pedido_grupo',
+            'grupo_id',
+            'pedido_id')->withTimestamps();
     }
 
     public function proveedor_rubro_grupo() : hasMany
     {
-        return $this->hasMany(Proveedor_Rubro_Grupo::class);
+        return $this->hasMany(ProveedorRubroGrupo::class);
     }
 }

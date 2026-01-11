@@ -23,7 +23,7 @@ Route::apiResource('empleados', EmpleadoController::class);
 
 Route::apiResource('tipos_documento', TipoDocumentoController::class);
 
-Route::apiResource('documentaciones', DocumentacionController::class);
+Route::apiResource('empleados.documentaciones', DocumentacionController::class);
 // Grupos
 Route::apiResource('grupos', GrupoController::class);
 
@@ -63,3 +63,14 @@ Route::apiResource('proveedor_rubro_grupo', ProveedorRubroGrupoController::class
 
 // Obras adjudicadas
 Route::apiResource('obras_adjudicada', ObraAdjudicadaController::class);
+
+//Pedidos_Grupo
+Route::post(
+    'pedidos_cotizacion/{pedido}/grupos',
+    [PedidoCotizacionController::class, 'asignarGrupos']
+);
+
+Route::delete(
+    'pedidos_cotizacion/{pedido}/grupos/{grupo}',
+    [PedidoCotizacionController::class, 'quitarGrupo']
+);
