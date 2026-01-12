@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Orden_Compra;
+use App\Models\OrdenCompra;
 use Illuminate\Http\Request;
+use App\Models\Obra;
 
 class OrdenCompraController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Obra $obra)
     {
-        $ordenes = Orden_Compra::with('obra')->get();
         return response()->json([
-            'ordenes' => $ordenes,
+            'ordenes' => $ordenes = $obra->ordenCompra()->with('obra')->get(),
             'status' => 200
         ], 200);
     }
@@ -25,27 +25,14 @@ class OrdenCompraController extends Controller
      */
     public function store(Request $request, Obra $obra)
     {
-        $validator = \Validator::make($request->all(), [
+        $validated = $request->validate([
             'detalle' => 'nullable',
             'fecha_inicio_orden_compra' => 'nullable|date',
             'fecha_fin_orden_compra' => 'nullable|date',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Error en la validación de los datos',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ], 400);
-        }
 
-        $orden = $obra->ordenes_compra()->create($validator);
-        if (!$orden) {
-            return response()->json([
-                'message' => 'Error al crear la orden de compra',
-                'status' => 500
-            ], 500);
-        }
+        $orden = $obra->ordenCompra()->create($validated);
 
         return response()->json([
             'orden' => $orden->load('obra'),
@@ -56,9 +43,15 @@ class OrdenCompraController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Orden_Compra $orden_Compra)
+    public function show(OrdenCompra $ordenCompra, Obra $obra)
     {
-        $orden = Orden_Compra::with('obra')->find($orden_Compra->id);
+        if ($ordenCompra->obra_id !== $obra->id) {
+            return response()->json([
+                'message' => 'Esta orden de compra no pertenece a esta obra',
+                'status' => 404
+            ], 404);
+        }
+        $orden = OrdenCompra::with('obra')->find($ordenCompra->id);
         if (!$orden) {
             return response()->json([
                 'message' => 'Orden no encontrada',
@@ -74,10 +67,10 @@ class OrdenCompraController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Orden_Compra $orden_Compra, Obra $obra)
+    public function update(Request $request, OrdenCompra $ordenCompra, Obra $obra)
     {
         
-        if ($orden_Compra -> obra_id !== $obra->id) {
+        if ($ordenCompra->obra_id !== $obra->id) {
             return response () ->json([
                 'message' => 'Esta orden de compra no pertenece a esta obra',
                 'status' => 403
@@ -90,10 +83,10 @@ class OrdenCompraController extends Controller
             'fecha_fin_orden_compra' => 'nullable|date',
         ]);
 
-        $orden_Compra->update($validated);
+        $ordenCompra->update($validated);
 
         return response()->json([
-            'orden' => $orden_Compra->load('obra'),
+            'orden' => $ordenCompra->load('obra'),
             'message' => 'Orden actualizada',
             'status' => 200
         ], 200);
@@ -102,16 +95,16 @@ class OrdenCompraController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Orden_Compra $orden_Compra, Obra $obra)
+    public function destroy(OrdenCompra $ordenCompra, Obra $obra)
     {
-        if ($orden_Compra->obra_id !== $obra->id) {
+        if ($ordenCompra->obra_id !== $obra->id) {
             return response()->json([
                 'message' => 'Orden no encontrada',
                 'status' => 404
             ], 404);
         }
 
-        $orden_Compra->delete();
+        $ordenCompra->delete();
         
         return response()->json([
             'message' => 'Orden eliminada',

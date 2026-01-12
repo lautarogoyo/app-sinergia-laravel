@@ -35,7 +35,7 @@ class Obra extends Model
 
     public function ordenCompra() : HasOne
     {
-        return $this->hasOne(Orden_Compra::class);
+        return $this->hasOne(OrdenCompra::class);
     }
 
     public function comentarios () : HasMany

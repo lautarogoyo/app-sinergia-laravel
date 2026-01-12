@@ -23,7 +23,7 @@ Route::apiResource('empleados', EmpleadoController::class);
 
 Route::apiResource('tipos_documento', TipoDocumentoController::class);
 
-Route::apiResource('empleados.documentaciones', DocumentacionController::class);
+Route::apiResource('empleados/{empleado}/documentaciones', DocumentacionController::class);
 // Grupos
 Route::apiResource('grupos', GrupoController::class);
 
@@ -35,34 +35,26 @@ Route::apiResource('rubros', RubroController::class);
 
 // Obras
 Route::apiResource('obras', ObraController::class);
-Route::post('/obras/{obra}/pedidos', [ObraController::class, 'agregarPedido']);
-Route::post('/obras/{obra}/ordenes', [ObraController::class, 'agregarOrden']);
+
 
 
 // Ordenes de compra
-Route::apiResource('ordenes_compra', OrdenCompraController::class);
+Route::apiResource('obras/{obra}/ordenes_compra', OrdenCompraController::class);
 
 // Comentarios
-Route::apiResource('obras.comentarios', ComentarioController::class);
+Route::apiResource('obras/{obra}/comentarios', ComentarioController::class);
 
 // Usuarios
 Route::apiResource('usuarios', UsuarioController::class);
 
 // Pedidos de cotización
-Route::apiResource('obras.pedidos_cotizacion', PedidoCotizacionController::class);
-
-// Pedidos de compra
-Route::apiResource('obras.pedidos_compra', PedidoCompraController::class);
+Route::apiResource('obras/{obra}/pedidos_cotizacion', PedidoCotizacionController::class);
 
 // Compra rubros
 Route::apiResource('compras_rubro', CompraRubroController::class);
 
 // Proveedor rubro grupo
 Route::apiResource('proveedor_rubro_grupo', ProveedorRubroGrupoController::class);
-
-
-// Obras adjudicadas
-Route::apiResource('obras_adjudicada', ObraAdjudicadaController::class);
 
 //Pedidos_Grupo
 Route::post(

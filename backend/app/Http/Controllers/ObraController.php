@@ -36,34 +36,7 @@ class ObraController extends Controller
         return response()->json($obra, 201);
 
     }
-    public function agregarOrden(Request $request, Obra $obra)
-    {
-        $validated = $request -> validate([
-            'fecha_inicio_orden_compra' => 'required|date',
-            'fecha_fin_orden_compra' => 'required|date',
-        ]);
-        $orden = $obra->ordenCompra()->create($validated);
-        return response()->json($orden, 201);
-    }
-
-     public function agregarPedido(Request $request, Obra $obra)
-    {
-        if ($obra->estado !== 'pedida') {
-        return response()->json([
-            'message' => 'La obra no está en estado de pedido de cotización'
-        ], 409);
-    }
-
-        $validated = $request -> validate([
-            'path' => 'required|string',
-            'fecha_cierre_cotizacion' => 'required|date',
-            'estado_cotizacion' => 'required|in:pasada,debePasar,otro',
-            'estado_comparativa' => 'required|in:pasado,hacerPlanilla,noLleva',
-        ]);
-        $pedido = $obra->pedidosCotizacion()->create($validated);
-        return response()->json($pedido, 201);
-        
-    }
+    
     /**
      * Display the specified resource.
      */

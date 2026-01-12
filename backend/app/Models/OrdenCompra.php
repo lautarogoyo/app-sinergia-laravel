@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Obra;
 
-class Orden_Compra extends Model
+class OrdenCompra extends Model
 {
     /** @use HasFactory<\Database\Factories\OrdenCompraFactory> */
     use HasFactory;
