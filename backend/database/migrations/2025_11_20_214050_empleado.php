@@ -19,16 +19,11 @@ return new class extends Migration
                 $table->string('cbu')->nullable();
                 $table->string('alias')->nullable();
                 $table->enum('estado', ['activo', 'inactivo'])->default('activo');
-                $table->unsignedBigInteger('id_grupo')->nullable();
+                $table->unsignedBigInteger('grupo_id')->nullable();
+                $table->foreign('grupo_id')->references('id')->on('grupos')->onUpdate('cascade')->onDelete('restrict');
                 $table->timestamps();
                 $table->softDeletes();
             });
-
-            if (Schema::hasTable('grupos')) {
-                Schema::table('empleados', function (Blueprint $table) {
-                    $table->foreign('id_grupo')->references('id')->on('grupos')->onUpdate('cascade')->onDelete('restrict');
-                });
-            }
     }
 
     /**

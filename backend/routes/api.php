@@ -23,7 +23,6 @@ Route::apiResource('empleados', EmpleadoController::class);
 
 Route::apiResource('tipos_documento', TipoDocumentoController::class);
 
-Route::apiResource('empleados/{empleado}/documentaciones', DocumentacionController::class);
 // Grupos
 Route::apiResource('grupos', GrupoController::class);
 
@@ -48,7 +47,7 @@ Route::apiResource('obras/{obra}/comentarios', ComentarioController::class);
 Route::apiResource('usuarios', UsuarioController::class);
 
 // Pedidos de cotización
-Route::apiResource('obras/{obra}/pedidos_cotizacion', PedidoCotizacionController::class);
+Route::apiResource('obras.pedidos_cotizacion', PedidoCotizacionController::class);
 
 // Compra rubros
 Route::apiResource('compras_rubro', CompraRubroController::class);
