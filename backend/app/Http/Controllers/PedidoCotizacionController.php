@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PedidoCotizacion;
-use Illuminate\Http\Request;
+use App\Http\Requests\StorePedidoCotizacionRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Obra;
 use App\Models\Grupo;
@@ -25,17 +25,9 @@ class PedidoCotizacionController extends Controller
     /** 
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, Obra $obra)
+    public function store(StorePedidoCotizacionRequest $request, Obra $obra)
     {
-        $validated = $request->validate([
-            'archivo' => 'nullable|file|max:10240',
-            'fecha_cierre_cotizacion' => 'nullable|date',
-            'estado_cotizacion' => 'nullable|in:pasada,debePasar,otro',
-            'estado_comparativa' => 'nullable|in:pasado,hacerPlanilla,noLleva',
-        ]);
-
-        $data = $validated;
-
+        $data = $request->all();
         if ($request->hasFile('archivo')) {
             $data['path'] = $request->file('archivo')
                 ->store('cotizaciones', 'public');
@@ -54,16 +46,11 @@ class PedidoCotizacionController extends Controller
      */
     public function show(Obra $obra, PedidoCotizacion $pedido)
     {
-        if ($pedido->obra_id !== $obra->id) {
-            abort(404);
-        }
-
-        if ($pedido->path) {
-            $pedido->url = Storage::disk('public')->url($pedido->path);
-        }
+        
+        $p = PedidoCotizacion::with('obra')->find($pedido->id);       
 
         return response()->json([
-            'pedido' => $pedido->load(['grupos','obra']),
+            'pedido' => $p,
             'status' => 200
         ], 200);
     }
@@ -72,28 +59,17 @@ class PedidoCotizacionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Obra $obra, PedidoCotizacion $pedido)
-{
-    if ($pedido->obra_id !== $obra->id) {
-        abort(404);
-    }
+    public function update(StorePedidoCotizacionRequest $request, Obra $obra, PedidoCotizacion $pedido)
+    {
+        $data = $request->all();
 
-    $validated = $request->validate([
-        'archivo' => 'sometimes|file|max:10240',
-        'fecha_cierre_cotizacion' => 'nullable|date',
-        'estado_cotizacion' => 'nullable|in:pasada,debe pasar,otro',
-        'estado_comparativa' => 'nullable|in:pasado,hacer planilla,no lleva planilla',
-    ]);
+        if ($request->hasFile('archivo')) {
+            if ($pedido->path) {
+                Storage::disk('public')->delete($pedido->path);
+            }
+        
 
-    $data = $validated;
-
-    if ($request->hasFile('archivo')) {
-        if ($pedido->path) {
-            Storage::disk('public')->delete($pedido->path);
-        }
-
-        $data['path'] = $request->file('archivo')
-            ->store('cotizaciones', 'public');
+        $data['path'] = $request->file('archivo')->store('cotizaciones', 'public');
     }
 
     unset($data['archivo']);

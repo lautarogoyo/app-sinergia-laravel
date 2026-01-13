@@ -46,14 +46,15 @@ Route::apiResource('obras/{obra}/comentarios', ComentarioController::class);
 // Usuarios
 Route::apiResource('usuarios', UsuarioController::class);
 
-// Pedidos de cotización
-Route::apiResource('obras.pedidos_cotizacion', PedidoCotizacionController::class);
 
 // Compra rubros
 Route::apiResource('compras_rubro', CompraRubroController::class);
 
 // Proveedor rubro grupo
 Route::apiResource('proveedor_rubro_grupo', ProveedorRubroGrupoController::class);
+
+// Pedidos de cotización
+Route::apiResource('obras.pedidos_cotizacion', PedidoCotizacionController::class);
 
 //Pedidos_Grupo
 Route::post(

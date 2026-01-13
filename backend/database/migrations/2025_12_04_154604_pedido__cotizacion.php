@@ -13,19 +13,18 @@ return new class extends Migration
     {
         Schema::create('pedidos_cotizacion', function (Blueprint $table) {
             $table->id();
-            $table->string('path') ->nullable();
+            $table->string('path');
             $table->date('fecha_cierre_cotizacion');
-            $table->enum('estado_cotizacion', ['pasada', 'debePasar', 'otro'])->nullable();
-            $table->enum('estado_comparativa', ['pasado', 'hacerPlanilla', 'noLleva'])->nullable();
+            $table->enum('estado_cotizacion', ['pasada', 'debe_pasar', 'otro']);
+            $table->enum('estado_comparativa', ['pasado', 'hacer_planilla', 'no_lleva']);
             $table->unsignedBigInteger('obra_id');
+            $table  ->foreign('obra_id')
+                    ->references('id')
+                    ->on('obras')
+                    ->onUpdate('cascade')
+                    ->onDelete('restrict');
             $table->timestamps();
         });
-
-        if (Schema::hasTable('obras')) {
-            Schema::table('pedidos_cotizacion', function (Blueprint $table) {
-                $table->foreign('obra_id')->references('id')->on('obras')->onUpdate('cascade')->onDelete('restrict');
-            });
-        }
     }
 
     /**
@@ -33,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pedido_cotizacion');
+        Schema::dropIfExists('pedidos_cotizacion');
     }
 };
