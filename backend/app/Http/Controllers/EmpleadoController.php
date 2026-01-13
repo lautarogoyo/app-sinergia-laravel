@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Empleado;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreEmpleadoRequest;
 
 class EmpleadoController extends Controller
 {
@@ -19,7 +19,7 @@ class EmpleadoController extends Controller
 
     public function store(StoreEmpleadoRequest $request)
     {
-        $empleado = Empleado::create($request->all());
+        $empleado = Empleado::create($request->validated());
 
         return response()->json([
             'empleado' => $empleado,
@@ -68,7 +68,7 @@ class EmpleadoController extends Controller
             ], 404);
         }
 
-        $empleado->update($request->all());
+        $empleado->update($request->validated());
         return response()->json([
             'message' => 'Empleado actualizado',
             'empleado' => $empleado,
