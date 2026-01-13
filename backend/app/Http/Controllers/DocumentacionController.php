@@ -3,58 +3,38 @@
 namespace App\Http\Controllers;
 
 use App\Models\Documentacion;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Empleado;
+use App\Http\Requests\StoreDocumentacionRequest;
 
 class DocumentacionController extends Controller
 {
-    public function index()
+    public function index(Empleado $empleado)
     {
-        $documentaciones = Documentacion::with(['tipoDocumento', 'empleado'])->get();
-        return response()->json([
-            'documentaciones' => $documentaciones,
-            'status' => 200
-        ], 200);
+       return response()->json([
+        'documentaciones' => $empleado->documentaciones()->with('tipoDocumento')->get(),
+        'status' => 200
+    ]);
+
     }
 
-    public function store(Request $request)
+    public function store(StoreDocumentacionRequest $request, Empleado $empleado)
     {
-         $validator = Validator::make($request->all(), [
-            'id_tipoDocumento'    => 'required|exists:tipo_documentos,id',
-            'id_empleado'          => 'required|exists:empleados,id',
-            'archivo'              => 'required|file|max:10240', // 10MB
-            'fecha_vencimiento'    => 'nullable|date',
-            'estado'               => 'required|in:vigente,vencido'
-        ]);
-        if ($validator->fails()) {
+        
+        $data = $request->validated();
+        if (!$request->hasFile('archivo')) {
             return response()->json([
-                'message' => 'Error en la validación de los datos',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ], 400);
+                'message' => 'El archivo es obligatorio'
+            ], 422);
         }
 
-        // guardar archivo
         $file = $request->file('archivo');
-        $path = $file->store('documentos', 'public'); // storage/app/public/documentos/...
 
-        $documentacion = Documentacion::create([
-            'id_tipoDocumento'     => $request->id_tipoDocumento,
-            'id_empleado'           => $request->id_empleado,
-            'path'=> $path, // guardamos el path real
-            'mime'       => $file->getClientMimeType() ?? null,
-            'size'                  => $file->getSize() ?? null,
-            'fecha_vencimiento'     => $request->fecha_vencimiento,
-            'estado'                => $request->estado,
-        ]);
+        $path = $file->store('documentos', 'public');
 
-        if (!$documentacion) {
-            return response()->json([
-                'message' => 'Error al crear la documentación',
-                'status' => 500
-            ], 500);
-        }
+        $documentacion = $empleado->documentaciones()->create($data);
+
         return response()->json([
             'documentacion' => $documentacion,
             'status' => 201
@@ -62,17 +42,17 @@ class DocumentacionController extends Controller
     }
 
 
-    public function show($id)
+
+    public function show(Empleado $empleado, Documentacion $documentacion)
     {
-        $documentacion = Documentacion::with(['tipoDocumento', 'empleado'])->find($id);
+        $documentacion->load(['tipoDocumento', 'empleado']);
+
         if (!$documentacion) {
             return response()->json([
                 'message' => 'Documentación no encontrada',
                 'status' => 404
             ], 404);
         }
-        // si tu modelo expone accessor getUrlAttribute(), podés devolverla directo
-        $documentacion->url = Storage::disk('public')->url($documentacion->path);
 
         return response()->json([
             'documentacion' => $documentacion,
@@ -80,9 +60,9 @@ class DocumentacionController extends Controller
         ], 200);
     }
 
-    public function destroy($id)
+    public function destroy(Empleado $empleado, Documentacion $documentacion)
     {
-        $documentacion = Documentacion::find($id);
+        $documentacion = Documentacion::find($documentacion->id);
         if (!$documentacion) {
             return response()->json([
                 'message' => 'Documentación no encontrada',
@@ -100,50 +80,30 @@ class DocumentacionController extends Controller
         ], 200);
     }
 
-    public function update(Request $request, $id)
+    public function update(StoreDocumentacionRequest $request, Empleado $empleado, Documentacion $documentacion)
     {
-        $documentacion = Documentacion::find($id);
-        if (!$documentacion) {
-            return response()->json([
-                'message' => 'Documentación no encontrada',
-                'status' => 404
-            ], 404);
-        }
-        $validator = Validator::make($request->all(), [
-            'id_tipoDocumento'    => 'required|exists:tipo_documentos,id',
-            'id_empleado'          => 'required|exists:empleados,id',
-            'archivo'              => 'sometimes|file|max:10240',
-            'fecha_vencimiento'    => 'nullable|date',
-            'estado'               => 'required|in:vigente,vencido'
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Error en la validación de los datos',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ], 400);
-        }
-        // si viene archivo nuevo: borrar el anterior y reemplazar
+        // Ya tenés el modelo gracias al Route Model Binding
+        $data = $request->validated();
+
+        // ¿Viene un nuevo archivo?
         if ($request->hasFile('archivo')) {
+            // Borrar archivo anterior si existe
             if ($documentacion->path) {
                 Storage::disk('public')->delete($documentacion->path);
             }
 
+            // Guardar nuevo archivo
             $file = $request->file('archivo');
             $path = $file->store('documentos', 'public');
 
-            $documentacion->path = $path;
-            $documentacion->mime = $file->getClientMimeType() ?? null;
-            $documentacion->size = $file->getSize() ?? null;
+            // Setear nuevos datos del archivo
+            $data['path'] = $path;
+            $data['mime'] = $file->getClientMimeType();
+            $data['size'] = $file->getSize();
         }
 
-        // actualizar demás campos
-        $documentacion->id_tipoDocumento = $request->id_tipoDocumento;
-        $documentacion->id_empleado       = $request->id_empleado;
-        $documentacion->fecha_vencimiento = $request->fecha_vencimiento;
-        $documentacion->estado            = $request->estado;
-
-        $documentacion->save();
+        // Actualizar con datos validados + nuevos del archivo (si aplica)
+        $documentacion->update($data);
 
         return response()->json([
             'message' => 'Documentación actualizada',
@@ -151,62 +111,4 @@ class DocumentacionController extends Controller
             'status' => 200
         ], 200);
     }
-
-    public function updatePartial(Request $request, $id)
-    {
-        $documentacion = Documentacion::find($id);
-        if (!$documentacion) {
-            return response()->json([
-                'message' => 'Documentación no encontrada',
-                'status' => 404
-            ], 404);
-        }
-        $validator = Validator::make($request->all(), [
-            'id_tipoDocumento'    => 'sometimes|exists:tipo_documentos,id',
-            'id_empleado'          => 'sometimes|exists:empleados,id',
-            'archivo'              => 'sometimes|file|max:10240',
-            'fecha_vencimiento'    => 'sometimes|date',
-            'estado'               => 'sometimes|in:vigente,vencido'
-        ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Error en la validación de los datos',
-                'errors' => $validator->errors(),
-                'status' => 400
-            ], 400);
-        }
-        // reemplazo de archivo si vino
-        if ($request->hasFile('archivo')) {
-            if ($documentacion->path) {
-                Storage::disk('public')->delete($documentacion->path);
-            }
-            $file = $request->file('archivo');
-            $path = $file->store('documentos', 'public');
-            $documentacion->path = $path;
-            $documentacion->mime = $file->getClientMimeType() ?? null;
-            $documentacion->size = $file->getSize() ?? null;
-        }
-
-        // partial fields
-        if ($request->filled('id_tipoDocumento')) {
-            $documentacion->id_tipoDocumento = $request->id_tipoDocumento;
-        }
-        if ($request->filled('id_empleado')) {
-            $documentacion->id_empleado = $request->id_empleado;
-        }
-        if ($request->filled('fecha_vencimiento')) {
-            $documentacion->fecha_vencimiento = $request->fecha_vencimiento;
-        }
-        if ($request->filled('estado')) {
-            $documentacion->estado = $request->estado;
-        }
-
-        $documentacion->save();
-
-        return response()->json([
-            'message'       => 'Documentación actualizada',
-            'documentacion' => $documentacion,
-            'status'        => 200
-        ], 200);
-    }  
 }
