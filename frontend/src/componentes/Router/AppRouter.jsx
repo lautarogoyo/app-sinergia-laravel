@@ -10,7 +10,7 @@ import Grupos from "../Grupos/Grupos.jsx";
 import CreateGrupo from "../Grupos/CreateGrupo.jsx";
 import EditGrupo from "../Grupos/EditGrupo.jsx";
 import RemoveGrupo from "../Grupos/RemoveGrupo.jsx";
-
+import Gestionar from "../Obras/Gestionar.jsx";
 
 function AppRouter() {
     return (
@@ -27,6 +27,7 @@ function AppRouter() {
             <Route path="/eliminargrupo/:id" element ={<RemoveGrupo />} />
             <Route path="/documentacionempleado/:id" element={<EditDocument />} />
             <Route path="/obras" element={<div>Obras</div>} />
+            <Route path="/obra/:id/gestionar" element={<Gestionar />} />
             <Route path="/empleados" element={<div>Empleados</div>} />
             <Route path="/salir" element={<div>Salir</div>} />
         </Routes>
