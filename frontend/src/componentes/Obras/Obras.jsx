@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { useObras } from "../hooks/useObras.jsx";
+import Icon from "../Icons/Icons";
 
+const obras = [{"id":1,"nro_obra":1001,"detalle":"comitente SAN CRISTOBAL SANTA FE - Baño accesible + sobretecho planta alta","estado":"Pedida para Cotizar","grupos": ["Stizza", "Parroni"],"direccion":"Calle Falsa 123, Ciudad", "fecha_visto" : "2023-01-15","fecha_ingreso":"2023-01-15","fecha_programacion_inicio":"2023-02-01","fecha_recepcion_provisoria":"2024-01-15","fecha_recepcion_definitiva":"2024-06-30"}];
 // Panel de Obras inspirado en el panel de Empleados
 export default function Obras() {
 
 	const [filtro, setFiltro] = useState("");
+	const [isLoading, setLoading] = useState(false);
 
-	const {data: obras = [], isLoading, isError} = useObras();
 	console.log(obras)
 	if (isLoading) return (
     <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
@@ -54,7 +55,7 @@ export default function Obras() {
 
 	return (
 		<>
-		{!isLoading && !isError &&
+		{!isLoading &&
 		<div className="p-8 bg-gray-100 lg:w-full flex flex-col">
 			
 			<h2 className="text-3xl font-extrabold mb-6 text-gray-800 tracking-wide">Panel de Obras</h2>
@@ -80,8 +81,8 @@ export default function Obras() {
 							<th className="px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500">Nro</th>
 							<th className="px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500">Detalle</th>
 							<th className="px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500">Estado</th>
-							<th className="px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500">Dirección</th>
-							<th className="px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500">Fechas</th>
+							<th className="px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500">Grupo Contratado</th>
+							<th className="px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500">Fecha Visto</th>
 							<th className="px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500">Acciones</th>
 						</tr>
 					</thead>
@@ -96,32 +97,46 @@ export default function Obras() {
 											{(obra.estado ?? "-").toUpperCase()}
 										</span>
 									</td>
-									<td className="text-left text-lg text-gray-800 px-4 py-3 max-w-md break-words">{obra.direccion ?? "-"}</td>
-									<td className="text-sm text-gray-700 px-4 py-3 whitespace-nowrap">
-										<div>Ingreso: {obra.fecha_ingreso ?? "-"}</div>
-										<div>Inicio: {obra.fecha_programacion_inicio ?? "-"}</div>
-										<div>Recep. Prov.: {obra.fecha_recepcion_provisoria ?? "-"}</div>
-										<div>Recep. Def.: {obra.fecha_recepcion_definitiva ?? "-"}</div>
+									<td className="px-4 py-3">
+										<div className="flex flex-wrap gap-2 justify-center">
+											{obra.grupos && obra.grupos.length > 0 ? (
+												obra.grupos.map((grupo) => (
+													<span
+													//la key tiene que ser grupo.id y el grupo.nombre va abajo
+													key={grupo}
+													className="px-3 py-1 border-1 text-lg font-semibold "
+													>
+													{grupo}
+													</span>
+												))
+												) : (
+												<span className="text-gray-500">-</span>
+												)
+											}
+										</div>
+									</td>
+									<td className="text-lg font-bold px-4 py-3 whitespace-nowrap">
+										{obra.fecha_visto ?? "-"}
 									</td>
 									<td className="px-6 py-4">
 										<div className="flex gap-2 justify-center flex-wrap">
 											<button
-												className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
+												className=" border-2 border-black hover:bg-gray-300 py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
 												onClick={() => (window.location.href = `/editarobra/${obra.id}`)}
 											>
-												Editar
+												<Icon name="pencil" className="w-5 h-5" />
 											</button>
 											<button
-												className="bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
+												className="bg-red-500 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
 												onClick={() => (window.location.href = `/eliminarobra/${obra.id}`)}
 											>
-												Eliminar
+												<Icon name="trash" className="w-5 h-5" />
 											</button>
 											<button
-												className="bg-gray-700 hover:bg-gray-800 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-												onClick={() => (window.location.href = `/obra/${obra.id}`)}
+												className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
+												onClick={() => (window.location.href = `/obra/${obra.id}/gestionar`)}
 											>
-												Ver detalle
+												Gestionar
 											</button>
 										</div>
 									</td>
