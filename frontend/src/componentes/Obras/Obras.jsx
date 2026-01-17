@@ -1,12 +1,22 @@
 import { useState } from "react";
 import Icon from "../Icons/Icons";
+import ComentariosModal from "./ComentariosModal";
 
-const obras = [{"id":1,"nro_obra":1001,"detalle":"comitente SAN CRISTOBAL SANTA FE - Baño accesible + sobretecho planta alta","estado":"Pedida para Cotizar","grupos": ["Stizza", "Parroni"],"direccion":"Calle Falsa 123, Ciudad", "fecha_visto" : "2023-01-15","fecha_ingreso":"2023-01-15","fecha_programacion_inicio":"2023-02-01","fecha_recepcion_provisoria":"2024-01-15","fecha_recepcion_definitiva":"2024-06-30"}];
+const obras = [{"id":1,"nro_obra":1001,"detalle":"comitente SAN CRISTOBAL SANTA FE - Baño accesible + sobretecho planta alta",
+	"estado":"Pedida para Cotizar","grupos": ["Stizza", "Parroni"],"direccion":"Calle Falsa 123, Ciudad", 
+	"fecha_visto" : "2023-01-15","fecha_ingreso":"2023-01-15","fecha_programacion_inicio":"2023-02-01",
+	"fecha_recepcion_provisoria":"2024-01-15","fecha_recepcion_definitiva":"2024-06-30",
+	"comentarios": [
+		{"id":1, "denominacion": "Revisar planos arquitectónicos", "created_at": "2024-01-10T10:30:00", "obra_id": 1},
+		{"id":2, "denominacion": "Coordinar con el cliente sobre modificaciones", "created_at": "2024-01-12T14:15:00", "obra_id": 1}
+	]
+}];
 // Panel de Obras inspirado en el panel de Empleados
 export default function Obras() {
 
 	const [filtro, setFiltro] = useState("");
 	const [isLoading, setLoading] = useState(false);
+	const [modalComentarios, setModalComentarios] = useState({ isOpen: false, obra: null });
 
 	console.log(obras)
 	if (isLoading) return (
@@ -53,8 +63,21 @@ export default function Obras() {
 		return "bg-gray-300 text-gray-800";
 	};
 
+	const abrirModalComentarios = (obra) => {
+		setModalComentarios({ isOpen: true, obra });
+	};
+
+	const cerrarModalComentarios = () => {
+		setModalComentarios({ isOpen: false, obra: null });
+	};
+
 	return (
 		<>
+		<ComentariosModal
+			isOpen={modalComentarios.isOpen}
+			onClose={cerrarModalComentarios}
+			obra={modalComentarios.obra}
+		/>
 		{!isLoading &&
 		<div className="p-8 bg-gray-100 lg:w-full flex flex-col">
 			
@@ -131,6 +154,12 @@ export default function Obras() {
 												onClick={() => (window.location.href = `/eliminarobra/${obra.id}`)}
 											>
 												<Icon name="trash" className="w-5 h-5" />
+											</button>
+											<button
+												className="border-2 border-black hover:bg-gray-300 py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
+											onClick={() => abrirModalComentarios(obra)}
+											>
+												<Icon name="message" className="w-5 h-5" />
 											</button>
 											<button
 												className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
