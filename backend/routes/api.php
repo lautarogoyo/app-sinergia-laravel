@@ -54,7 +54,11 @@ Route::apiResource('compras_rubro', CompraRubroController::class);
 Route::apiResource('proveedor_rubro_grupo', ProveedorRubroGrupoController::class);
 
 // Pedidos de cotización
-Route::apiResource('obras.pedidos_cotizacion', PedidoCotizacionController::class);
+Route::apiResource(
+    'obras/{obra}/pedidos_cotizacion',
+    PedidoCotizacionController::class
+);
+
 
 //Pedidos_Grupo
 Route::post(
