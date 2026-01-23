@@ -11,11 +11,10 @@ class ComentarioController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Obra $obra)
     {
-        $comentarios = Comentario::with('obra')->get();
         return response()->json([
-            'comentarios' => $comentarios,
+            'comentarios' => $obra->comentarios()->with('obra')->get(),
             'status' => 200
         ], 200);
     }
@@ -36,17 +35,16 @@ class ComentarioController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Comentario $comentario)
+    public function show(Obra $obra, Comentario $comentario)
     {
-        $c = Comentario::with('obra')->find($comentario->id);
-        if (!$c) {
+        if ($comentario->obra_id !== $obra->id) {
             return response()->json([
                 'message' => 'Comentario no encontrado',
                 'status' => 404
             ], 404);
         }
         return response()->json([
-            'comentario' => $c,
+            'comentario' => $comentario->load('obra'),
             'status' => 200
         ], 200);
     }

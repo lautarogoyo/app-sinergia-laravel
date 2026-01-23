@@ -12,7 +12,7 @@ class ObraController extends Controller
     public function index()
     {
         $obras = Obra::with('pedidosCotizacion.grupos', 'ordenCompra', 'comentarios')->get();
-        return response()->json($obras, 200);
+        return response()->json(['obras' => $obras, 'status' => 200]);
     }
 
     /**
@@ -21,7 +21,7 @@ class ObraController extends Controller
     public function store(Request $request)
     {
         $validated = $request -> validate([
-            'nro_obra' => 'required|max:255',
+            'nro_obra' => 'required|max:255|unique:obras,nro_obra',
             'detalle' => 'required|max:255',
             'estado' => 'required|in:pedida,cotizada,enCurso,finalizada',
             'fecha_visto' => 'required|date',
@@ -33,7 +33,7 @@ class ObraController extends Controller
             'detalle_caratula' => 'nullable',
         ]);
         $obra = Obra::create($validated);
-        return response()->json($obra, 201);
+        return response()->json(['obra' => $obra, 'status' => 201], 201);
 
     }
     
@@ -43,8 +43,7 @@ class ObraController extends Controller
     public function show(Obra $obra)
     {
         return response()->json(
-            $obra->load('pedidosCotizacion.grupos', 'comentarios', 'ordenCompra'),
-            200
+            ['obra' => $obra->load('pedidosCotizacion.grupos', 'comentarios', 'ordenCompra'), 'status' => 200]
         );
     }
 
@@ -69,7 +68,11 @@ class ObraController extends Controller
 
         $obra->update($validated);
 
-        return response()->json($obra->load('pedidosCotizacion'), 200);
+        return response()->json(
+        ['obra' => $obra->load('pedidosCotizacion', 'comentarios', 'ordenCompra'), 'status' => 200]
+        );
+
+
     }
 
     /**
@@ -79,7 +82,7 @@ class ObraController extends Controller
     {
         $obra->delete();
 
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Obra eliminada exitosamente', 'status' => 200]);
     }
         
 }

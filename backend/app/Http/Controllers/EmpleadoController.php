@@ -27,52 +27,36 @@ class EmpleadoController extends Controller
         ], 201);
     }
 
-    public function show($id)
+    public function show(Empleado $empleado)
     {
-        $empleado = Empleado::with(['documentaciones.tipoDocumento', 'grupo'])->find($id);
-        if (!$empleado) {
-            return response()->json([
-                'message' => 'Empleado no encontrado',
-                'status' => 404
-            ], 404);
-        }
+        $empleado->load(['documentaciones.tipoDocumento', 'grupo']);
+
         return response()->json([
             'empleado' => $empleado,
             'status' => 200
-        ], 200);
+        ]);
     }
 
-    public function destroy($id)
+
+    public function destroy(Empleado $empleado)
     {
-        $empleado = Empleado::find($id);
-        if (!$empleado) {
-            return response()->json([
-                'message' => 'Empleado no encontrado',
-                'status' => 404
-            ], 404);
-        }
         $empleado->delete();
+
         return response()->json([
             'message' => 'Empleado eliminado',
             'status' => 200
-        ], 200);
+        ]);
     }
 
-    public function update(StoreEmpleadoRequest $request, $id)
-    {
-        $empleado = Empleado::find($id);
-        if (!$empleado) {
-            return response()->json([
-                'message' => 'Empleado no encontrado',
-                'status' => 404
-            ], 404);
-        }
 
+    public function update(StoreEmpleadoRequest $request, Empleado $empleado)
+    {
         $empleado->update($request->validated());
+
         return response()->json([
             'message' => 'Empleado actualizado',
             'empleado' => $empleado,
             'status' => 200
-        ], 200);
+        ]);
     }
 }

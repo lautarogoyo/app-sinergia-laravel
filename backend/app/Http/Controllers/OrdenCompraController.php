@@ -43,26 +43,21 @@ class OrdenCompraController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(OrdenCompra $ordenCompra, Obra $obra)
+    public function show(Obra $obra, OrdenCompra $ordenCompra)
     {
         if ($ordenCompra->obra_id !== $obra->id) {
             return response()->json([
-                'message' => 'Esta orden de compra no pertenece a esta obra',
-                'status' => 404
-            ], 404);
+                'message' => 'Esta orden no pertenece a la obra',
+                'status' => 403
+            ], 403);
         }
-        $orden = OrdenCompra::with('obra')->find($ordenCompra->id);
-        if (!$orden) {
-            return response()->json([
-                'message' => 'Orden no encontrada',
-                'status' => 404
-            ], 404);
-        }
+
         return response()->json([
-            'orden' => $orden,
+            'orden' => $ordenCompra->load('obra'),
             'status' => 200
-        ], 200);
+        ]);
     }
+
 
     /**
      * Update the specified resource in storage.

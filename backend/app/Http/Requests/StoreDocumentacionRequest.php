@@ -22,7 +22,10 @@ class StoreDocumentacionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'tipo_documento_id' => 'required|exists:tipo_documentos,id',
+            'archivo'           => 'required|file|max:10240',
+            'fecha_vencimiento' => 'required|date',
+            'estado'            => 'required|in:vigente,vencido'
         ];
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Documentacion;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Empleado;
 use App\Http\Requests\StoreDocumentacionRequest;
@@ -31,9 +30,12 @@ class DocumentacionController extends Controller
 
         $file = $request->file('archivo');
 
-        $path = $file->store('documentos', 'public');
+        $data['path'] = $path;
+        $data['mime'] = $file->getClientMimeType();
+        $data['size'] = $file->getSize();
 
         $documentacion = $empleado->documentaciones()->create($data);
+
 
         return response()->json([
             'documentacion' => $documentacion,
@@ -44,44 +46,52 @@ class DocumentacionController extends Controller
 
 
     public function show(Empleado $empleado, Documentacion $documentacion)
-    {
-        $documentacion->load(['tipoDocumento', 'empleado']);
+        {
+            if ($documentacion->empleado_id !== $empleado->id) {
+                return response()->json([
+                    'message' => 'La documentación no pertenece a este empleado',
+                    'status' => 403
+                ], 403);
+            }
 
-        if (!$documentacion) {
             return response()->json([
-                'message' => 'Documentación no encontrada',
-                'status' => 404
-            ], 404);
+                'documentacion' => $documentacion->load('tipoDocumento'),
+                'status' => 200
+            ]);
         }
 
-        return response()->json([
-            'documentacion' => $documentacion,
-            'status' => 200
-        ], 200);
-    }
 
     public function destroy(Empleado $empleado, Documentacion $documentacion)
     {
-        $documentacion = Documentacion::find($documentacion->id);
-        if (!$documentacion) {
+        if ($documentacion->empleado_id !== $empleado->id) {
             return response()->json([
-                'message' => 'Documentación no encontrada',
-                'status' => 404
-            ], 404);
+                'message' => 'La documentación no pertenece a este empleado',
+                'status' => 403
+            ], 403);
         }
-        // borrar archivo físico
+
         if ($documentacion->path) {
             Storage::disk('public')->delete($documentacion->path);
         }
+
         $documentacion->delete();
+
         return response()->json([
             'message' => 'Documentación eliminada',
             'status' => 200
-        ], 200);
+        ]);
     }
+
 
     public function update(StoreDocumentacionRequest $request, Empleado $empleado, Documentacion $documentacion)
     {
+        if ($documentacion->empleado_id !== $empleado->id) {
+        return response()->json([
+            'message' => 'La documentación no pertenece a este empleado',
+            'status' => 403
+        ], 403);
+        }
+
         // Ya tenés el modelo gracias al Route Model Binding
         $data = $request->validated();
 
