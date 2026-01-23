@@ -56,9 +56,11 @@ export default function Gestionar() {
 	const [estadoActual, setEstadoActual] = useState(obraData.estado);
 	const [pedidosCompra, setPedidosCompra] = useState(obraData.pedidos_compra || []);
 	const [mostrarModalPedido, setMostrarModalPedido] = useState(false);
+	const [mostrarArchivados, setMostrarArchivados] = useState(false);
 	const [pedidoForm, setPedidoForm] = useState({
 		rol: "cotizar",
-		archivo: null,
+		archivo_presupuesto: null,
+		archivo_materiales: null,
 		fecha_pedido: "",
 		fecha_entrega_estimada: "",
 		estado_contratista: "Falta Cargar",
@@ -66,7 +68,7 @@ export default function Gestionar() {
 		estado_registro: "activo",
 		observaciones: "",
 		rubros: [
-			{ id: 1, nombre: "Rubro demo", proveedoresText: "Proveedor Demo" }
+			{ id: 1, nombre: "Rubro demo", proveedor: "Proveedor Demo", contratista: "" }
 		]
 	});
 	const { register, handleSubmit, watch, control, setValue, formState: { errors } } = useForm({
@@ -91,6 +93,10 @@ export default function Gestionar() {
 			if (confirmar) {
 				setEstadoActual(nuevoEstado);
 				setValue("estado", nuevoEstado);
+				if (nuevoEstado === "Cotizada") {
+					setValue("estado_cotizacion", "pasada");
+					setValue("estado_comparativa", "pasado");
+				}
 			} else {
 				// Revertir el cambio
 				e.target.value = estadoActual;
@@ -99,13 +105,23 @@ export default function Gestionar() {
 	};
 
 	const handleActualizarEstadoPedido = (id, nuevoEstado) => {
-		setPedidosCompra((prev) => prev.map((p) => (p.id === id ? { ...p, estado: nuevoEstado } : p)));
+		setPedidosCompra((prev) => prev.map((p) => {
+			if (p.id === id) {
+				const actualizado = { ...p, estado: nuevoEstado };
+				if (nuevoEstado === "Recibido") {
+					actualizado.estado_registro = "archivado";
+				}
+				return actualizado;
+			}
+			return p;
+		}));
 	};
 
 	const abrirModalPedido = () => {
 		setPedidoForm({
 			rol: "cotizar",
-			archivo: null,
+			archivo_presupuesto: null,
+			archivo_materiales: null,
 			fecha_pedido: new Date().toISOString().slice(0, 10),
 			fecha_entrega_estimada: "",
 			estado_contratista: "Falta Cargar",
@@ -113,7 +129,7 @@ export default function Gestionar() {
 			estado_registro: "activo",
 			observaciones: "",
 			rubros: [
-				{ id: Date.now(), nombre: "", proveedoresText: "" }
+				{ id: Date.now(), nombre: "", proveedor: "", contratista: "" }
 			]
 		});
 		setMostrarModalPedido(true);
@@ -125,14 +141,12 @@ export default function Gestionar() {
 		setPedidoForm((prev) => ({ ...prev, [field]: value }));
 	};
 
-	const actualizarArchivo = (file) => {
-		setPedidoForm((prev) => ({ ...prev, archivo: file }));
-	};
+	// Archivos se manejan con actualizarPedidoCampo("archivo_*", file)
 
 	const agregarRubro = () => {
 		setPedidoForm((prev) => ({
 			...prev,
-			rubros: [...prev.rubros, { id: Date.now(), nombre: "", proveedoresText: "" }]
+			rubros: [...prev.rubros, { id: Date.now(), nombre: "", proveedor: "", contratista: "" }]
 		}));
 	};
 
@@ -153,16 +167,15 @@ export default function Gestionar() {
 	const handleGuardarPedido = () => {
 		const rubrosNormalizados = pedidoForm.rubros.map((r) => ({
 			nombre: r.nombre?.trim() || "Sin nombre",
-			proveedores: (r.proveedoresText || "")
-				.split(",")
-				.map((p) => p.trim())
-				.filter(Boolean)
+			proveedor: r.proveedor?.trim() || "",
+			contratista: r.contratista?.trim() || ""
 		}));
 
 		const nuevo = {
 			id: Date.now(),
 			rol: pedidoForm.rol,
-			archivo_presupuesto: pedidoForm.archivo ? pedidoForm.archivo.name : null,
+			archivo_presupuesto: pedidoForm.archivo_presupuesto ? pedidoForm.archivo_presupuesto.name : null,
+			archivo_materiales: pedidoForm.archivo_materiales ? pedidoForm.archivo_materiales.name : null,
 			fecha_pedido: pedidoForm.fecha_pedido || new Date().toISOString().slice(0, 10),
 			fecha_entrega_estimada: pedidoForm.fecha_entrega_estimada || "-",
 			estado_contratista: pedidoForm.estado_contratista,
@@ -170,7 +183,7 @@ export default function Gestionar() {
 			estado_registro: pedidoForm.estado_registro,
 			observaciones: pedidoForm.observaciones,
 			total: "$ -",
-			proveedor: rubrosNormalizados[0]?.proveedores?.[0] || "Proveedor sin definir",
+			proveedor: rubrosNormalizados[0]?.proveedor || "Proveedor sin definir",
 			rubros: rubrosNormalizados,
 		};
 
@@ -280,6 +293,19 @@ export default function Gestionar() {
 					<div className="mb-8">
 						<div className="flex items-center justify-between mb-3">
 							<h3 className="text-xl font-semibold text-gray-900">Pedidos de compra</h3>
+						<div className="flex items-center gap-2">
+							<button
+								type="button"
+								onClick={() => setMostrarArchivados(!mostrarArchivados)}
+								className={`flex items-center gap-2 px-3 py-2 text-sm font-semibold rounded-md border border-gray-200 ${
+									mostrarArchivados 
+										? 'bg-blue-100 hover:bg-blue-200 text-blue-700' 
+										: 'bg-gray-100 hover:bg-gray-200'
+								}`}
+								title={mostrarArchivados ? "Ocultar archivados" : "Mostrar archivados"}
+							>
+								<Icon name="archive" className="w-4 h-4" />
+							</button>
 							<button
 								type="button"
 								onClick={abrirModalPedido}
@@ -289,10 +315,11 @@ export default function Gestionar() {
 								Nuevo pedido
 							</button>
 						</div>
+					</div>
 
-						{pedidosCompra.length > 0 ? (
+					{pedidosCompra.filter(p => mostrarArchivados ? p.estado_registro === "archivado" : p.estado_registro !== "archivado").length > 0 ? (
 							<div className="space-y-3">
-								{pedidosCompra.map((pedido) => (
+							{pedidosCompra.filter(p => mostrarArchivados ? p.estado_registro === "archivado" : p.estado_registro !== "archivado").map((pedido) => (
 									<div
 										key={pedido.id}
 										className="border border-gray-200 rounded-lg p-4 flex flex-col gap-2 bg-gray-50"
@@ -334,7 +361,7 @@ export default function Gestionar() {
 								))}
 							</div>
 						) : (
-							<p className="text-sm text-gray-500">No hay pedidos de compra</p>
+							<p className="text-sm text-gray-500">{mostrarArchivados ? "No hay pedidos archivados" : "No hay pedidos de compra activos"}</p>
 						)}
 					</div>
 
@@ -392,11 +419,23 @@ export default function Gestionar() {
 								<label className="block text-sm font-semibold text-gray-700 mb-1">Archivo de presupuesto</label>
 								<input
 									type="file"
-									onChange={(e) => actualizarArchivo(e.target.files?.[0] || null)}
+									onChange={(e) => actualizarPedidoCampo("archivo_presupuesto", e.target.files?.[0] || null)}
 									className="w-full"
 								/>
-								{pedidoForm.archivo?.name && (
-									<p className="text-xs text-gray-600 mt-1">Archivo seleccionado: {pedidoForm.archivo.name}</p>
+								{pedidoForm.archivo_presupuesto?.name && (
+									<p className="text-xs text-gray-600 mt-1">Archivo seleccionado: {pedidoForm.archivo_presupuesto.name}</p>
+								)}
+							</div>
+
+							<div className="md:col-span-2">
+								<label className="block text-sm font-semibold text-gray-700 mb-1">Archivo de materiales</label>
+								<input
+									type="file"
+									onChange={(e) => actualizarPedidoCampo("archivo_materiales", e.target.files?.[0] || null)}
+									className="w-full"
+								/>
+								{pedidoForm.archivo_materiales?.name && (
+									<p className="text-xs text-gray-600 mt-1">Archivo seleccionado: {pedidoForm.archivo_materiales.name}</p>
 								)}
 							</div>
 
@@ -496,13 +535,23 @@ export default function Gestionar() {
 													/>
 												</div>
 												<div className="flex-1">
-													<label className="block text-xs font-semibold text-gray-700 mb-1">Proveedores (separados por coma)</label>
+													<label className="block text-xs font-semibold text-gray-700 mb-1">Proveedor</label>
 													<input
 														type="text"
-														value={rubro.proveedoresText}
-														onChange={(e) => actualizarRubro(rubro.id, "proveedoresText", e.target.value)}
+														value={rubro.proveedor}
+														onChange={(e) => actualizarRubro(rubro.id, "proveedor", e.target.value)}
 														className="w-full border border-gray-300 rounded-md px-3 py-2"
-														placeholder="Ej: Proveedor A, Proveedor B"
+														placeholder="Ej: Proveedor A"
+													/>
+												</div>
+												<div className="flex-1">
+													<label className="block text-xs font-semibold text-gray-700 mb-1">Contratista</label>
+													<input
+														type="text"
+														value={rubro.contratista}
+														onChange={(e) => actualizarRubro(rubro.id, "contratista", e.target.value)}
+														className="w-full border border-gray-300 rounded-md px-3 py-2"
+														placeholder="Ej: Contratista X"
 													/>
 												</div>
 											</div>
