@@ -6,6 +6,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Models\Comentario;
+use App\Models\PedidoCotizacion;
+use App\Models\Grupo;
+use App\Models\OrdenCompra;
+use App\Models\PedidoCompra;
+
 
 class Obra extends Model
 {
@@ -46,6 +53,18 @@ class Obra extends Model
     public function pedidosCotizacion () : HasMany
     {
         return $this->hasMany(PedidoCotizacion::class);
+    }
+
+    public function grupos() : BelongsToMany
+    {
+        return $this->belongsToMany(Grupo::class,'obra_grupo',
+            'obra_id',
+            'grupo_id')->withTimestamps();
+    }
+
+    public function pedidoCompra() : HasMany
+    {
+        return $this->hasMany(PedidoCompra::class);
     }
 }
 

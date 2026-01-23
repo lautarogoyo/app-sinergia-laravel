@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Models\Usuario;
+use App\Models\Rubro;
 
 class Proveedor extends Model
 {
@@ -26,14 +29,21 @@ class Proveedor extends Model
     
     protected $casts = [
         'fecha_ingreso' => 'date',
-    ];
+        'monotributista' => 'boolean',
+        ];
     public function usuario() : BelongsTo
     {
         return $this->belongsTo(Usuario::class);
     }
 
-    public function proveedor_rubro_grupo() : HasMany
+    public function rubros() : BelongsToMany
     {
-        return $this->hasMany(Proveedor_Rubro_Grupo::class);
+        return $this->belongsToMany(
+            Rubro::class,
+            'rubro_proveedor',
+            'proveedor_id',
+            'rubro_id'
+        )->withTimestamps();
     }
+
 }

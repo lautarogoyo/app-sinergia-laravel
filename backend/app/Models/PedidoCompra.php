@@ -5,8 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Models\Rubro;
+use App\Models\Obra;
 
-class Pedido_Compra extends Model
+
+class PedidoCompra extends Model
 {
     /** @use HasFactory<\Database\Factories\PedidoCompraFactory> */
     use HasFactory;
@@ -27,14 +32,16 @@ class Pedido_Compra extends Model
         'fecha_entrega_estimada' => 'date',
     ];
 
-    public function compraRubros() : hasMany
+    public function rubros() : BelongsToMany
     {
-        return $this->hasMany(Compra_Rubro::class);
+        return $this->belongsToMany(Rubro::class, 'compra_rubro',
+            'pedido_id',
+            'rubro_id')->withTimestamps();
     }
 
-    public function obraAdjudicada() : hasMany
+    public function obra() : BelongsTo
     {
-        return $this->hasMany(Obra_Adjudicada::class);
+        return $this->belongsTo(Obra::class);
     }
 
 }

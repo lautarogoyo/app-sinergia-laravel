@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Models\PedidoCompra;
+use App\Models\Proveedor;
+use App\Models\Grupo;
 
 class Rubro extends Model
 {
@@ -15,13 +19,30 @@ class Rubro extends Model
         'descripcion'
     ];
 
-    public function compraRubros() : HasMany
+    public function pedidosCompra() : BelongsToMany
     {
-        return $this->hasMany(Compra_Rubro::class);
+        return $this->belongsToMany(PedidoCompra::class, 'compra_rubro',
+            'rubro_id',
+            'pedido_id')->withTimestamps();
     }
 
-    public function proveedor_rubro_grupo() : HasMany
+    public function proveedores() : BelongsToMany
     {
-        return $this->hasMany(Proveedor_Rubro_Grupo::class);
+        return $this->belongsToMany(
+            Proveedor::class,
+            'rubro_proveedor',
+            'rubro_id',
+            'proveedor_id'
+        )->withTimestamps();
+    }
+
+    public function grupos() : BelongsToMany
+    {
+        return $this->belongsToMany(
+            Grupo::class,
+            'rubro_grupo',
+            'rubro_id',
+            'grupo_id'
+        )->withTimestamps();
     }
 }

@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Models\Empleado;
+use App\Models\Obra;
+use App\Models\Rubro;
 
 class Grupo extends Model
 {
@@ -20,15 +23,20 @@ class Grupo extends Model
         return $this->hasMany(Empleado::class);
     }
 
-    public function pedido_cotizacion() : BelongsToMany
+    public function obras() : BelongsToMany
     {
-        return $this->belongsToMany(PedidoCotizacion::class,'pedido_grupo',
+        return $this->belongsToMany(Obra::class,'obra_grupo',
             'grupo_id',
-            'pedido_id')->withTimestamps();
+            'obra_id')->withTimestamps();
     }
 
-    public function proveedor_rubro_grupo() : hasMany
+    public function rubros() : BelongsToMany
     {
-        return $this->hasMany(ProveedorRubroGrupo::class);
+        return $this->belongsToMany(
+            Rubro::class,
+            'rubro_grupo',
+            'grupo_id',
+            'rubro_id'
+        )->withTimestamps();
     }
 }
