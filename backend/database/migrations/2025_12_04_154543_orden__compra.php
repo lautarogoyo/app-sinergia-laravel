@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('ordenes_compra', function (Blueprint $table) {
             $table->id();
+            $table->string('detalle');
             $table->date('fecha_inicio_orden_compra');
             $table->date('fecha_fin_orden_compra');
             $table->unsignedBigInteger('obra_id');

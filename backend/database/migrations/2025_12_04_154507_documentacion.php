@@ -29,9 +29,9 @@ return new class extends Migration
             });
         }
 
-        if (Schema::hasTable('tipo_documentos')) {
+        if (Schema::hasTable('tipos_documento')) {
             Schema::table('documentaciones', function (Blueprint $table) {
-                $table->foreign('id_tipoDocumento')->references('id')->on('tipo_documentos')->onUpdate('cascade')->onDelete('restrict');
+                $table->foreign('id_tipoDocumento')->references('id')->on('tipos_documento')->onUpdate('cascade')->onDelete('restrict');
             });
         }
     }

@@ -11,22 +11,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rubro_proveedor', function (Blueprint $table) {
+        Schema::create('rubro_grupo', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('proveedor_id')
-                ->constrained('proveedores')
-                ->restrictOnDelete();
 
             $table->foreignId('rubro_id')
                 ->constrained('rubros')
                 ->restrictOnDelete();
+
+            $table->foreignId('grupo_id')
+                ->constrained('grupos')
+                ->restrictOnDelete();
+
+            $table->unique(['rubro_id', 'grupo_id']);
+
             $table->timestamps();
-
-            // Evita duplicados
-            $table->unique(['proveedor_id', 'rubro_id']);
         });
-
     }
 
     /**
@@ -34,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rubro_proveedor');
+        Schema::dropIfExists('rubro_grupo');
     }
 };
