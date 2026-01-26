@@ -14,18 +14,25 @@ return new class extends Migration
         Schema::create('rubro_grupo', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('rubro_id')
-                ->constrained('rubros')
-                ->restrictOnDelete();
-
-            $table->foreignId('grupo_id')
-                ->constrained('grupos')
-                ->restrictOnDelete();
+            $table->unsignedBigInteger('rubro_id');
+            $table->unsignedBigInteger('grupo_id');
 
             $table->unique(['rubro_id', 'grupo_id']);
 
             $table->timestamps();
         });
+
+        if (Schema::hasTable('rubros')) {
+            Schema::table('rubro_grupo', function (Blueprint $table) {
+                $table->foreign('rubro_id')->references('id')->on('rubros')->onUpdate('cascade')->onDelete('restrict');
+            });
+        }
+
+        if (Schema::hasTable('grupos')) {
+            Schema::table('rubro_grupo', function (Blueprint $table) {
+                $table->foreign('grupo_id')->references('id')->on('grupos')->onUpdate('cascade')->onDelete('restrict');
+            });
+        }
     }
 
     /**

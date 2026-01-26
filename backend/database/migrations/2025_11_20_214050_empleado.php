@@ -20,10 +20,15 @@ return new class extends Migration
                 $table->string('alias')->nullable();
                 $table->enum('estado', ['activo', 'inactivo'])->default('activo');
                 $table->unsignedBigInteger('grupo_id')->nullable();
-                $table->foreign('grupo_id')->references('id')->on('grupos')->onUpdate('cascade')->onDelete('restrict');
                 $table->timestamps();
                 $table->softDeletes();
             });
+
+            if (Schema::hasTable('grupos')) {
+                Schema::table('empleados', function (Blueprint $table) {
+                    $table->foreign('grupo_id')->references('id')->on('grupos')->onUpdate('cascade')->onDelete('restrict');
+                });
+            }
     }
 
     /**

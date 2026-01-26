@@ -13,19 +13,25 @@ return new class extends Migration
     {
         Schema::create('rubro_proveedor', function (Blueprint $table) {
             $table->id();
-
-            $table->foreignId('proveedor_id')
-                ->constrained('proveedores')
-                ->restrictOnDelete();
-
-            $table->foreignId('rubro_id')
-                ->constrained('rubros')
-                ->restrictOnDelete();
+            $table->unsignedBigInteger('proveedor_id');
+            $table->unsignedBigInteger('rubro_id');
             $table->timestamps();
 
             // Evita duplicados
             $table->unique(['proveedor_id', 'rubro_id']);
         });
+
+        if (Schema::hasTable('proveedores')) {
+            Schema::table('rubro_proveedor', function (Blueprint $table) {
+                $table->foreign('proveedor_id')->references('id')->on('proveedores')->onUpdate('cascade')->onDelete('restrict');
+            });
+        }
+
+        if (Schema::hasTable('rubros')) {
+            Schema::table('rubro_proveedor', function (Blueprint $table) {
+                $table->foreign('rubro_id')->references('id')->on('rubros')->onUpdate('cascade')->onDelete('restrict');
+            });
+        }
 
     }
 

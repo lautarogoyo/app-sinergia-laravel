@@ -13,15 +13,23 @@ return new class extends Migration
     {
         Schema::create('obra_grupo', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('obra_id')
-                ->constrained('obras')
-                ->restrictOnDelete();
-            $table->foreignId('grupo_id')
-                ->constrained('grupos')
-                ->restrictOnDelete();
+            $table->unsignedBigInteger('obra_id');
+            $table->unsignedBigInteger('grupo_id');
             $table->unique(['obra_id', 'grupo_id']);
             $table->timestamps();
         });
+
+        if (Schema::hasTable('obras')) {
+            Schema::table('obra_grupo', function (Blueprint $table) {
+                $table->foreign('obra_id')->references('id')->on('obras')->onUpdate('cascade')->onDelete('restrict');
+            });
+        }
+
+        if (Schema::hasTable('grupos')) {
+            Schema::table('obra_grupo', function (Blueprint $table) {
+                $table->foreign('grupo_id')->references('id')->on('grupos')->onUpdate('cascade')->onDelete('restrict');
+            });
+        }
     }
 
     /**
