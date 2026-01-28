@@ -27,7 +27,7 @@ export default function EditDocument() {
                         doc.id === docId
                                                         ? {
                                                                         ...doc,
-                                                                        id_tipoDocumento: value,
+                                                                        tipo_documento_id: value,
                                                                         hasChanges: true
                                                                 }
                             : doc
@@ -90,8 +90,8 @@ export default function EditDocument() {
             return;
         }
         const formData = new FormData();
-            formData.append("id_empleado", String(id));
-            formData.append("id_tipoDocumento", String(newTipo));
+            formData.append("empleado_id", String(id));
+            formData.append("tipo_documento_id", String(newTipo));
         formData.append("estado", "vigente");
             formData.append("archivo", newFile);
         createMutation.mutate(formData);
@@ -110,15 +110,15 @@ export default function EditDocument() {
         try {
             await Promise.all(changes.map(doc => {
                 const formData = new FormData();
-                const tipoId = doc.id_tipoDocumento ?? doc.tipo_documento?.id;
+                const tipoId = doc.tipo_documento_id ?? doc.tipo_documento?.id;
 
                 if (!id || !tipoId) {
                     console.error('Faltan campos requeridos:', { id, tipoId, docId: doc.id });
                     throw new Error('Faltan campos requeridos');
                 }
 
-                formData.append('id_empleado', String(id));
-                formData.append('id_tipoDocumento', String(tipoId));
+                formData.append('empleado_id', String(id));
+                formData.append('tipo_documento_id', String(tipoId));
                 formData.append('estado', 'vigente');
 
                 if (doc.newFile) formData.append('archivo', doc.newFile);
@@ -185,7 +185,7 @@ export default function EditDocument() {
                                     <select
                                         className="shadow border rounded py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-orange-400"
                                         id="tipo_documento.id"
-                                        value={(doc.id_tipoDocumento ?? doc.tipo_documento?.id ?? "")?.toString?.() ?? ""}
+                                        value={(doc.tipo_documento_id ?? doc.tipo_documento?.id ?? "")?.toString?.() ?? ""}
                                         onChange={e => handleTipoDocumentoChange(doc.id, e.target.value)}
                                         required
                                     >

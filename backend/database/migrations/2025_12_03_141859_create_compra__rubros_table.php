@@ -13,28 +13,28 @@ return new class extends Migration
     {
         Schema::create('compra_rubro', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_rubro')->nullable();
-            $table->unsignedBigInteger('id_pedido_compra')->nullable();
-            $table->unsignedBigInteger('id_proveedor')->nullable();
+            $table->unsignedBigInteger('rubro_id')->nullable();
+            $table->unsignedBigInteger('pedido_compra_id')->nullable();
+            $table->unsignedBigInteger('proveedor_id')->nullable();
             $table->string('path_material')->nullable();
             $table->timestamps();
         });
 
         if (Schema::hasTable('rubros')) {
             Schema::table('compra_rubro', function (Blueprint $table) {
-                $table->foreign('id_rubro')->references('id')->on('rubros')->onUpdate('cascade')->onDelete('restrict');
+                $table->foreign('rubro_id')->references('id')->on('rubros')->onUpdate('cascade')->onDelete('restrict');
             });
         }
 
         if (Schema::hasTable('pedido_compra')) {
             Schema::table('compra_rubro', function (Blueprint $table) {
-                $table->foreign('id_pedido_compra')->references('id')->on('pedido_compra')->onUpdate('cascade')->onDelete('restrict');
+                $table->foreign('pedido_compra_id')->references('id')->on('pedido_compra')->onUpdate('cascade')->onDelete('restrict');
             });
         }
 
         if (Schema::hasTable('proveedores')) {
             Schema::table('compra_rubro', function (Blueprint $table) {
-                $table->foreign('id_proveedor')->references('id')->on('proveedores')->onUpdate('cascade')->onDelete('restrict');
+                $table->foreign('proveedor_id')->references('id')->on('proveedores')->onUpdate('cascade')->onDelete('restrict');
             });
         }
     }

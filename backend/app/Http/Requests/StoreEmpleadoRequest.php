@@ -11,7 +11,7 @@ class StoreEmpleadoRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,9 +25,9 @@ class StoreEmpleadoRequest extends FormRequest
             'nombre' => 'required|max:255',
             'apellido' => 'required|max:255',
             'telefono' => 'required|digits:10',
-            'cbu' => 'nullable|maxdigits:22',
+            'cbu' => 'nullable|max_digits:22',
             'alias' => 'nullable|max:30',
-            'estado' => 'required|in:activo,inactivo,cancelado',
+            'estado' => 'required|in:activo,inactivo',
             'grupo_id' => 'nullable|exists:grupos,id'
         ];
     }

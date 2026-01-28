@@ -18,20 +18,20 @@ return new class extends Migration
             $table->string('estado')->nullable();
             $table->string('mime')->nullable();
             $table->bigInteger('size')->nullable();
-            $table->unsignedBigInteger('id_empleado')->nullable();
-            $table->unsignedBigInteger('id_tipoDocumento')->nullable();
+            $table->unsignedBigInteger('empleado_id')->nullable();
+            $table->unsignedBigInteger('tipo_documento_id')->nullable();
             $table->timestamps();
         });
 
         if (Schema::hasTable('empleados')) {
             Schema::table('documentaciones', function (Blueprint $table) {
-                $table->foreign('id_empleado')->references('id')->on('empleados')->onUpdate('cascade')->onDelete('restrict');
+                $table->foreign('empleado_id')->references('id')->on('empleados')->onUpdate('cascade')->onDelete('restrict');
             });
         }
 
         if (Schema::hasTable('tipos_documento')) {
             Schema::table('documentaciones', function (Blueprint $table) {
-                $table->foreign('id_tipoDocumento')->references('id')->on('tipos_documento')->onUpdate('cascade')->onDelete('restrict');
+                $table->foreign('tipo_documento_id')->references('id')->on('tipos_documento')->onUpdate('cascade')->onDelete('restrict');
             });
         }
     }

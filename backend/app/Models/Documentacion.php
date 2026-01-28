@@ -22,6 +22,8 @@ class Documentacion extends Model
         'estado',
         'mime',              // opcional si lo agregás en la migración
         'size',
+        'empleado_id',
+        'tipo_documento_id'
     ];
 
     protected $casts = [
