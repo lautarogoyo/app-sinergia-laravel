@@ -24,7 +24,7 @@ class GrupoController extends Controller
      */
     public function store(Request $request)
     {
-       Grupo::create($request->only('denominacion'));
+       $grupo = Grupo::create($request->only('denominacion'));
 
         return response()->json([
             'message' => 'Grupo creado exitosamente',

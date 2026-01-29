@@ -21,7 +21,12 @@ use App\Http\Controllers\ObraAdjudicadaController;
 
 Route::apiResource('empleados', EmpleadoController::class);
 
-Route::apiResource('empleados/{empleado}/documentaciones', DocumentacionController::class);
+Route::apiResource('grupos', GrupoController::class);
+
+
+Route::apiResource('empleados/{empleado}/documentaciones', DocumentacionController::class)->parameters([
+    'documentaciones' => 'documentacion'
+]);
 
 Route::apiResource('tipos_documento', TipoDocumentoController::class);
 
