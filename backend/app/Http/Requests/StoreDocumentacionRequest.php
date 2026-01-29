@@ -11,7 +11,7 @@ class StoreDocumentacionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,11 +21,13 @@ class StoreDocumentacionRequest extends FormRequest
      */
     public function rules(): array
     {
+        $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
+
         return [
-            'tipo_documento_id' => 'required|exists:tipo_documentos,id',
-            'archivo'           => 'required|file|max:10240',
-            'fecha_vencimiento' => 'required|date',
-            'estado'            => 'required|in:vigente,vencido'
+            'tipo_documento_id' => $isUpdate ? 'sometimes|exists:tipos_documento,id' : 'required|exists:tipos_documento,id',
+            'archivo'           => $isUpdate ? 'nullable|file|max:10240' : 'required|file|max:10240',
+            'fecha_vencimiento' => 'nullable|date',
+            'estado'            => $isUpdate ? 'nullable|in:vigente,vencido' : 'required|in:vigente,vencido'
         ];
     }
 }

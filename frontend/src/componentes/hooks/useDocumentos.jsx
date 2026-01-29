@@ -1,11 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchEmpleadoDocumentaciones } from '../api/documentos.js';
 
-export const useDocumentos = (id) => {
+export const useDocumentos = (empleadoId) => {
   return useQuery({
-    queryKey: ['empleado', id],
-    queryFn: () => fetchEmpleadoDocumentaciones(id),
-    enabled: !!id,
-    refetchOnWindowFocus: false,
+    queryKey: ['documentaciones', empleadoId],
+    queryFn: () => fetchEmpleadoDocumentaciones(empleadoId),
+    enabled: !!empleadoId,
   });
 };
+

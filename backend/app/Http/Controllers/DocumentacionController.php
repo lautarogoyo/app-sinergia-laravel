@@ -27,12 +27,13 @@ class DocumentacionController extends Controller
                 'message' => 'El archivo es obligatorio'
             ], 422);
         }
-
         $file = $request->file('archivo');
+        $path = $file->store('documentos', 'public');
 
         $data['path'] = $path;
         $data['mime'] = $file->getClientMimeType();
         $data['size'] = $file->getSize();
+
 
         $documentacion = $empleado->documentaciones()->create($data);
 

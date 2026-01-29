@@ -2,19 +2,42 @@ import axios from "axios";
 const backendUrl = import.meta.env.VITE_API_URL;
 
 
-export const fetchEmpleadoDocumentaciones = async (id) => {
-    const { data } = await axios.get(`${backendUrl}/api/empleados/${id}`);
-    return data.empleado;
+export const fetchEmpleadoDocumentaciones = async (empleadoId) => {
+  const { data } = await axios.get(
+    `${backendUrl}/api/empleados/${empleadoId}/documentaciones`
+  );
+  return data.documentaciones;
 };
 
-export const updateDocumentacionAPI = async (id, formData) => {
-    // Laravel processes file uploads on POST; use method override for PUT
-    formData.append("_method", "PUT");
-    const { data } = await axios.post(`${backendUrl}/api/documentaciones/${id}`, formData);
-    return data;
+
+export const updateDocumentacionAPI = async (
+  empleadoId,
+  documentacionId,
+  formData
+) => {
+  formData.append("_method", "PUT");
+
+  const { data } = await axios.post(
+    `${backendUrl}/api/empleados/${empleadoId}/documentaciones/${documentacionId}`,
+    formData
+  );
+
+  return data;
 };
 
-export const createDocumentacionAPI = async (formData) => {
-    const { data } = await axios.post(`${backendUrl}/api/documentaciones`, formData);
-    return data;
+export const createDocumentacionAPI = async (empleadoId, formData) => {
+  const { data } = await axios.post(
+    `${backendUrl}/api/empleados/${empleadoId}/documentaciones`,
+    formData
+  );
+  return data;
+};
+
+
+
+export const deleteDocumentacionAPI = async (empleadoId, documentacionId) => {
+  const { data } = await axios.delete(
+    `${backendUrl}/api/empleados/${empleadoId}/documentaciones/${documentacionId}`
+  );
+  return data;
 };
