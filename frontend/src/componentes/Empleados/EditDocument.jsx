@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEmpleadoById } from "../hooks/useEmpleados.jsx";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  updateDocumentacionAPI,
-  createDocumentacionAPI,
-} from "../api/documentos.js";
+  useCreateDocumentacion,
+  useUpdateDocumentacion,
+  useDeleteDocumentacion
+} from "../hooks/useDocumentaciones.jsx";
 
 export default function EditDocument() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
   const [exit, setExit] = useState(false);
   const [documentaciones, setDocumentaciones] = useState([]);
@@ -62,29 +61,9 @@ export default function EditDocument() {
   };
 
   /* ---------- MUTATIONS ---------- */
-  const updateMutation = useMutation({
-    mutationFn: ({ empleadoId, docId, formData }) =>
-      updateDocumentacionAPI(empleadoId, docId, formData),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["documentaciones", id]);
-    },
-  });
-
-  const createMutation = useMutation({
-    mutationFn: ({ empleadoId, formData }) =>
-      createDocumentacionAPI(empleadoId, formData),
-    onSuccess: () => {
-      queryClient.invalidateQueries(["documentaciones", id]);
-      setFile(false);
-      setNewFile(null);
-      setNewTipo("");
-      setNewFecha("");
-    },
-    onError: (error) => {
-      console.error(error.response?.data);
-      alert("Error al crear documentación");
-    },
-  });
+  const updateMutation = useUpdateDocumentacion(id);
+  const createMutation = useCreateDocumentacion(id);
+  const deleteMutation = useDeleteDocumentacion(id);
 
   /* ---------- CREATE ---------- */
   const handleAgregarNuevo = () => {
@@ -99,9 +78,34 @@ export default function EditDocument() {
     formData.append("fecha_vencimiento", newFecha);
     formData.append("archivo", newFile);
 
-    createMutation.mutate({
-      empleadoId: id,
-      formData,
+    createMutation.mutate(formData, {
+      onSuccess: () => {
+        setFile(false);
+        setNewFile(null);
+        setNewTipo("");
+        setNewFecha("");
+      },
+      onError: (error) => {
+        console.error(error.response?.data);
+        alert("Error al crear documentación");
+      }
+    });
+  };
+
+  /* ---------- DELETE ---------- */
+  const handleEliminar = (docId) => {
+    if (!confirm("¿Estás seguro de eliminar este documento?")) {
+      return;
+    }
+
+    deleteMutation.mutate(docId, {
+      onSuccess: () => {
+        alert("Documento eliminado");
+      },
+      onError: (error) => {
+        console.error(error.response?.data);
+        alert("Error al eliminar documentación");
+      }
     });
   };
 
@@ -139,7 +143,6 @@ export default function EditDocument() {
           }
 
           return updateMutation.mutateAsync({
-            empleadoId: id,
             docId: doc.id,
             formData,
           });
@@ -157,7 +160,29 @@ export default function EditDocument() {
 
   /* ---------- UI ---------- */
   if (isLoadingEmpleado) {
-    return <div className="p-10">Cargando empleado...</div>;
+    return (
+     <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
+      <div className="relative">
+        
+        {/* Texto de carga */}
+        <div className="mt-8 text-center">
+          <h2 className="text-3xl font-bold text-white mb-4 animate-pulse">Cargando Documento</h2>
+          
+          {/* Barra de progreso */}
+          <div className="w-80 h-3 bg-gray-700 rounded-full overflow-hidden shadow-lg">
+            <div className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-full animate-loading-bar"></div>
+          </div>
+          
+          {/* Puntos animados */}
+          <div className="mt-4 flex justify-center gap-2">
+            <span className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></span>
+            <span className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></span>
+            <span className="w-3 h-3 bg-blue-300 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    );
   }
 
   if (isError) {
@@ -165,10 +190,10 @@ export default function EditDocument() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen py-8 px-8">
+      <div className="w-full max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             Documentaciones de {empleado?.nombre} {empleado?.apellido}
           </h1>
@@ -186,11 +211,20 @@ export default function EditDocument() {
             documentaciones.map(doc => (
               <div
                 key={doc.id}
-                className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500"
+                className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500 relative"
               >
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                {/* Botón Eliminar */}
+                <button
+                  onClick={() => handleEliminar(doc.id)}
+                  className="absolute top-4 right-4 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md transition duration-200 text-sm"
+                  disabled={deleteMutation.isPending}
+                >
+                  {deleteMutation.isPending ? "Eliminando..." : "Eliminar"}
+                </button>
+
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-end">
                   {/* Tipo de Documento */}
-                  <div>
+                  <div className="lg:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Tipo de Documento
                     </label>
@@ -213,7 +247,7 @@ export default function EditDocument() {
                   </div>
 
                   {/* Fecha Vencimiento */}
-                  <div>
+                  <div className="lg:col-span-1">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Fecha Vencimiento
                     </label>
@@ -232,7 +266,7 @@ export default function EditDocument() {
                   </div>
 
                   {/* Archivo */}
-                  <div className="md:col-span-2">
+                  <div className="lg:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Reemplazar Archivo
                     </label>
@@ -256,7 +290,7 @@ export default function EditDocument() {
         </div>
 
         {/* Nuevo Documento */}
-        <div className="mb-8">
+        <div className="mb-6">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">Agregar Nuevo Documento</h2>
           
           {!file ? (
@@ -267,8 +301,8 @@ export default function EditDocument() {
               <span className="text-xl">+</span> Nuevo Documento
             </button>
           ) : (
-            <div className="bg-white rounded-lg shadow-md p-8 border-2 border-green-500">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white rounded-lg shadow-md p-6 border-2 border-green-500">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Tipo Documento */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -306,7 +340,7 @@ export default function EditDocument() {
                 </div>
 
                 {/* Archivo */}
-                <div className="md:col-span-2">
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Archivo *
                   </label>
