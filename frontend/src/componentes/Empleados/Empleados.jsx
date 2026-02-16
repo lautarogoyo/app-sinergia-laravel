@@ -126,7 +126,7 @@ export default function Empleados() {
                           <div 
                             key={doc.id} 
                             className={`${clases} rounded px-2 py-1 mb-3 text-[17px] shadow font-bold hover:bg-opacity-80 cursor-pointer relative group`} 
-                            onClick={() => window.open(`${backendUrl}/storage/${doc.path}`, '_blank')}
+                            onClick={() => window.open(`${backendUrl}/api/empleados/${empleado.id}/documentaciones/${doc.id}/download`, '_blank')}
                             title={mensaje}
                           >
                             {doc.tipo_documento.descripcion.toUpperCase()}

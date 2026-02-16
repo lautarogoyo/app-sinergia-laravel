@@ -38,8 +38,8 @@ class Documentacion extends Model
         if (!$this->path) {
             return null;
         }
-        // Si usás otro disk (ej. s3), cambiá 'public' por el que corresponda
-        return Storage::disk('public')->url($this->path);
+        // Usar la ruta de descarga en lugar del URL directo
+        return '/api/empleados/' . $this->empleado_id . '/documentaciones/' . $this->id . '/download';
     }
 
     // Relaciones

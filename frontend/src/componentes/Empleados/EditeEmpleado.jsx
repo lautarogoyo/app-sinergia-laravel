@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEmpleadoById } from "../hooks/useEmpleados.jsx";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UpdateEmpleado } from "../api/empleados.js";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import {useEffect } from "react";
 import { useGrupos } from "../hooks/useGrupos.jsx";
 
@@ -11,9 +11,18 @@ export default function EditeEmpleado() {
     const { id } = useParams();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    const {register, handleSubmit, reset} = useForm();
+    const {register, handleSubmit, reset, control, watch} = useForm({
+        defaultValues: {
+            nombre: "",
+            apellido: "",
+            telefono: "",
+            estado: "activo",
+            grupo_id: "",
+        }
+    });
     const {data : empleado, isLoading} = useEmpleadoById(id);
     const {data: grupos = [], isLoading : isLoadingGrupo} = useGrupos();
+    
     useEffect(() => {
         if (empleado) {
             reset({
@@ -21,10 +30,10 @@ export default function EditeEmpleado() {
                 apellido: empleado.apellido,
                 telefono: empleado.telefono,
                 estado: empleado.estado,
-                id_grupo: empleado.grupo?.id, 
+                grupo_id: empleado.grupo?.id || "", 
             });
     }
-    }, [empleado,grupos,reset]);
+    }, [empleado, reset]);
     console.log (empleado);
     const {mutate} = useMutation({
         mutationFn: (data) => UpdateEmpleado(id, data),
@@ -42,7 +51,7 @@ export default function EditeEmpleado() {
     });
     return (
         <>
-        {isLoadingGrupo && 
+        {(isLoading || isLoadingGrupo) && 
         <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
             <div className="relative">
             
@@ -91,23 +100,27 @@ export default function EditeEmpleado() {
                     />
                 </div>
                 <div className="mb-4 ">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="id_grupo">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="grupo_id">
                         Grupo (opcional)
                     </label>
-                    <select
-                        id="id_grupo"
-                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        {...register("id_grupo", {
-                        setValueAs: v => (v === "" ? null : Number(v)),
-                        })}
-                    >
-                        <option value="">Sin grupo</option>
-                        {grupos.map((g) => (
-                        <option key={g.id} value={g.id}>
-                            {g.denominacion}
-                        </option>
-                        ))}
-                    </select>
+                    <Controller
+                        name="grupo_id"
+                        control={control}
+                        render={({ field }) => (
+                            <select
+                                {...field}
+                                id="grupo_id"
+                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            >
+                                <option value="">Sin grupo</option>
+                                {grupos.map((g) => (
+                                <option key={g.id} value={g.id}>
+                                    {g.denominacion}
+                                </option>
+                                ))}
+                            </select>
+                        )}
+                    />
                 </div>
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="telefono">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Documentacion;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Models\Empleado;
 use App\Http\Requests\StoreDocumentacionRequest;
 
@@ -28,7 +29,8 @@ class DocumentacionController extends Controller
             ], 422);
         }
         $file = $request->file('archivo');
-        $path = $file->store('documentos', 'public');
+        $filename = Str::random(32) . '.' . $file->getClientOriginalExtension();
+        $path = Storage::disk('public')->putFileAs('documentos', $file, $filename);
 
         $data['path'] = $path;
         $data['mime'] = $file->getClientMimeType();
@@ -105,7 +107,8 @@ class DocumentacionController extends Controller
 
             // Guardar nuevo archivo
             $file = $request->file('archivo');
-            $path = $file->store('documentos', 'public');
+            $filename = Str::random(32) . '.' . $file->getClientOriginalExtension();
+            $path = Storage::disk('public')->putFileAs('documentos', $file, $filename);
 
             // Setear nuevos datos del archivo
             $data['path'] = $path;
@@ -121,5 +124,24 @@ class DocumentacionController extends Controller
             'documentacion' => $documentacion,
             'status' => 200
         ], 200);
+    }
+
+    public function download(Empleado $empleado, Documentacion $documentacion)
+    {
+        if ($documentacion->empleado_id !== $empleado->id) {
+            return response()->json([
+                'message' => 'La documentación no pertenece a este empleado',
+                'status' => 403
+            ], 403);
+        }
+
+        if (!Storage::disk('public')->exists($documentacion->path)) {
+            return response()->json([
+                'message' => 'El archivo no existe',
+                'status' => 404
+            ], 404);
+        }
+
+        return Storage::disk('public')->download($documentacion->path);
     }
 }

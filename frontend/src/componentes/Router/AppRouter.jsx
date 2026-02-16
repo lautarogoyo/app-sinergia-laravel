@@ -6,6 +6,8 @@ import EditeEmpleado from "../Empleados/EditeEmpleado.jsx";
 import RemoveEmpleado from "../Empleados/RemoveEmpleado.jsx";
 import EditDocument from "../Empleados/EditDocument.jsx";
 import Obras from "../Obras/Obras.jsx";
+import CreateObra from "../Obras/CreateObra.jsx";
+import EditObra from "../Obras/EditObra.jsx";
 import Grupos from "../Grupos/Grupos.jsx";
 import CreateGrupo from "../Grupos/CreateGrupo.jsx";
 import EditGrupo from "../Grupos/EditGrupo.jsx";
@@ -18,6 +20,8 @@ function AppRouter() {
             <Route path="/home" element={<Home />} />
             <Route path="/empleados" element={<Empleados />} />
             <Route path="/obras" element={<Obras />} />
+            <Route path="/crear-obra" element={<CreateObra />} />
+            <Route path="/editarobra/:id" element={<EditObra />} />
             <Route path="/grupos" element={<Grupos />} />
             <Route path="/crear-empleado" element={<CreateEmpleado />} />
             <Route path="/editarempleado/:id" element={<EditeEmpleado />} />
