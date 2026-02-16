@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Icon from "../Icons/Icons";
 import ComentariosModal from "./ComentariosModal";
 import { useObras } from "../hooks/useObras.jsx";
+import { DeleteObra } from "../api/obras.js";
 
 // Panel de Obras inspirado en el panel de Empleados
 export default function Obras() {
@@ -10,7 +12,25 @@ export default function Obras() {
 	const [filtro, setFiltro] = useState("");
 	const [modalComentarios, setModalComentarios] = useState({ isOpen: false, obra: null });
 	const { data: obrasData = [], isLoading: isLoadingObras } = useObras();
-	
+	const queryClient = useQueryClient();
+
+	const deleteMutation = useMutation({
+		mutationFn: (id) => DeleteObra(id),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["obras"] });
+		},
+		onError: (error) => {
+			console.error("Error al eliminar obra:", error);
+			alert("Error al eliminar la obra");
+		}
+	});
+
+	const handleEliminarObra = (obra) => {
+		if (confirm(`¿Está seguro de eliminar la Obra #${obra.nro_obra}?`)) {
+			deleteMutation.mutate(obra.id);
+		}
+	};
+
 	// Función para formatear fechas a dd/mm/yy
 	const formatearFecha = (fecha) => {
 		if (!fecha) return "-";
@@ -173,8 +193,9 @@ export default function Obras() {
 												<Icon name="pencil" className="w-5 h-5" />
 											</button>
 											<button
-												className="bg-red-500 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-												onClick={() => navigate(`/eliminarobra/${obra.id}`)}
+												className="bg-red-500 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer disabled:opacity-50"
+												onClick={() => handleEliminarObra(obra)}
+												disabled={deleteMutation.isPending}
 											>
 												<Icon name="trash" className="w-5 h-5" />
 											</button>
