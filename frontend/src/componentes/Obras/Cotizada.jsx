@@ -1,9 +1,9 @@
 import { useState } from "react";
 import Icon from "../Icons/Icons";
 
+const backendUrl = import.meta.env.VITE_API_URL;
+
 export default function Cotizada({ obraData, register, watch }) {
-	const [archivoLocal, setArchivoLocal] = useState(null);
-	const [archivoManoObraLocal, setArchivoManoObraLocal] = useState(null);
 
 	const handleDescargar = (nombreArchivo, rutaArchivo) => {
 		const link = document.createElement('a');
@@ -18,43 +18,12 @@ export default function Cotizada({ obraData, register, watch }) {
 		window.open(rutaArchivo, '_blank');
 	};
 
-	const handleAgregarArchivoCotizacion = () => {
-		const input = document.getElementById('input-archivo-cotizacion');
-		input?.click();
-	};
-
-	const handleAgregarArchivoManoObra = () => {
-		const input = document.getElementById('input-archivo-mano-obra');
-		input?.click();
-	};
-
-	const handleArchivoSeleccionado = (event) => {
-		const archivo = event.target.files[0];
-		if (archivo) {
-			setArchivoLocal(archivo);
-		}
-	};
-
-	const handleArchivoManoObraSeleccionado = (event) => {
-		const archivo = event.target.files[0];
-		if (archivo) {
-			setArchivoManoObraLocal(archivo);
-		}
-	};
-
-	const handleVerPreviaLocal = (archivo) => {
-		if (!archivo) return;
-		const url = URL.createObjectURL(archivo);
-		window.open(url, '_blank');
-		setTimeout(() => URL.revokeObjectURL(url), 1000);
-	};
-
 	const estadoCotizacionValue = watch("estado_cotizacion");
 
 
 	const renderGrupos = () => {
 		if (!obraData.grupos || obraData.grupos.length === 0) return "Sin grupos asignados";
-		return obraData.grupos.map(grupo => grupo.nombre).join(", ");
+		return obraData.grupos.map(grupo => grupo.denominacion).join(", ");
 	};
 
 	return (
@@ -89,7 +58,7 @@ export default function Cotizada({ obraData, register, watch }) {
 									key={grupo.id}
 									className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg font-semibold text-sm border-2 border-blue-300"
 								>
-									{grupo.nombre}
+									{grupo.denominacion}
 								</div>
 							))
 						) : (
@@ -148,12 +117,12 @@ export default function Cotizada({ obraData, register, watch }) {
 					<label className="block text-sm font-medium text-gray-700 mb-2">Cotización de la Obra</label>
 					
 					<div className="space-y-2">
-						{obraData.pedido_cotizacion?.path_archivo && (
+						{obraData.pedido_cotizacion?.path_archivo_cotizacion && (
 							<div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-md">
 								<div className="flex items-center gap-2">
 									<div>
 										<p className="text-sm font-medium text-gray-900">
-											{obraData.pedido_cotizacion.path_archivo.split('/').pop()}
+											{obraData.pedido_cotizacion.path_archivo_cotizacion.split('/').pop()}
 										</p>
 										<p className="text-xs text-gray-500">Archivo actual</p>
 									</div>
@@ -161,7 +130,7 @@ export default function Cotizada({ obraData, register, watch }) {
 								<div className="flex gap-2">
 									<button
 										type="button"
-										onClick={() => handleVerPrevia(obraData.pedido_cotizacion.path_archivo)}
+										onClick={() => handleVerPrevia(`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo_cotizacion}`)}
 										className="text-blue-600 hover:text-blue-800 p-1"
 										title="Ver previsualización"
 									>
@@ -170,8 +139,8 @@ export default function Cotizada({ obraData, register, watch }) {
 									<button
 										type="button"
 										onClick={() => handleDescargar(
-											obraData.pedido_cotizacion.path_archivo.split('/').pop(),
-											obraData.pedido_cotizacion.path_archivo
+											obraData.pedido_cotizacion.path_archivo_cotizacion.split('/').pop(),
+											`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo_cotizacion}`
 										)}
 										className="text-blue-600 hover:text-blue-800 p-1"
 										title="Descargar"
@@ -181,51 +150,18 @@ export default function Cotizada({ obraData, register, watch }) {
 								</div>
 							</div>
 						)}
-						{archivoLocal && (
-							<div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-md">
-								<div className="flex items-center gap-2">
-									<div>
-										<p className="text-sm font-medium text-gray-900">{archivoLocal.name}</p>
-										<p className="text-xs text-gray-500">Nuevo archivo</p>
-									</div>
-								</div>
-								<div className="flex gap-2">
-									<button
-										type="button"
-										onClick={() => handleVerPreviaLocal(archivoLocal)}
-										className="text-blue-600 hover:text-blue-800"
-										title="Ver previsualización"
-									>
-										<Icon name="eye" className="w-5 h-5" />
-									</button>
-									<button
-										type="button"
-										onClick={() => setArchivoLocal(null)}
-										className="text-red-600 hover:text-red-800"
-										title="Remover"
-									>
-										<Icon name="trash" className="w-5 h-5" />
-									</button>
-								</div>
-							</div>
-						)}
-						<button
-							type="button"
-							onClick={handleAgregarArchivoCotizacion}
-							className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
-						>
-							<Icon name="plus" className="w-4 h-4" />
-							{archivoLocal ? "Cambiar archivo" : "Agregar archivo"}
-						</button>
-						<input
-							id="input-archivo-cotizacion"
-							type="file"
-							className="hidden"
-							onChange={handleArchivoSeleccionado}
-							accept=".pdf,.doc,.docx"
-						/>
+						<div>
+							<label className="block text-xs text-gray-500 mb-1">Subir nuevo archivo de cotización</label>
+							<input
+								type="file"
+								{...register("archivo_cotizacion")}
+								className="w-full px-4 py-2 border border-gray-300 rounded-md"
+							/>
+						</div>
 					</div>
 				</div>
+
+				{/* Archivo de Mano de Obra */}
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">Cotización Mano de Obra</label>
 					
@@ -243,7 +179,7 @@ export default function Cotizada({ obraData, register, watch }) {
 								<div className="flex gap-2">
 									<button
 										type="button"
-										onClick={() => handleVerPrevia(obraData.pedido_cotizacion.path_archivo_mano_obra)}
+										onClick={() => handleVerPrevia(`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo_mano_obra}`)}
 										className="text-blue-600 hover:text-blue-800 p-1"
 										title="Ver previsualización"
 									>
@@ -253,7 +189,7 @@ export default function Cotizada({ obraData, register, watch }) {
 										type="button"
 										onClick={() => handleDescargar(
 											obraData.pedido_cotizacion.path_archivo_mano_obra.split('/').pop(),
-											obraData.pedido_cotizacion.path_archivo_mano_obra
+											`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo_mano_obra}`
 										)}
 										className="text-blue-600 hover:text-blue-800 p-1"
 										title="Descargar"
@@ -263,49 +199,14 @@ export default function Cotizada({ obraData, register, watch }) {
 								</div>
 							</div>
 						)}
-						{archivoManoObraLocal && (
-							<div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-md">
-								<div className="flex items-center gap-2">
-									<div>
-										<p className="text-sm font-medium text-gray-900">{archivoManoObraLocal.name}</p>
-										<p className="text-xs text-gray-500">Nuevo archivo</p>
-									</div>
-								</div>
-								<div className="flex gap-2">
-									<button
-										type="button"
-										onClick={() => handleVerPreviaLocal(archivoManoObraLocal)}
-										className="text-blue-600 hover:text-blue-800"
-										title="Ver previsualización"
-									>
-										<Icon name="eye" className="w-5 h-5" />
-									</button>
-									<button
-										type="button"
-										onClick={() => setArchivoManoObraLocal(null)}
-										className="text-red-600 hover:text-red-800"
-										title="Remover"
-									>
-										<Icon name="trash" className="w-5 h-5" />
-									</button>
-								</div>
-							</div>
-						)}
-						<button
-							type="button"
-							onClick={handleAgregarArchivoManoObra}
-							className="w-full px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
-						>
-							<Icon name="plus" className="w-4 h-4" />
-							{archivoLocal ? "Cambiar archivo" : "Agregar archivo"}
-						</button>
-						<input
-							id="input-archivo-mano-obra"
-							type="file"
-							className="hidden"
-							onChange={handleArchivoManoObraSeleccionado}
-							accept=".pdf,.doc,.docx"
-						/>
+						<div>
+							<label className="block text-xs text-gray-500 mb-1">Subir nuevo archivo de mano de obra</label>
+							<input
+								type="file"
+								{...register("archivo_mano_obra")}
+								className="w-full px-4 py-2 border border-gray-300 rounded-md"
+							/>
+						</div>
 					</div>
 				</div>
 			</div>

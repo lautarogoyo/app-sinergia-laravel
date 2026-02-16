@@ -11,7 +11,7 @@ class UpdatePedidoCompraRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,6 +24,7 @@ class UpdatePedidoCompraRequest extends FormRequest
         return [
             'rol' => 'sometimes|required|string|max:255',
             'archivo' => 'sometimes|file|max:10240',
+            'archivo_material' => 'sometimes|file|max:10240',
             'fecha_pedido' => 'sometimes|required|date',
             'fecha_entrega_estimada' => 'sometimes|nullable|date',
             'estado_contratista' => 'sometimes|nullable|string|max:50',

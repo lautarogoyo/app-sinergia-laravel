@@ -44,7 +44,7 @@ export default function Finalizada({ obraData }) {
 								key={grupo.id}
 								className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg font-semibold text-sm border-2 border-blue-300"
 							>
-								{grupo.nombre}
+								{grupo.denominacion}
 							</div>
 						))
 					) : (
@@ -102,37 +102,37 @@ export default function Finalizada({ obraData }) {
                 <div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">Carátula</label>
 					<div className="px-4 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-900">
-						{obraData.caratula || "Sin información"}
+						{obraData.caratula || obraData.detalle_caratula || "Sin información"}
 					</div>
 				</div>
                 <div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">Fecha Inicio Orden de Compra</label>
 					<div className="px-4 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-900">
-						{obraData.orden_compra?.fecha_inicio_oc || "Sin información"}
+						{obraData.orden_compra?.fecha_inicio_orden_compra?.split("T")[0] || "Sin información"}
 					</div>
 				</div>
                 <div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">Fecha Fin Orden de Compra</label>
 					<div className="px-4 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-900">
-						{obraData.orden_compra?.fecha_fin_oc || "Sin información"}
+						{obraData.orden_compra?.fecha_fin_orden_compra?.split("T")[0] || "Sin información"}
 					</div>
 				</div>
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">Fecha Programada de Inicio</label>
 					<div className="px-4 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-900">
-						{obraData.fecha_programacion_inicio || "Sin información"}
+						{obraData.fecha_programacion_inicio?.split("T")[0] || "Sin información"}
 					</div>
 				</div>
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">Fecha Recepción Provisoria</label>
 					<div className="px-4 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-900">
-						{obraData.fecha_recepcion_provisoria || "Sin información"}
+						{obraData.fecha_recepcion_provisoria?.split("T")[0] || "Sin información"}
 					</div>
 				</div>
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">Fecha Recepción Definitiva</label>
 					<div className="px-4 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-900">
-						{obraData.fecha_recepcion_definitiva || "Sin información"}
+						{obraData.fecha_recepcion_definitiva?.split("T")[0] || "Sin información"}
 					</div>
 				</div>
 			</div>

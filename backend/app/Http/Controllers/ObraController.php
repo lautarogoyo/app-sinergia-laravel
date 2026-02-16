@@ -11,7 +11,7 @@ class ObraController extends Controller
     */
     public function index()
     {
-        $obras = Obra::with('grupos', 'pedidosCotizacion', 'ordenCompra', 'comentarios')->get();
+        $obras = Obra::with('grupos', 'pedidosCotizacion', 'ordenCompra', 'comentarios', 'pedidoCompra')->get();
         return response()->json(['obras' => $obras, 'status' => 200]);
     }
 
@@ -55,7 +55,7 @@ class ObraController extends Controller
     public function show(Obra $obra)
     {
         return response()->json(
-            ['obra' => $obra->load('grupos', 'pedidosCotizacion', 'comentarios', 'ordenCompra'), 'status' => 200]
+            ['obra' => $obra->load('grupos', 'pedidosCotizacion', 'comentarios', 'ordenCompra', 'pedidoCompra'), 'status' => 200]
         );
     }
 
@@ -80,20 +80,22 @@ class ObraController extends Controller
         ]);
 
         // Separar grupo_id del resto de campos
-        $grupo_ids = $validated['grupo_id'] ?? [];
+        $grupo_ids = $validated['grupo_id'] ?? null;
         unset($validated['grupo_id']);
 
         $obra->update($validated);
 
-        // Actualizar la relación muchos-a-muchos
-        if (!empty($grupo_ids)) {
-            $obra->grupos()->sync($grupo_ids);
-        } else {
-            $obra->grupos()->detach();
+        // Solo actualizar la relación muchos-a-muchos si se envió grupo_id explícitamente
+        if ($request->has('grupo_id')) {
+            if (!empty($grupo_ids)) {
+                $obra->grupos()->sync($grupo_ids);
+            } else {
+                $obra->grupos()->detach();
+            }
         }
 
         return response()->json(
-            ['obra' => $obra->load('grupos', 'pedidosCotizacion', 'comentarios', 'ordenCompra'), 'status' => 200]
+            ['obra' => $obra->load('grupos', 'pedidosCotizacion', 'comentarios', 'ordenCompra', 'pedidoCompra'), 'status' => 200]
         );
     }
 

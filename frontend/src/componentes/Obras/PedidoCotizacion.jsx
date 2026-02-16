@@ -48,7 +48,7 @@ export default function PedidoCotizacion({ obraData, register, watch, tabActiva,
                                                     key={grupo.id}
                                                     className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg font-semibold text-sm border-2 border-blue-300"
                                                 >
-                                                    {grupo.nombre}
+                                                    {grupo.denominacion}
                                                 </div>
                                             ))
                                         ) : (
@@ -59,18 +59,40 @@ export default function PedidoCotizacion({ obraData, register, watch, tabActiva,
                     <div className="bg-white rounded-lg border border-gray-200 p-6">
                         <div className="grid grid-cols-2 gap-6 mb-6">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Archivo</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Archivo de cotización</label>
                                 <input
                                     type="file"
-                                    {...register("path_archivo")}
+                                    {...register("archivo_cotizacion")}
                                     className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                                    readOnly
                                 />
-                                {obraData.orden_compra?.path_archivo && (
-                                <p className="text-sm text-gray-500 mt-1">
-                                    Archivo actual: {obraData.orden_compra.path_archivo}
-                                </p>
-					            )}
+                                {obraData.pedido_cotizacion?.path_archivo_cotizacion && (
+                                    <a
+                                        href={`${import.meta.env.VITE_API_URL}/storage/${obraData.pedido_cotizacion.path_archivo_cotizacion}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 underline mt-1"
+                                    >
+                                        📄 {obraData.pedido_cotizacion.path_archivo_cotizacion.split('/').pop()}
+                                    </a>
+                                )}
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">Archivo de mano de obra</label>
+                                <input
+                                    type="file"
+                                    {...register("archivo_mano_obra")}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                                />
+                                {obraData.pedido_cotizacion?.path_archivo_mano_obra && (
+                                    <a
+                                        href={`${import.meta.env.VITE_API_URL}/storage/${obraData.pedido_cotizacion.path_archivo_mano_obra}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 underline mt-1"
+                                    >
+                                        📄 {obraData.pedido_cotizacion.path_archivo_mano_obra.split('/').pop()}
+                                    </a>
+                                )}
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Fecha Cierre Cotizacion</label>
@@ -86,7 +108,7 @@ export default function PedidoCotizacion({ obraData, register, watch, tabActiva,
                                     {...register("estado_cotizacion")}
                                     className="w-48 px-4 py-2 border border-gray-300 rounded-md"
                                 >
-                                    <option value="Debe pasar">Debe pasar</option>
+                                    <option value="debe_pasar">Debe pasar</option>
                                     <option value="pasada">Pasada</option>
                                     <option value="otro">Otro</option>
                                 </select>
@@ -127,7 +149,7 @@ export default function PedidoCotizacion({ obraData, register, watch, tabActiva,
 						</button>
 					</div>
 					<div className="bg-white rounded-lg border border-gray-200">
-						{obraData.archivos.map((archivo) => (
+						{(obraData.archivos || []).length > 0 ? (obraData.archivos || []).map((archivo) => (
 							<div key={archivo.id} className="flex items-center justify-between p-4 border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
 								<div className="flex items-center gap-3">
 									<Icon name="file-text" className="w-6 h-6 text-blue-600" />
@@ -151,7 +173,9 @@ export default function PedidoCotizacion({ obraData, register, watch, tabActiva,
 									</button>
 								</div>
 							</div>
-						))}
+						)) : (
+							<div className="p-4 text-sm text-gray-500">No hay archivos</div>
+						)}
 					</div>
 				</div>
 			)}

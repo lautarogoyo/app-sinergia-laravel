@@ -17,7 +17,8 @@ class PedidoCotizacion extends Model
     protected $table = 'pedidos_cotizacion';
 
     protected $fillable = [
-        'path',
+        'path_archivo_cotizacion',
+        'path_archivo_mano_obra',
         'fecha_cierre_cotizacion',
         'estado_cotizacion',
         'estado_comparativa',

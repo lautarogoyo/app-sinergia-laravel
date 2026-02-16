@@ -11,7 +11,7 @@ class StorePedidoCotizacionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,10 +22,11 @@ class StorePedidoCotizacionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'archivo' => 'required|file|max:10240',
+            'archivo_cotizacion' => 'nullable|file|max:10240',
+            'archivo_mano_obra' => 'nullable|file|max:10240',
             'fecha_cierre_cotizacion' => 'required|date',
-            'estado_cotizacion' => 'required|in:pasada,debePasar,otro',
-            'estado_comparativa' => 'required|in:pasado,hacerPlanilla,noLleva'
+            'estado_cotizacion' => 'required|in:pasada,debe_pasar,otro',
+            'estado_comparativa' => 'required|in:pasado,hacer_planilla,no_lleva'
         ];
     }
 }

@@ -16,6 +16,7 @@ class OrdenCompra extends Model
         'detalle',
         'fecha_inicio_orden_compra',
         'fecha_fin_orden_compra',
+        'obra_id',
     ];
 
     protected $casts = [

@@ -11,7 +11,7 @@ class StorePedidoCompraRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,8 @@ class StorePedidoCompraRequest extends FormRequest
     {
         return [
             'rol' => 'required|string|max:255',
-            'archivo' => 'required|file|max:10240',
+            'archivo' => 'nullable|file|max:10240',
+            'archivo_material' => 'nullable|file|max:10240',
             'fecha_pedido' => 'required|date',
             'fecha_entrega_estimada' => 'nullable|date',
             'estado_contratista' => 'nullable|string|max:50',

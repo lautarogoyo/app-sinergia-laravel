@@ -15,16 +15,18 @@ class PedidoCompra extends Model
 {
     /** @use HasFactory<\Database\Factories\PedidoCompraFactory> */
     use HasFactory;
-    protected $table = 'pedido_compra';
+    protected $table = 'pedidos_compra';
     protected $fillable = [
         'rol',
         'path_presupuesto',
+        'path_material',
         'fecha_pedido',
         'fecha_entrega_estimada',
         'estado_contratista',
         'estado_pedido',
         'estado',
         'observaciones',
+        'obra_id',
     ];
 
     protected $casts = [

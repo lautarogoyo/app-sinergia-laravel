@@ -62,10 +62,10 @@ class OrdenCompraController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, OrdenCompra $ordenCompra, Obra $obra)
+    public function update(Request $request, Obra $obra, OrdenCompra $ordenesCompra)
     {
         
-        if ($ordenCompra->obra_id !== $obra->id) {
+        if ($ordenesCompra->obra_id !== $obra->id) {
             return response () ->json([
                 'message' => 'Esta orden de compra no pertenece a esta obra',
                 'status' => 403
@@ -78,10 +78,10 @@ class OrdenCompraController extends Controller
             'fecha_fin_orden_compra' => 'nullable|date',
         ]);
 
-        $ordenCompra->update($validated);
+        $ordenesCompra->update($validated);
 
         return response()->json([
-            'orden' => $ordenCompra->load('obra'),
+            'orden' => $ordenesCompra->load('obra'),
             'message' => 'Orden actualizada',
             'status' => 200
         ], 200);
@@ -90,16 +90,16 @@ class OrdenCompraController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(OrdenCompra $ordenCompra, Obra $obra)
+    public function destroy(Obra $obra, OrdenCompra $ordenesCompra)
     {
-        if ($ordenCompra->obra_id !== $obra->id) {
+        if ($ordenesCompra->obra_id !== $obra->id) {
             return response()->json([
                 'message' => 'Orden no encontrada',
                 'status' => 404
             ], 404);
         }
 
-        $ordenCompra->delete();
+        $ordenesCompra->delete();
         
         return response()->json([
             'message' => 'Orden eliminada',

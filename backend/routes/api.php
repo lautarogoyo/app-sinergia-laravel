@@ -57,16 +57,19 @@ Route::apiResource('usuarios', UsuarioController::class);
 
 
 // Compra rubros
-Route::apiResource('compras_rubro', CompraRubroController::class);
+// Route::apiResource('compras_rubro', CompraRubroController::class); // TODO: Crear CompraRubroController
+
+// Pedidos de compra
+Route::apiResource('pedidos_compra', PedidoCompraController::class)->parameters(['pedidos_compra' => 'pedido']);
 
 // Proveedor rubro grupo
-Route::apiResource('proveedor_rubro_grupo', ProveedorRubroGrupoController::class);
+// Route::apiResource('proveedor_rubro_grupo', ProveedorRubroGrupoController::class); // TODO: Crear ProveedorRubroGrupoController
 
 // Pedidos de cotización
 Route::apiResource(
     'obras/{obra}/pedidos_cotizacion',
     PedidoCotizacionController::class
-);
+)->parameters(['pedidos_cotizacion' => 'pedido']);
 
 
 //Pedidos_Grupo

@@ -31,11 +31,18 @@ class PedidoCompraController extends Controller
     {
         $data = $request->validated();
 
-        // Archivo obligatorio
-        $file = $request->file('archivo');
-        $data['path_presupuesto'] = $file->store('presupuestos', 'public');
-        $data['mime'] = $file->getClientMimeType();
-        $data['size'] = $file->getSize();
+        if ($request->hasFile('archivo')) {
+            $file = $request->file('archivo');
+            $data['path_presupuesto'] = $file->storeAs('presupuestos', $file->getClientOriginalName(), 'public');
+        }
+
+        if ($request->hasFile('archivo_material')) {
+            $file = $request->file('archivo_material');
+            $data['path_material'] = $file->storeAs('materiales', $file->getClientOriginalName(), 'public');
+        }
+
+        // Quitar campos de archivo del array ya que no son columnas de la tabla
+        unset($data['archivo'], $data['archivo_material']);
 
         $pedido = PedidoCompra::create($data);
 
@@ -66,19 +73,29 @@ class PedidoCompraController extends Controller
     {
         $data = $request->validated();
 
-        // Si viene nuevo archivo
+        // Si viene nuevo archivo de presupuesto
         if ($request->hasFile('archivo')) {
-
             // borrar archivo anterior
             if ($pedido->path_presupuesto) {
                 Storage::disk('public')->delete($pedido->path_presupuesto);
             }
 
             $file = $request->file('archivo');
-            $data['path_presupuesto'] = $file->store('presupuestos', 'public');
-            $data['mime'] = $file->getClientMimeType();
-            $data['size'] = $file->getSize();
+            $data['path_presupuesto'] = $file->storeAs('presupuestos', $file->getClientOriginalName(), 'public');
         }
+
+        // Si viene nuevo archivo de material
+        if ($request->hasFile('archivo_material')) {
+            if ($pedido->path_material) {
+                Storage::disk('public')->delete($pedido->path_material);
+            }
+
+            $file = $request->file('archivo_material');
+            $data['path_material'] = $file->storeAs('materiales', $file->getClientOriginalName(), 'public');
+        }
+
+        // Quitar campos de archivo del array ya que no son columnas de la tabla
+        unset($data['archivo'], $data['archivo_material']);
 
         $pedido->update($data);
 
@@ -92,18 +109,14 @@ class PedidoCompraController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(PedidoCompra $pedidoCompra)
+    public function destroy(PedidoCompra $pedido)
     {
-        $pedido = PedidoCompra::find($pedidoCompra->id);
-        if (!$pedido) {
-            return response()->json([
-                'message' => 'Pedido no encontrado',
-                'status' => 404
-            ], 404);
-        }
-        // borrar archivo asociado si existe
+        // borrar archivos asociados si existen
         if ($pedido->path_presupuesto) {
             Storage::disk('public')->delete($pedido->path_presupuesto);
+        }
+        if ($pedido->path_material) {
+            Storage::disk('public')->delete($pedido->path_material);
         }
         $pedido->delete();
         return response()->json([
