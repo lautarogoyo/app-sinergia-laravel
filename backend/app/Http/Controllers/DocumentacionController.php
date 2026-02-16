@@ -29,7 +29,7 @@ class DocumentacionController extends Controller
             ], 422);
         }
         $file = $request->file('archivo');
-        $filename = Str::random(32) . '.' . $file->getClientOriginalExtension();
+        $filename = $file->getClientOriginalName();
         $path = Storage::disk('public')->putFileAs('documentos', $file, $filename);
 
         $data['path'] = $path;
@@ -107,7 +107,7 @@ class DocumentacionController extends Controller
 
             // Guardar nuevo archivo
             $file = $request->file('archivo');
-            $filename = Str::random(32) . '.' . $file->getClientOriginalExtension();
+            $filename = $file->getClientOriginalName();
             $path = Storage::disk('public')->putFileAs('documentos', $file, $filename);
 
             // Setear nuevos datos del archivo
