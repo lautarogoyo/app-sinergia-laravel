@@ -15,7 +15,7 @@ class PedidoCotizacionController extends Controller
      */
     public function index(Obra $obra)
     {
-        $pedidos = $obra->pedidosCotizacion()->with(['grupos','obra'])->get();
+        $pedidos = $obra->pedidosCotizacion()->with(['obra'])->get();
 
         return response()->json([
             'pedidos' => $pedidos,
@@ -37,7 +37,7 @@ class PedidoCotizacionController extends Controller
         $pedido = $obra->pedidosCotizacion()->create($data);
 
         return response()->json([
-            'pedido' => $pedido->load(['grupos','obra']),
+            'pedido' => $pedido->load(['obra']),
             'status' => 201
         ], 201);
     }
@@ -56,7 +56,7 @@ class PedidoCotizacionController extends Controller
         }
 
         return response()->json([
-            'pedido' => $pedido->load(['grupos','obra']),
+            'pedido' => $pedido->load(['obra']),
             'status' => 200
         ]);
     }
@@ -91,7 +91,7 @@ class PedidoCotizacionController extends Controller
         $pedido->update($data);
 
         return response()->json([
-            'pedido' => $pedido->load(['grupos','obra']),
+            'pedido' => $pedido->load(['obra']),
             'status' => 200
         ]);
     }

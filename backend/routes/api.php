@@ -28,6 +28,8 @@ Route::apiResource('empleados/{empleado}/documentaciones', DocumentacionControll
     'documentaciones' => 'documentacion'
 ]);
 
+Route::get('empleados/{empleado}/documentaciones/{documentacion}/download', [DocumentacionController::class, 'download']);
+
 Route::apiResource('tipos_documento', TipoDocumentoController::class);
 
 // Grupos

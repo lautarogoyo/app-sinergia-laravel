@@ -24,7 +24,6 @@ class Obra extends Model
     'detalle',
     'estado',
     'fecha_visto',
-    'direccion',
     'fecha_ingreso',
     'fecha_programacion_inicio',
     'fecha_recepcion_provisoria',
