@@ -17,7 +17,6 @@ return new class extends Migration
             $table->text('detalle');
             $table->enum('estado', ['pedida', 'cotizada', 'enCurso', 'finalizada'])->default('pedida');
             $table->date('fecha_visto');
-            $table->string('direccion');
             $table->date('fecha_ingreso');
             $table->date('fecha_programacion_inicio')->nullable();
             $table->date('fecha_recepcion_provisoria')->nullable();

@@ -143,7 +143,7 @@ export default function EditObra() {
                                 id="estado"
                                 {...register("estado")}
                             >
-                                <option value="pedida">Pedida</option>
+                                <option value="pedida">Pedido de Cotización</option>
                                 <option value="cotizada">Cotizada</option>
                                 <option value="enCurso">En Curso</option>
                                 <option value="finalizada">Finalizada</option>

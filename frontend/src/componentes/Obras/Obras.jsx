@@ -65,13 +65,24 @@ export default function Obras() {
 		);
 	});
 
+	const labelEstado = (estado) => {
+		if (!estado) return "-";
+		const mapa = {
+			pedida: "Pedido de Cotización",
+			cotizada: "Cotizada",
+			encurso: "En Curso",
+			finalizada: "Finalizada",
+		};
+		return mapa[estado.toLowerCase()] || estado;
+	};
+
 	const statusClass = (estado) => {
 		if (!estado) return "bg-gray-300 text-gray-800";
 		const norm = estado.toLowerCase();
-		if (norm === "activa" || norm === "en curso" || norm === "progreso") return "bg-green-500 text-white";
-		if (norm === "pendiente" || norm === "planificada") return "bg-yellow-400 text-gray-900";
-		if (norm === "finalizada" || norm === "cerrada") return "bg-blue-600 text-white";
-		if (norm === "cancelada") return "bg-red-600 text-white";
+		if (norm === "encurso") return "bg-green-500 text-white";
+		if (norm === "pedida") return "bg-yellow-400 text-gray-900";
+		if (norm === "cotizada") return "bg-orange-400 text-white";
+		if (norm === "finalizada") return "bg-blue-600 text-white";
 		return "bg-gray-300 text-gray-800";
 	};
 
@@ -130,7 +141,7 @@ export default function Obras() {
 									<td className="text-left text-lg text-gray-800 px-6 py-4 max-w-xl break-words">{obra.detalle ?? "Sin detalle"}</td>
 									<td className="whitespace-nowrap px-6 py-4">
 										<span className={`px-3 py-1 rounded text-sm font-bold ${statusClass(obra.estado)}`}>
-											{(obra.estado ?? "-").toUpperCase()}
+											{labelEstado(obra.estado).toUpperCase()}
 										</span>
 									</td>
 									<td className="px-6 py-4">

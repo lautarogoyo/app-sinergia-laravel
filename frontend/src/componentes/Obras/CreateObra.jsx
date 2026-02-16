@@ -125,7 +125,7 @@ export default function CreateObra() {
                                 id="estado"
                                 {...register("estado", { required: { value: true, message: "El estado es obligatorio" } })}
                             >
-                                <option value="pedida">Pedida</option>
+                                <option value="pedida">Pedido de Cotización</option>
                                 <option value="cotizada">Cotizada</option>
                                 <option value="enCurso">En Curso</option>
                                 <option value="finalizada">Finalizada</option>
