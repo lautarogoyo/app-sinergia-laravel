@@ -16,6 +16,8 @@ export default function EditeEmpleado() {
             nombre: "",
             apellido: "",
             telefono: "",
+            cbu: "",
+            alias: "",
             estado: "activo",
             grupo_id: "",
         }
@@ -29,6 +31,8 @@ export default function EditeEmpleado() {
                 nombre: empleado.nombre,
                 apellido: empleado.apellido,
                 telefono: empleado.telefono,
+                cbu: empleado.cbu || "",
+                alias: empleado.alias || "",
                 estado: empleado.estado,
                 grupo_id: empleado.grupo?.id || "", 
             });
@@ -131,6 +135,30 @@ export default function EditeEmpleado() {
                         id="telefono"
                         type="text"
                         {...register("telefono", {required: {value:true, message: "El telefono es obligatorio"}})}
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cbu">
+                        CBU
+                    </label>
+                    <input
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        id="cbu"
+                        type="text"
+                        placeholder="Ingrese CBU (opcional)"
+                        {...register("cbu")}
+                    />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="alias">
+                        Alias
+                    </label>
+                    <input
+                        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                        id="alias"
+                        type="text"
+                        placeholder="Ingrese Alias (opcional)"
+                        {...register("alias")}
                     />
                 </div>
                 <div className="mb-4">
