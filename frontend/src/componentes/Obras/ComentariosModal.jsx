@@ -1,28 +1,38 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Icon from "../Icons/Icons";
+import { useComentariosByObra } from "../hooks/useComentarios";
+import { createComentario, deleteComentario } from "../api/comentarios";
 
 export default function ComentariosModal({ isOpen, onClose, obra }) {
-  const [comentarios, setComentarios] = useState(obra?.comentarios || []);
+  const queryClient = useQueryClient();
+  const { data: comentarios = [], isLoading } = useComentariosByObra(obra?.id);
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
+
+  const createMutation = useMutation({
+    mutationFn: createComentario,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["comentarios", obra.id]);
+      reset();
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteComentario,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["comentarios", obra.id]);
+    },
+  });
 
   const onSubmit = (formData) => {
     if (!formData.denominacion.trim()) return;
-
-    const nuevoComentario = {
-      id: Date.now(),
-      denominacion: formData.denominacion,
-      created_at: new Date().toISOString(),
-      obra_id: obra.id
-    };
-
-    setComentarios([...comentarios, nuevoComentario]);
-    reset();
+    createMutation.mutate({ obraId: obra.id, denominacion: formData.denominacion });
   };
 
   const handleEliminar = (comentarioId) => {
     if (confirm("¿Está seguro de que desea eliminar este comentario?")) {
-      setComentarios(comentarios.filter(c => c.id !== comentarioId));
+      deleteMutation.mutate({ obraId: obra.id, comentarioId });
     }
   };
 
@@ -34,7 +44,7 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
         {/* Header */}
         <div className="border-b border-gray-200 px-6 py-4 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900">
-            Comentarios - Obra #{obra.nro_obra++} {obra.detalle}
+            Comentarios - Obra #{obra.nro_obra} - {obra.detalle}
           </h2>
           <button
             onClick={onClose}
@@ -46,7 +56,12 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
-          {comentarios.length > 0 ? (
+          {isLoading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="text-gray-500 mt-2">Cargando comentarios...</p>
+            </div>
+          ) : comentarios.length > 0 ? (
             <div className="space-y-4 mb-6">
               {comentarios.map((comentario) => (
                 <div
@@ -66,6 +81,7 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
                       onClick={() => handleEliminar(comentario.id)}
                       className="text-red-500 hover:text-red-700 transition-colors flex-shrink-0"
                       title="Eliminar comentario"
+                      disabled={deleteMutation.isPending}
                     >
                       <Icon name="trash" className="w-5 h-5" />
                     </button>
@@ -101,9 +117,10 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
               )}
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition-colors flex items-center justify-center gap-2"
+                disabled={createMutation.isPending}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                Agregar Comentario
+                {createMutation.isPending ? "Guardando..." : "Agregar Comentario"}
               </button>
             </form>
           </div>

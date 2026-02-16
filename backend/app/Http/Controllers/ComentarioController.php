@@ -62,7 +62,7 @@ class ComentarioController extends Controller
         }
 
         $validated = $request->validate([
-            'denominacion' => 'required|string|max:1000',
+            'denominacion' => 'required|string',
         ]);
 
         $comentario->update($validated);
