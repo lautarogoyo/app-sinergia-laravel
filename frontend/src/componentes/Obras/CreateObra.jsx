@@ -15,7 +15,7 @@ export default function CreateObra() {
         return hoy.toISOString().split('T')[0];
     };
     
-    const { register, handleSubmit, reset } = useForm({
+    const { register, handleSubmit } = useForm({
         defaultValues: {
             nro_obra: "",
             detalle: "",

@@ -9,7 +9,7 @@ export default function Obras() {
 	const navigate = useNavigate();
 	const [filtro, setFiltro] = useState("");
 	const [modalComentarios, setModalComentarios] = useState({ isOpen: false, obra: null });
-	const { data: obrasData = [], isLoading: isLoadingObras, isError } = useObras();
+	const { data: obrasData = [], isLoading: isLoadingObras } = useObras();
 	
 	// Función para formatear fechas a dd/mm/yy
 	const formatearFecha = (fecha) => {
