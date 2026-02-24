@@ -32,6 +32,9 @@ class StorePedidoCompraRequest extends FormRequest
             'estado' => 'nullable|string|max:50',
             'observaciones' => 'nullable|string',
             'obra_id' => 'required|exists:obras,id',
+            'grupo_id' => 'nullable|exists:grupos,id',
+            'proveedores' => 'nullable|array',
+            'proveedores.*' => 'string|max:255',
         ];
     }
 }

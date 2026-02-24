@@ -19,9 +19,10 @@ return new class extends Migration
             $table->enum('estado_cotizacion', ['pasada', 'debe_pasar', 'otro']);
             $table->enum('estado_comparativa', ['pasado', 'hacer_planilla', 'no_lleva']);
             $table->unsignedBigInteger('obra_id');
-            $table  ->foreign('obra_id')
+                $table  ->foreign('obra_id')
                     ->references('id')
                     ->on('obras')
+                    ->onDelete('cascade')
                     ->onUpdate('cascade')
                     ->onDelete('restrict');
             $table->timestamps();

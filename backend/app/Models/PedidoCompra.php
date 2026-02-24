@@ -27,11 +27,14 @@ class PedidoCompra extends Model
         'estado',
         'observaciones',
         'obra_id',
+        'grupo_id',
+        'proveedores',
     ];
 
     protected $casts = [
         'fecha_pedido' => 'date',
         'fecha_entrega_estimada' => 'date',
+        'proveedores' => 'array',
     ];
 
     public function rubros() : BelongsToMany
@@ -44,6 +47,11 @@ class PedidoCompra extends Model
     public function obra() : BelongsTo
     {
         return $this->belongsTo(Obra::class);
+    }
+    
+    public function grupo(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Grupo::class);
     }
 
 }
