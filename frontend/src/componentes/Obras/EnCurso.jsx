@@ -3,9 +3,8 @@ import Icon from "../Icons/Icons";
 const backendUrl = import.meta.env.VITE_API_URL;
 
 export default function EnCurso({ obraData, register }) {
-
 	const handleDescargar = (nombreArchivo, rutaArchivo) => {
-		const link = document.createElement('a');
+		const link = document.createElement("a");
 		link.href = rutaArchivo;
 		link.download = nombreArchivo;
 		document.body.appendChild(link);
@@ -14,14 +13,13 @@ export default function EnCurso({ obraData, register }) {
 	};
 
 	const handleVerPrevia = (rutaArchivo) => {
-		window.open(rutaArchivo, '_blank');
+		window.open(rutaArchivo, "_blank");
 	};
 
 	return (
 		<div className="bg-white rounded-lg border border-gray-200 p-6">
 			<h3 className="text-xl font-semibold text-gray-800 mb-6">Seguimiento de Obra en Curso</h3>
 
-			{/* Datos generales de la obra */}
 			<div className="space-y-6 mb-8">
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">Nro de Obra</label>
@@ -36,8 +34,7 @@ export default function EnCurso({ obraData, register }) {
 					</div>
 				</div>
 			</div>
-			
-			{/* Información de grupos */}
+
 			<div className="mb-8">
 				<h4 className="text-lg font-medium text-gray-800 mb-4">Grupos</h4>
 				<div className="flex flex-wrap gap-3">
@@ -56,35 +53,35 @@ export default function EnCurso({ obraData, register }) {
 				</div>
 			</div>
 
-			{/* Datos de obra en curso */}
 			<div className="space-y-6 mb-8">
-				{/* Cotización de la obra (archivo del pedido_cotizacion) */}
 				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-2">Cotización</label>
+					<label className="block text-sm font-medium text-gray-700 mb-2">Cotizacion</label>
 					<div className="space-y-2">
 						{obraData.pedido_cotizacion?.path_archivo_cotizacion ? (
 							<div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-md">
 								<div>
 									<p className="text-sm font-medium text-gray-900">
-										{obraData.pedido_cotizacion.path_archivo_cotizacion.split('/').pop()}
+										{obraData.pedido_cotizacion.path_archivo_cotizacion.split("/").pop()}
 									</p>
-									<p className="text-xs text-gray-500">Archivo de cotización</p>
+									<p className="text-xs text-gray-500">Archivo de cotizacion</p>
 								</div>
 								<div className="flex gap-2">
 									<button
 										type="button"
 										onClick={() => handleVerPrevia(`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo_cotizacion}`)}
 										className="text-blue-600 hover:text-blue-800 p-1"
-										title="Ver previsualización"
+										title="Ver previsualizacion"
 									>
 										<Icon name="eye" className="w-5 h-5" />
 									</button>
 									<button
 										type="button"
-										onClick={() => handleDescargar(
-											obraData.pedido_cotizacion.path_archivo_cotizacion.split('/').pop(),
-											`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo_cotizacion}`
-										)}
+										onClick={() =>
+											handleDescargar(
+												obraData.pedido_cotizacion.path_archivo_cotizacion.split("/").pop(),
+												`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo_cotizacion}`
+											)
+										}
 										className="text-blue-600 hover:text-blue-800 p-1"
 										title="Descargar"
 									>
@@ -94,13 +91,71 @@ export default function EnCurso({ obraData, register }) {
 							</div>
 						) : (
 							<div className="px-4 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-500 italic">
-								Sin archivo de cotización
+								Sin archivo de cotizacion
 							</div>
 						)}
+						<div>
+							<label className="block text-xs text-gray-500 mb-1">Reemplazar archivo de cotizacion</label>
+							<input
+								type="file"
+								{...register("archivo_cotizacion")}
+								className="w-full px-4 py-2 border border-gray-300 rounded-md"
+							/>
+						</div>
 					</div>
 				</div>
 
-				{/* Orden de Compra - Detalle */}
+				<div>
+					<label className="block text-sm font-medium text-gray-700 mb-2">Mano de obra</label>
+					<div className="space-y-2">
+						{obraData.pedido_cotizacion?.path_archivo_mano_obra ? (
+							<div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-md">
+								<div>
+									<p className="text-sm font-medium text-gray-900">
+										{obraData.pedido_cotizacion.path_archivo_mano_obra.split("/").pop()}
+									</p>
+									<p className="text-xs text-gray-500">Archivo de mano de obra</p>
+								</div>
+								<div className="flex gap-2">
+									<button
+										type="button"
+										onClick={() => handleVerPrevia(`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo_mano_obra}`)}
+										className="text-blue-600 hover:text-blue-800 p-1"
+										title="Ver previsualizacion"
+									>
+										<Icon name="eye" className="w-5 h-5" />
+									</button>
+									<button
+										type="button"
+										onClick={() =>
+											handleDescargar(
+												obraData.pedido_cotizacion.path_archivo_mano_obra.split("/").pop(),
+												`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo_mano_obra}`
+											)
+										}
+										className="text-blue-600 hover:text-blue-800 p-1"
+										title="Descargar"
+									>
+										<Icon name="download" className="w-5 h-5" />
+									</button>
+								</div>
+							</div>
+						) : (
+							<div className="px-4 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-500 italic">
+								Sin archivo de mano de obra
+							</div>
+						)}
+						<div>
+							<label className="block text-xs text-gray-500 mb-1">Reemplazar archivo de mano de obra</label>
+							<input
+								type="file"
+								{...register("archivo_mano_obra")}
+								className="w-full px-4 py-2 border border-gray-300 rounded-md"
+							/>
+						</div>
+					</div>
+				</div>
+
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">Orden de Compra - Detalle</label>
 					<input
@@ -110,7 +165,6 @@ export default function EnCurso({ obraData, register }) {
 					/>
 				</div>
 
-				{/* Fecha Inicio OC */}
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">Fecha Inicio Orden de Compra</label>
 					<input
@@ -120,7 +174,6 @@ export default function EnCurso({ obraData, register }) {
 					/>
 				</div>
 
-				{/* Fecha Fin OC */}
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">Fecha Fin Orden de Compra</label>
 					<input
@@ -130,18 +183,16 @@ export default function EnCurso({ obraData, register }) {
 					/>
 				</div>
 
-				{/* Carátula */}
 				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-2">Carátula</label>
+					<label className="block text-sm font-medium text-gray-700 mb-2">Caratula</label>
 					<input
 						type="text"
 						{...register("detalle_caratula")}
-						placeholder="Número de carátula"
+						placeholder="Numero de caratula"
 						className="w-full px-4 py-2 border border-gray-300 rounded-md"
 					/>
 				</div>
 
-				{/* Fecha Programación Inicio */}
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">Fecha Programada de Inicio</label>
 					<input
@@ -151,9 +202,8 @@ export default function EnCurso({ obraData, register }) {
 					/>
 				</div>
 
-				{/* Fecha Recepción Provisoria (atributo de obra) */}
 				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-2">Fecha Recepción Provisoria</label>
+					<label className="block text-sm font-medium text-gray-700 mb-2">Fecha Recepcion Provisoria</label>
 					<input
 						type="date"
 						{...register("fecha_recepcion_provisoria")}
@@ -161,9 +211,8 @@ export default function EnCurso({ obraData, register }) {
 					/>
 				</div>
 
-				{/* Fecha Recepción Definitiva (atributo de obra) */}
 				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-2">Fecha Recepción Definitiva</label>
+					<label className="block text-sm font-medium text-gray-700 mb-2">Fecha Recepcion Definitiva</label>
 					<input
 						type="date"
 						{...register("fecha_recepcion_definitiva")}

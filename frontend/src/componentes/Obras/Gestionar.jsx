@@ -139,6 +139,7 @@ export default function Gestionar() {
 		try {
 			const archivoCotizacion = data.archivo_cotizacion?.[0] || null;
 			const archivoManoObra = data.archivo_mano_obra?.[0] || null;
+			const pedidoCotExistente = obraData.pedidos_cotizacion?.[0];
 
 			const obraPayload = {
 				estado: estadoActual,
@@ -149,17 +150,24 @@ export default function Gestionar() {
 			};
 			await UpdateObra(id, obraPayload);
 
-			if (data.estado_cotizacion && data.fecha_cierre) {
-				const pedidoCot = obraData.pedidos_cotizacion?.[0];
+			const fechaCierreCotizacion =
+				data.fecha_cierre || pedidoCotExistente?.fecha_cierre_cotizacion?.split("T")[0] || "";
+			const estadoCotizacion = data.estado_cotizacion || pedidoCotExistente?.estado_cotizacion || "";
+			const estadoComparativa = data.estado_comparativa || pedidoCotExistente?.estado_comparativa || "hacer_planilla";
+			const debeGuardarPedidoCotizacion =
+				Boolean(fechaCierreCotizacion && estadoCotizacion) &&
+				(Boolean(archivoCotizacion) || Boolean(archivoManoObra) || Boolean(data.fecha_cierre) || Boolean(data.estado_cotizacion) || Boolean(data.estado_comparativa));
+
+			if (debeGuardarPedidoCotizacion) {
 				const formData = new FormData();
-				formData.append("fecha_cierre_cotizacion", data.fecha_cierre);
-				formData.append("estado_cotizacion", data.estado_cotizacion);
-				formData.append("estado_comparativa", data.estado_comparativa || "hacer_planilla");
+				formData.append("fecha_cierre_cotizacion", fechaCierreCotizacion);
+				formData.append("estado_cotizacion", estadoCotizacion);
+				formData.append("estado_comparativa", estadoComparativa);
 				if (archivoCotizacion) formData.append("archivo_cotizacion", archivoCotizacion);
 				if (archivoManoObra) formData.append("archivo_mano_obra", archivoManoObra);
 
-				if (pedidoCot) {
-					await updatePedidoCotizacion(id, pedidoCot.id, formData);
+				if (pedidoCotExistente) {
+					await updatePedidoCotizacion(id, pedidoCotExistente.id, formData);
 				} else {
 					await createPedidoCotizacion(id, formData);
 				}
@@ -318,7 +326,7 @@ export default function Gestionar() {
 		} else if (estadoActual === "enCurso") {
 			return <EnCurso obraData={obraDataForComponents} register={register} />;
 		} else if (estadoActual === "finalizada") {
-			return <Finalizada obraData={obraDataForComponents} />;
+			return <Finalizada obraData={obraDataForComponents} register={register} />;
 		}
 	};
 
@@ -330,8 +338,20 @@ export default function Gestionar() {
 	// --- Loading / Error ---
 	if (isLoading) {
 		return (
-			<div className="min-h-screen flex items-center justify-center">
-				<div className="text-gray-500 text-lg">Cargando obra...</div>
+			<div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
+				<div className="relative">
+					<div className="mt-8 text-center">
+						<h2 className="text-3xl font-bold text-white mb-4 animate-pulse">Cargando Obra</h2>
+						<div className="w-80 h-3 bg-gray-700 rounded-full overflow-hidden shadow-lg">
+							<div className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-full animate-loading-bar"></div>
+						</div>
+						<div className="mt-4 flex justify-center gap-2">
+							<span className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></span>
+							<span className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></span>
+							<span className="w-3 h-3 bg-blue-300 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></span>
+						</div>
+					</div>
+				</div>
 			</div>
 		);
 	}
