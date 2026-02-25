@@ -334,6 +334,9 @@ export default function Gestionar() {
 	const pedidosFiltrados = pedidosCompra.filter((p) =>
 		mostrarArchivados ? p.estado === "archivado" : p.estado !== "archivado"
 	);
+	const pedidosActivosCount = pedidosCompra.filter((p) => p.estado !== "archivado").length;
+	const pedidosArchivadosCount = pedidosCompra.filter((p) => p.estado === "archivado").length;
+	const estadoActualLabel = labelEstado(estadoActual || obraData?.estado || "");
 
 	// --- Loading / Error ---
 	if (isLoading) {
@@ -366,10 +369,11 @@ export default function Gestionar() {
 	return (
 		<>
 			<form onSubmit={handleSubmit(onSubmit)}>
-				<div className="min-h-screen bg-gray-50">
+				<div className="min-h-screen bg-gradient-to-b from-slate-100 via-gray-50 to-white">
 
 					{/* Header */}
-					<div className="bg-white border-b border-gray-200 px-8 py-6">
+					<div className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-200">
+						<div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
 						<div className="flex items-center gap-3 mb-4">
 							<button onClick={() => navigate("/obras")} className="text-gray-600 hover:text-gray-800" type="button">
 								<Icon name="arrow-left" className="w-6 h-6" />
@@ -378,26 +382,42 @@ export default function Gestionar() {
 								Obra #{obraData.nro_obra} – {obraData.detalle}
 							</h1>
 						</div>
-						<div className="mt-4">
+						<div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+							<div className="flex flex-wrap items-center gap-2">
+								<span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-sm font-semibold">
+									Estado actual: {estadoActualLabel}
+								</span>
+								<span className="inline-flex items-center px-3 py-1 rounded-full bg-white border border-gray-200 text-gray-700 text-sm">
+									Activos: {pedidosActivosCount}
+								</span>
+								<span className="inline-flex items-center px-3 py-1 rounded-full bg-white border border-gray-200 text-gray-700 text-sm">
+									Archivados: {pedidosArchivadosCount}
+								</span>
+							</div>
+							<div className="flex items-center gap-2">
 							<label className="text-sm font-medium text-gray-700 mr-2">Estado:</label>
 							<select
 								value={estadoActual || ""}
 								onChange={handleEstadoChange}
-								className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+								className="px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[220px]"
 							>
 								<option value="pedida">Pedido de Cotización</option>
 								<option value="cotizada">Cotizada</option>
 								<option value="enCurso">En Curso</option>
 								<option value="finalizada">Finalizada</option>
 							</select>
+							</div>
+						</div>
 						</div>
 					</div>
 
 					{/* Contenido principal */}
-					<div className="flex">
+					<div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+						<div className="flex flex-col lg:flex-row gap-6">
 
 						{/* Sidebar — Flujo de estados */}
-						<div className="w-80 bg-gray-50 border-r border-gray-200 p-6">
+						<div className="lg:w-80 lg:shrink-0">
+							<div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm lg:sticky lg:top-28">
 							<h3 className="text-lg font-semibold mb-4 text-gray-800">Flujo de estados</h3>
 							<div className="space-y-4">
 								{estadosFlujo.map((estado, index) => {
@@ -426,15 +446,19 @@ export default function Gestionar() {
 									);
 								})}
 							</div>
+							</div>
 						</div>
 
 						{/* Contenido central */}
-						<div className="flex-1 p-8">
+						<div className="flex-1 min-w-0 space-y-6">
 
 							{/* ── Pedidos de compra ── */}
-							<div className="mb-8">
-								<div className="flex items-center justify-between mb-3">
-									<h3 className="text-xl font-semibold text-gray-900">Pedidos de compra</h3>
+							<div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-5">
+								<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+									<div>
+										<h3 className="text-xl font-semibold text-gray-900">Pedidos de compra</h3>
+										<p className="text-sm text-gray-500">Gestiona pedidos activos y archivados de esta obra.</p>
+									</div>
 									<div className="flex items-center gap-2">
 										<button
 											type="button"
@@ -445,11 +469,12 @@ export default function Gestionar() {
 											title={mostrarArchivados ? "Ocultar archivados" : "Mostrar archivados"}
 										>
 											<Icon name="archive" className="w-4 h-4" />
+											<span className="hidden sm:inline">{mostrarArchivados ? "Ocultar" : "Archivados"}</span>
 										</button>
 										<button
 											type="button"
 											onClick={abrirModalPedido}
-											className="flex items-center gap-2 px-3 py-2 text-sm font-semibold bg-gray-100 hover:bg-gray-200 rounded-md border border-gray-200"
+											className="flex items-center gap-2 px-3 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-md border border-blue-600"
 										>
 											<Icon name="plus" className="w-4 h-4" />
 											Nuevo pedido
@@ -460,7 +485,19 @@ export default function Gestionar() {
 								{pedidosFiltrados.length > 0 ? (
 									<div className="space-y-3">
 										{pedidosFiltrados.map((pedido) => (
-											<div key={pedido.id} className="border border-gray-200 rounded-lg p-4 flex flex-col gap-2 bg-gray-50">
+											<div
+												key={pedido.id}
+												onClick={() => editarPedido(pedido)}
+												role="button"
+												tabIndex={0}
+												onKeyDown={(e) => {
+													if (e.key === "Enter" || e.key === " ") {
+														e.preventDefault();
+														editarPedido(pedido);
+													}
+												}}
+												className="border border-gray-200 rounded-xl p-4 sm:p-5 flex flex-col gap-3 bg-gradient-to-b from-white to-gray-50 cursor-pointer hover:border-blue-300 hover:shadow-sm transition"
+											>
 
 												{/* Cabecera */}
 												<div className="flex justify-between items-start gap-3">
@@ -472,20 +509,20 @@ export default function Gestionar() {
 														<span className="px-2 py-1 rounded text-xs font-bold bg-blue-100 text-blue-700 uppercase">
 															{pedido.estado_pedido || pedido.estado}
 														</span>
-														<button type="button" onClick={() => editarPedido(pedido)} className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded" title="Editar">
+														<button type="button" onClick={(e) => { e.stopPropagation(); editarPedido(pedido); }} className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded" title="Editar">
 															<Icon name="pencil" className="w-4 h-4" />
 														</button>
-														<button type="button" onClick={() => handleArchivarPedido(pedido)} className="p-1 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded" title={pedido.estado === "archivado" ? "Desarchivar" : "Archivar"}>
+														<button type="button" onClick={(e) => { e.stopPropagation(); handleArchivarPedido(pedido); }} className="p-1 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded" title={pedido.estado === "archivado" ? "Desarchivar" : "Archivar"}>
 															<Icon name="archive" className="w-4 h-4" />
 														</button>
-														<button type="button" onClick={() => handleEliminarPedido(pedido.id)} className="p-1 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded" title="Eliminar">
+														<button type="button" onClick={(e) => { e.stopPropagation(); handleEliminarPedido(pedido.id); }} className="p-1 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded" title="Eliminar">
 															<Icon name="trash" className="w-4 h-4" />
 														</button>
 													</div>
 												</div>
 
 												{/* Fechas */}
-												<div className="grid grid-cols-2 gap-3 text-sm text-gray-700">
+												<div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-700">
 													<div>
 														<p className="text-gray-500">Fecha pedido</p>
 														<p className="font-medium">
@@ -542,7 +579,7 @@ export default function Gestionar() {
 												{pedido.path_presupuesto && (
 													<div className="text-sm">
 														<p className="text-gray-500">Presupuesto</p>
-														<a href={`${import.meta.env.VITE_API_URL}/storage/${pedido.path_presupuesto}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+														<a href={`${import.meta.env.VITE_API_URL}/storage/${pedido.path_presupuesto}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-blue-600 hover:underline">
 															📎 {pedido.path_presupuesto.split("/").pop()}
 														</a>
 													</div>
@@ -550,7 +587,7 @@ export default function Gestionar() {
 												{pedido.path_material && (
 													<div className="text-sm">
 														<p className="text-gray-500">Material</p>
-														<a href={`${import.meta.env.VITE_API_URL}/storage/${pedido.path_material}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+														<a href={`${import.meta.env.VITE_API_URL}/storage/${pedido.path_material}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-blue-600 hover:underline">
 															📎 {pedido.path_material.split("/").pop()}
 														</a>
 													</div>
@@ -567,17 +604,19 @@ export default function Gestionar() {
 										))}
 									</div>
 								) : (
-									<p className="text-sm text-gray-500">
+									<p className="text-sm text-gray-500 border border-dashed border-gray-300 rounded-lg bg-gray-50 px-4 py-3">
 										{mostrarArchivados ? "No hay pedidos archivados" : "No hay pedidos de compra activos"}
 									</p>
 								)}
 							</div>
 
 							{/* Contenido según estado */}
-							{renderContenidoSegunEstado()}
+							<div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-5">
+								{renderContenidoSegunEstado()}
+							</div>
 
 							{/* Botones */}
-							<div className="mt-6 flex gap-3 justify-end">
+							<div className="flex flex-col-reverse sm:flex-row gap-3 justify-end bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-5">
 								<button type="button" onClick={() => navigate("/obras")} className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">
 									Cancelar
 								</button>
@@ -588,7 +627,9 @@ export default function Gestionar() {
 						</div>
 					</div>
 				</div>
+			</div>
 			</form>
+			
 
 			{/* ── Modal Pedido de compra ── */}
 			{mostrarModalPedido && (
