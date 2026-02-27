@@ -1,13 +1,22 @@
+﻿import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Icon from "../Icons/Icons";
 import { useComentariosByObra } from "../hooks/useComentarios";
-import { createComentario, deleteComentario } from "../api/comentarios";
+import { createComentario, deleteComentario, updateComentario } from "../api/comentarios";
+import { fixMojibake } from "../utils/text";
 
 export default function ComentariosModal({ isOpen, onClose, obra }) {
   const queryClient = useQueryClient();
   const { data: comentarios = [], isLoading } = useComentariosByObra(obra?.id);
-  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+  const [editingId, setEditingId] = useState(null);
+  const [editingText, setEditingText] = useState("");
 
   const createMutation = useMutation({
     mutationFn: createComentario,
@@ -24,6 +33,15 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: updateComentario,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["comentarios", obra.id]);
+      setEditingId(null);
+      setEditingText("");
+    },
+  });
+
   const onSubmit = (formData) => {
     if (!formData.denominacion.trim()) return;
     createMutation.mutate({ obraId: obra.id, denominacion: formData.denominacion });
@@ -35,15 +53,35 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
     }
   };
 
+  const handleStartEdit = (comentario) => {
+    setEditingId(comentario.id);
+    setEditingText(comentario.denominacion ?? "");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditingText("");
+  };
+
+  const handleSaveEdit = (comentarioId) => {
+    const text = editingText.trim();
+    if (!text) return;
+
+    updateMutation.mutate({
+      obraId: obra.id,
+      comentarioId,
+      denominacion: text,
+    });
+  };
+
   if (!isOpen || !obra) return null;
 
   return (
     <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col animate-fadeIn">
-        {/* Header */}
         <div className="border-b border-gray-200 px-6 py-4 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900">
-            Comentarios - Obra #{obra.nro_obra} - {obra.detalle}
+            Comentarios - Obra #{obra.nro_obra} - {fixMojibake(obra.detalle)}
           </h2>
           <button
             onClick={onClose}
@@ -53,7 +91,6 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
           </button>
         </div>
 
-        {/* Content */}
         <div className="flex-1 overflow-y-auto p-6">
           {isLoading ? (
             <div className="text-center py-8">
@@ -69,32 +106,73 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
                 >
                   <div className="flex justify-between items-start gap-4">
                     <div className="flex-1">
-                      <p className="text-gray-800 text-sm leading-relaxed">
-                        {comentario.denominacion}
-                      </p>
+                      {editingId === comentario.id ? (
+                        <textarea
+                          value={editingText}
+                          onChange={(e) => setEditingText(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-sm"
+                          rows="3"
+                        />
+                      ) : (
+                        <p className="text-gray-800 text-sm leading-relaxed">
+                          {fixMojibake(comentario.denominacion)}
+                        </p>
+                      )}
                       <p className="text-gray-500 text-xs mt-2">
                         {new Date(comentario.created_at).toLocaleString("es-AR")}
                       </p>
                     </div>
-                    <button
-                      onClick={() => handleEliminar(comentario.id)}
-                      className="text-red-500 hover:text-red-700 transition-colors flex-shrink-0"
-                      title="Eliminar comentario"
-                      disabled={deleteMutation.isPending}
-                    >
-                      <Icon name="trash" className="w-5 h-5" />
-                    </button>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      {editingId === comentario.id ? (
+                        <>
+                          <button
+                            onClick={() => handleSaveEdit(comentario.id)}
+                            className="px-2 py-1 text-xs font-semibold bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50"
+                            title="Guardar comentario"
+                            disabled={updateMutation.isPending || !editingText.trim()}
+                          >
+                            Guardar
+                          </button>
+                          <button
+                            onClick={handleCancelEdit}
+                            className="px-2 py-1 text-xs font-semibold bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition-colors"
+                            title="Cancelar edición"
+                            disabled={updateMutation.isPending}
+                          >
+                            Cancelar
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => handleStartEdit(comentario)}
+                            className="text-blue-500 hover:text-blue-700 transition-colors"
+                            title="Editar comentario"
+                            disabled={deleteMutation.isPending || updateMutation.isPending}
+                          >
+                            <Icon name="pencil" className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => handleEliminar(comentario.id)}
+                            className="text-red-500 hover:text-red-700 transition-colors"
+                            title="Eliminar comentario"
+                            disabled={deleteMutation.isPending || updateMutation.isPending}
+                          >
+                            <Icon name="trash" className="w-5 h-5" />
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
             <div className="text-center py-8">
-              <p className="text-gray-500">No hay comentarios aún</p>
+              <p className="text-gray-500">No hay comentarios aun</p>
             </div>
           )}
 
-          {/* Form para nuevo comentario */}
           <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
               <label className="block text-sm font-medium text-gray-700">
@@ -103,16 +181,14 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
               <textarea
                 {...register("denominacion", {
                   required: "El comentario es obligatorio",
-                  maxLength: { value: 1000, message: "Máximo 1000 caracteres" }
+                  maxLength: { value: 1000, message: "Maximo 1000 caracteres" },
                 })}
-                placeholder="Escriba su comentario aquí..."
+                placeholder="Escriba su comentario aqui..."
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 rows="3"
               />
               {errors.denominacion && (
-                <p className="text-red-600 text-sm font-semibold">
-                  {errors.denominacion.message}
-                </p>
+                <p className="text-red-600 text-sm font-semibold">{errors.denominacion.message}</p>
               )}
               <button
                 type="submit"
@@ -125,7 +201,6 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="border-t border-gray-200 px-6 py-4 flex justify-end">
           <button
             onClick={onClose}

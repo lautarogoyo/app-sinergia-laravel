@@ -5,6 +5,7 @@ import Icon from "../Icons/Icons";
 import ComentariosModal from "./ComentariosModal";
 import { useObras } from "../hooks/useObras.jsx";
 import { DeleteObra } from "../api/obras.js";
+import { fixMojibake } from "../utils/text";
 
 // Panel de Obras inspirado en el panel de Empleados
 export default function Obras() {
@@ -159,7 +160,7 @@ export default function Obras() {
 							obrasFiltradas.map((obra) => (
 								<tr key={obra.id} className="hover:bg-gray-200 transition-colors duration-150">
 									<td className="whitespace-nowrap text-lg text-gray-800 px-6 py-4">{obra.nro_obra ?? "-"}</td>
-									<td className="text-left text-lg text-gray-800 px-6 py-4 max-w-xl break-words">{obra.detalle ?? "Sin detalle"}</td>
+									<td className="text-left text-lg text-gray-800 px-6 py-4 max-w-xl break-words">{fixMojibake(obra.detalle ?? "Sin detalle")}</td>
 									<td className="whitespace-nowrap px-6 py-4">
 										<span className={`px-3 py-1 rounded text-sm font-bold ${statusClass(obra.estado)}`}>
 											{labelEstado(obra.estado).toUpperCase()}

@@ -16,3 +16,8 @@ export const deleteComentario = async ({ obraId, comentarioId }) => {
     const { data } = await axios.delete(`${backendUrl}/api/obras/${obraId}/comentarios/${comentarioId}`);
     return data;
 };
+
+export const updateComentario = async ({ obraId, comentarioId, denominacion }) => {
+    const { data } = await axios.put(`${backendUrl}/api/obras/${obraId}/comentarios/${comentarioId}`, { denominacion });
+    return data;
+};
