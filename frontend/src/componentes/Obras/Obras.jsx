@@ -21,7 +21,8 @@ export default function Obras() {
 		},
 		onError: (error) => {
 			console.error("Error al eliminar obra:", error);
-			alert("Error al eliminar la obra");
+			const msg = error?.response?.data?.message || "Error al eliminar la obra";
+			alert(msg);
 		}
 	});
 

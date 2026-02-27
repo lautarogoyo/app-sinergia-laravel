@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Obra;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 
 class ObraController extends Controller
 {
@@ -104,9 +106,24 @@ class ObraController extends Controller
      */
     public function destroy(Obra $obra)
     {
-        $obra->delete();
+        try {
+            DB::transaction(function () use ($obra) {
+                // With current FK rules (RESTRICT), children must be removed first.
+                $obra->grupos()->detach();
+                $obra->comentarios()->delete();
+                $obra->pedidosCotizacion()->delete();
+                $obra->pedidoCompra()->delete();
+                $obra->ordenCompra()->delete();
+                $obra->delete();
+            });
 
-        return response()->json(['message' => 'Obra eliminada exitosamente', 'status' => 200]);
+            return response()->json(['message' => 'Obra eliminada exitosamente', 'status' => 200]);
+        } catch (QueryException $e) {
+            return response()->json([
+                'message' => 'No se pudo eliminar la obra porque tiene registros asociados.',
+                'status' => 409,
+            ], 409);
+        }
     }
         
 }
