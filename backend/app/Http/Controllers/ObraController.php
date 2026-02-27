@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Obra;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\QueryException;
 
 class ObraController extends Controller
@@ -108,6 +109,29 @@ class ObraController extends Controller
     {
         try {
             DB::transaction(function () use ($obra) {
+                // Delete stored files from related pedidos before removing DB rows.
+                $obra->pedidosCotizacion()
+                    ->get(['id', 'path_archivo_cotizacion', 'path_archivo_mano_obra'])
+                    ->each(function ($pedido) {
+                        if ($pedido->path_archivo_cotizacion) {
+                            Storage::disk('public')->delete($pedido->path_archivo_cotizacion);
+                        }
+                        if ($pedido->path_archivo_mano_obra) {
+                            Storage::disk('public')->delete($pedido->path_archivo_mano_obra);
+                        }
+                    });
+
+                $obra->pedidoCompra()
+                    ->get(['id', 'path_presupuesto', 'path_material'])
+                    ->each(function ($pedido) {
+                        if ($pedido->path_presupuesto) {
+                            Storage::disk('public')->delete($pedido->path_presupuesto);
+                        }
+                        if ($pedido->path_material) {
+                            Storage::disk('public')->delete($pedido->path_material);
+                        }
+                    });
+
                 // With current FK rules (RESTRICT), children must be removed first.
                 $obra->grupos()->detach();
                 $obra->comentarios()->delete();
