@@ -160,12 +160,15 @@ export default function Obras() {
 				<input
 					id="filtro"
 					type="text"
-					className="w-full px-4 py-2 rounded border border-gray-300 text-lg focus:outline-none focus:ring focus:border-blue-400 mb-2"
+					className="w-full px-4 py-2 rounded border border-gray-300 text-lg focus:outline-none focus:ring focus:border-blue-400 mb-4"
 					placeholder="Filtrar por nro, detalle, estado o dirección..."
 					value={filtro}
 					onChange={(e) => setFiltro(e.target.value)}
 				/>
-				<button className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => navigate('/crear-obra')}>Agregar Obra</button>
+				<div className="flex flex-col sm:flex-row gap-2">
+					<button className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => navigate('/crear-obra')}>Agregar Obra</button>
+					<button className="bg-gray-800 hover:bg-gray-900 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => navigate('/obras/diagrama')}>Diagrama de Gantt</button>
+				</div>
 			</div>
 
 			<div className="shadow-2xl rounded-xl border border-gray-300 bg-white flex flex-col">
