@@ -4,6 +4,7 @@ import { PostObra } from "../api/obras.js";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { useGrupos } from "../hooks/useGrupos.jsx";
+import Swal from "sweetalert2";
 
 export default function CreateObra() {
     const navigate = useNavigate();
@@ -40,7 +41,11 @@ export default function CreateObra() {
         },
         onError: (error) => {
             console.error("Error al crear la obra", error);
-            alert("Error al crear la obra: " + (error.response?.data?.message || error.message));
+            Swal.fire({
+                icon: "error",
+                title: "Error al crear la obra",
+                text: error.response?.data?.message || error.message,
+            });
         }
     });
 

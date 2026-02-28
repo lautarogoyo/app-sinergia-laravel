@@ -5,6 +5,7 @@ import Icon from "../Icons/Icons";
 import { useComentariosByObra } from "../hooks/useComentarios";
 import { createComentario, deleteComentario, updateComentario } from "../api/comentarios";
 import { fixMojibake } from "../utils/text";
+import Swal from "sweetalert2";
 
 export default function ComentariosModal({ isOpen, onClose, obra }) {
   const queryClient = useQueryClient();
@@ -47,8 +48,16 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
     createMutation.mutate({ obraId: obra.id, denominacion: formData.denominacion });
   };
 
-  const handleEliminar = (comentarioId) => {
-    if (confirm("¿Está seguro de que desea eliminar este comentario?")) {
+  const handleEliminar = async (comentarioId) => {
+    const result = await Swal.fire({
+      icon: "warning",
+      title: "Eliminar comentario",
+      text: "Esta seguro de que desea eliminar este comentario?",
+      showCancelButton: true,
+      confirmButtonText: "Si, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+    if (result.isConfirmed) {
       deleteMutation.mutate({ obraId: obra.id, comentarioId });
     }
   };

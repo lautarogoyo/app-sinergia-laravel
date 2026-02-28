@@ -14,6 +14,7 @@ import { UpdateObra } from "../api/obras";
 import { createPedidoCotizacion, updatePedidoCotizacion } from "../api/pedidosCotizacion";
 import { createOrdenCompra, updateOrdenCompra } from "../api/ordenesCompra";
 import { createPedidoCompra, updatePedidoCompra, deletePedidoCompra } from "../api/pedidosCompra";
+import Swal from "sweetalert2";
 
 const estadosFlujo = [
 	{ id: 1, nombre: "pedida", label: "Pedido de cotización" },
@@ -90,7 +91,11 @@ export default function Gestionar() {
 			setNuevoRubroTexto("");
 			setMostrarInputNuevoRubro(false);
 		} catch (err) {
-			alert("Error al crear el rubro: " + (err.response?.data?.message || err.message));
+			await Swal.fire({
+				icon: "error",
+				title: "Error al crear rubro",
+				text: err.response?.data?.message || err.message,
+			});
 		} finally {
 			setCreandoRubro(false);
 		}
@@ -190,26 +195,37 @@ export default function Gestionar() {
 
 			queryClient.invalidateQueries({ queryKey: ["obra", id] });
 			queryClient.invalidateQueries({ queryKey: ["obras"] });
-			alert("Cambios guardados correctamente");
+			await Swal.fire({
+				icon: "success",
+				title: "Guardado",
+				text: "Cambios guardados correctamente",
+			});
 		} catch (err) {
 			console.error(err);
-			alert("Error al guardar: " + (err.response?.data?.message || err.message));
+			await Swal.fire({
+				icon: "error",
+				title: "Error al guardar",
+				text: err.response?.data?.message || err.message,
+			});
 		} finally {
 			setGuardando(false);
 		}
 	};
 
-	const handleEstadoChange = (e) => {
+	const handleEstadoChange = async (e) => {
 		const nuevoEstado = e.target.value;
 		if (nuevoEstado !== estadoActual) {
-			const confirmar = window.confirm(
-				`¿Está seguro de cambiar el estado de "${labelEstado(estadoActual)}" a "${labelEstado(nuevoEstado)}"?`
-			);
-			if (confirmar) {
+			const result = await Swal.fire({
+				icon: "question",
+				title: "Confirmar cambio de estado",
+				text: `Esta seguro de cambiar el estado de "${labelEstado(estadoActual)}" a "${labelEstado(nuevoEstado)}"?`,
+				showCancelButton: true,
+				confirmButtonText: "Si, cambiar",
+				cancelButtonText: "Cancelar",
+			});
+			if (result.isConfirmed) {
 				setEstadoActual(nuevoEstado);
 				setValue("estado", nuevoEstado);
-			} else {
-				e.target.value = estadoActual;
 			}
 		}
 	};
@@ -250,24 +266,48 @@ export default function Gestionar() {
 	};
 
 	const handleEliminarPedido = async (pedidoId) => {
-		if (!window.confirm("¿Está seguro de eliminar este pedido de compra?")) return;
+		const result = await Swal.fire({
+			icon: "warning",
+			title: "Eliminar pedido",
+			text: "Esta seguro de eliminar este pedido de compra?",
+			showCancelButton: true,
+			confirmButtonText: "Si, eliminar",
+			cancelButtonText: "Cancelar",
+		});
+		if (!result.isConfirmed) return;
 		try {
 			await deletePedidoCompraMutation.mutateAsync(pedidoId);
 		} catch (err) {
-			alert("Error al eliminar pedido: " + (err.response?.data?.message || err.message));
+			await Swal.fire({
+				icon: "error",
+				title: "Error al eliminar pedido",
+				text: err.response?.data?.message || err.message,
+			});
 		}
 	};
 
 	const handleArchivarPedido = async (pedido) => {
 		const nuevoEstado = pedido.estado === "archivado" ? "activo" : "archivado";
-		const msg = nuevoEstado === "archivado" ? "¿Archivar este pedido de compra?" : "¿Desarchivar este pedido de compra?";
-		if (!window.confirm(msg)) return;
+		const msg = nuevoEstado === "archivado" ? "Archivar este pedido de compra?" : "Desarchivar este pedido de compra?";
+		const result = await Swal.fire({
+			icon: "question",
+			title: "Confirmar accion",
+			text: msg,
+			showCancelButton: true,
+			confirmButtonText: "Si, continuar",
+			cancelButtonText: "Cancelar",
+		});
+		if (!result.isConfirmed) return;
 		try {
 			const formData = new FormData();
 			formData.append("estado", nuevoEstado);
 			await updatePedidoCompraMutation.mutateAsync({ pedidoId: pedido.id, formData });
 		} catch (err) {
-			alert("Error al archivar pedido: " + (err.response?.data?.message || err.message));
+			await Swal.fire({
+				icon: "error",
+				title: "Error al actualizar pedido",
+				text: err.response?.data?.message || err.message,
+			});
 		}
 	};
 
@@ -299,7 +339,11 @@ export default function Gestionar() {
 			setMostrarModalPedido(false);
 			setPedidoEditando(null);
 		} catch (err) {
-			alert("Error al guardar pedido de compra: " + (err.response?.data?.message || err.message));
+			await Swal.fire({
+				icon: "error",
+				title: "Error al guardar pedido",
+				text: err.response?.data?.message || err.message,
+			});
 		}
 	};
 

@@ -6,6 +6,7 @@ import ComentariosModal from "./ComentariosModal";
 import { useObras } from "../hooks/useObras.jsx";
 import { DeleteObra } from "../api/obras.js";
 import { fixMojibake } from "../utils/text";
+import Swal from "sweetalert2";
 
 // Panel de Obras inspirado en el panel de Empleados
 export default function Obras() {
@@ -23,12 +24,24 @@ export default function Obras() {
 		onError: (error) => {
 			console.error("Error al eliminar obra:", error);
 			const msg = error?.response?.data?.message || "Error al eliminar la obra";
-			alert(msg);
+			Swal.fire({
+				icon: "error",
+				title: "Error",
+				text: msg,
+			});
 		}
 	});
 
-	const handleEliminarObra = (obra) => {
-		if (confirm(`¿Está seguro de eliminar la Obra #${obra.nro_obra}?`)) {
+	const handleEliminarObra = async (obra) => {
+		const result = await Swal.fire({
+			icon: "warning",
+			title: "Confirmar eliminacion",
+			text: `Esta seguro de eliminar la Obra #${obra.nro_obra}?`,
+			showCancelButton: true,
+			confirmButtonText: "Si, eliminar",
+			cancelButtonText: "Cancelar",
+		});
+		if (result.isConfirmed) {
 			deleteMutation.mutate(obra.id);
 		}
 	};
@@ -260,3 +273,4 @@ export default function Obras() {
 		</>
 	);
 }
+
