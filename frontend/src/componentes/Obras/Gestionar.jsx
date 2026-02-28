@@ -143,6 +143,7 @@ export default function Gestionar() {
 
 			const obraPayload = {
 				estado: estadoActual,
+				fecha_visto: new Date().toISOString().split("T")[0],
 				detalle_caratula: data.detalle_caratula || null,
 				fecha_programacion_inicio: data.fecha_programacion_inicio || null,
 				fecha_recepcion_provisoria: data.fecha_recepcion_provisoria || null,
