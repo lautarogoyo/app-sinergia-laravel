@@ -157,7 +157,16 @@ export default function EnCurso({ obraData, register }) {
 				</div>
 
 				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-2">Orden de Compra - Detalle</label>
+					<label className="block text-sm font-medium text-gray-700 mb-2">Nro Orden de Compra</label>
+					<input
+						type="text"
+						{...register("nro_orden_compra_oc")}
+						className="w-full px-4 py-2 border border-gray-300 rounded-md"
+					/>
+				</div>
+
+				<div>
+					<label className="block text-sm font-medium text-gray-700 mb-2">Detalle Orden de Compra</label>
 					<input
 						type="text"
 						{...register("detalle_oc")}

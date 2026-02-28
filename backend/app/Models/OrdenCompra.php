@@ -13,6 +13,7 @@ class OrdenCompra extends Model
     use HasFactory;
     protected $table = 'ordenes_compra';
     protected $fillable = [
+        'nro_orden_compra',
         'detalle',
         'fecha_inicio_orden_compra',
         'fecha_fin_orden_compra',

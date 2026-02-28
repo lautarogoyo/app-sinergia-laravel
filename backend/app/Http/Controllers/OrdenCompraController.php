@@ -26,6 +26,7 @@ class OrdenCompraController extends Controller
     public function store(Request $request, Obra $obra)
     {
         $validated = $request->validate([
+            'nro_orden_compra' => 'nullable|string|max:255',
             'detalle' => 'nullable',
             'fecha_inicio_orden_compra' => 'nullable|date',
             'fecha_fin_orden_compra' => 'nullable|date',
@@ -73,6 +74,7 @@ class OrdenCompraController extends Controller
         }
 
         $validated = $request->validate([
+            'nro_orden_compra' => 'nullable|string|max:255',
             'detalle' => 'nullable',
             'fecha_inicio_orden_compra' => 'nullable|date',
             'fecha_fin_orden_compra' => 'nullable|date',

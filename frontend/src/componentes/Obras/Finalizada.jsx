@@ -157,7 +157,13 @@ export default function Finalizada({ obraData, register }) {
 				</div>
 
 				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-2">Orden de Compra</label>
+					<label className="block text-sm font-medium text-gray-700 mb-2">Nro Orden de Compra</label>
+					<div className="px-4 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-900">
+						{obraData.orden_compra?.nro_orden_compra || "Sin informacion"}
+					</div>
+				</div>
+				<div>
+					<label className="block text-sm font-medium text-gray-700 mb-2">Detalle Orden de Compra</label>
 					<div className="px-4 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-900">
 						{obraData.orden_compra?.detalle || "Sin informacion"}
 					</div>

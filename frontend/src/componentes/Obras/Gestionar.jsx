@@ -112,6 +112,7 @@ export default function Gestionar() {
 				estado_cotizacion: pedidoCot?.estado_cotizacion || "",
 				estado_comparativa: pedidoCot?.estado_comparativa || "",
 				detalle_caratula: obraData.detalle_caratula || "",
+				nro_orden_compra_oc: obraData.orden_compra?.nro_orden_compra || "",
 				detalle_oc: obraData.orden_compra?.detalle || "",
 				fecha_inicio_oc: obraData.orden_compra?.fecha_inicio_orden_compra?.split("T")[0] || "",
 				fecha_fin_oc: obraData.orden_compra?.fecha_fin_orden_compra?.split("T")[0] || "",
@@ -182,6 +183,7 @@ export default function Gestionar() {
 			if (estadoActual === "enCurso" || estadoActual === "finalizada") {
 				const ordenExistente = obraData.orden_compra;
 				const ordenPayload = {
+					nro_orden_compra: data.nro_orden_compra_oc || null,
 					detalle: data.detalle_oc || null,
 					fecha_inicio_orden_compra: data.fecha_inicio_oc || null,
 					fecha_fin_orden_compra: data.fecha_fin_oc || null,
