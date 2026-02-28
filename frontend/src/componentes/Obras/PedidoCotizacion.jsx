@@ -21,17 +21,7 @@ export default function PedidoCotizacion({ obraData, register, watch, tabActiva,
 					>
 						Datos del Pedido
 					</button>
-					<button
-						type="button"
-						onClick={() => setTabActiva("archivos")}
-						className={`pb-3 px-1 font-medium transition-colors ${
-							tabActiva === "archivos"
-								? "text-blue-600 border-b-2 border-blue-600"
-								: "text-gray-600 hover:text-gray-900"
-						}`}
-					>
-						Archivos
-					</button>
+					
 				</nav>
 			</div>
 
@@ -137,48 +127,7 @@ export default function PedidoCotizacion({ obraData, register, watch, tabActiva,
             )}
 
 
-			{tabActiva === "archivos" && (
-				<div>
-					<div className="flex justify-between items-center mb-4">
-						<h3 className="text-xl font-semibold text-gray-800">Archivos</h3>
-						<button 
-							type="button"
-							className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
-						>
-							Agregar Archivos
-						</button>
-					</div>
-					<div className="bg-white rounded-lg border border-gray-200">
-						{(obraData.archivos || []).length > 0 ? (obraData.archivos || []).map((archivo) => (
-							<div key={archivo.id} className="flex items-center justify-between p-4 border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
-								<div className="flex items-center gap-3">
-									<Icon name="file-text" className="w-6 h-6 text-blue-600" />
-									<div>
-										<div className="font-medium text-gray-900">{archivo.nombre}</div>
-										<div className="text-sm text-gray-500">({archivo.tamaño})</div>
-									</div>
-								</div>
-								<div className="flex gap-2">
-									<button 
-										type="button"
-										className="text-gray-600 hover:text-gray-900"
-									>
-										<Icon name="download" className="w-5 h-5" />
-									</button>
-									<button 
-										type="button"
-										className="text-gray-600 hover:text-gray-900"
-									>
-										<Icon name="more-vertical" className="w-5 h-5" />
-									</button>
-								</div>
-							</div>
-						)) : (
-							<div className="p-4 text-sm text-gray-500">No hay archivos</div>
-						)}
-					</div>
-				</div>
-			)}
+			
 		</>
 	);
 }
