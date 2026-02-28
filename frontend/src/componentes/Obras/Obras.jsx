@@ -87,6 +87,31 @@ export default function Obras() {
 		);
 	});
 
+	const prioridadEstado = (estado) => {
+		const norm = (estado || "").toLowerCase().replaceAll("_", "");
+		if (norm === "encurso") return 0;
+		if (norm === "pedida") return 1;
+		return 2;
+	};
+
+	const ordenarNroObraAsc = (a, b) => {
+		const aNum = Number(a.nro_obra);
+		const bNum = Number(b.nro_obra);
+		const aEsNum = Number.isFinite(aNum);
+		const bEsNum = Number.isFinite(bNum);
+
+		if (aEsNum && bEsNum) return aNum - bNum;
+		if (aEsNum) return -1;
+		if (bEsNum) return 1;
+		return String(a.nro_obra ?? "").localeCompare(String(b.nro_obra ?? ""), undefined, { numeric: true, sensitivity: "base" });
+	};
+
+	const obrasOrdenadas = [...obrasFiltradas].sort((a, b) => {
+		const prioridad = prioridadEstado(a.estado) - prioridadEstado(b.estado);
+		if (prioridad !== 0) return prioridad;
+		return ordenarNroObraAsc(a, b);
+	});
+
 	const labelEstado = (estado) => {
 		if (!estado) return "-";
 		const mapa = {
@@ -156,8 +181,8 @@ export default function Obras() {
 						</tr>
 					</thead>
 					<tbody className="bg-gray-50 divide-y divide-gray-200 text-center">
-						{obrasFiltradas.length > 0 ? (
-							obrasFiltradas.map((obra) => (
+						{obrasOrdenadas.length > 0 ? (
+							obrasOrdenadas.map((obra) => (
 								<tr key={obra.id} className="hover:bg-gray-200 transition-colors duration-150">
 									<td className="whitespace-nowrap text-lg text-gray-800 px-6 py-4">{obra.nro_obra ?? "-"}</td>
 									<td className="text-left text-lg text-gray-800 px-6 py-4 max-w-xl break-words">{fixMojibake(obra.detalle ?? "Sin detalle")}</td>
