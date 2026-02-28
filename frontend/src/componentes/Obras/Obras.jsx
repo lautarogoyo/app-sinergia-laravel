@@ -167,7 +167,7 @@ export default function Obras() {
 				/>
 				<div className="flex flex-col sm:flex-row gap-2">
 					<button className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => navigate('/crear-obra')}>Agregar Obra</button>
-					<button className="bg-gray-800 hover:bg-gray-900 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => navigate('/obras/diagrama')}>Diagrama de Gantt</button>
+					<button className="bg-orange-500 hover:bg-orange-600 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => navigate('/obras/diagrama')}>Diagrama de Gantt</button>
 				</div>
 			</div>
 
