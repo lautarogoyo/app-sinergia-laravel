@@ -7,6 +7,8 @@ import { useObras } from "../hooks/useObras.jsx";
 import { DeleteObra } from "../api/obras.js";
 import { fixMojibake } from "../utils/text";
 import Swal from "sweetalert2";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 
 // Panel de Obras inspirado en el panel de Empleados
 export default function Obras() {
@@ -63,6 +65,108 @@ export default function Obras() {
 			return "-";
 		} catch {
 			return "-";
+		}
+	};
+
+	const formatDateForFile = () => {
+		const now = new Date();
+		const y = now.getFullYear();
+		const m = String(now.getMonth() + 1).padStart(2, "0");
+		const d = String(now.getDate()).padStart(2, "0");
+		return `${y}${m}${d}`;
+	};
+
+	const buildPdfObrasEnCurso = (obras) => {
+		const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+		doc.setFontSize(16);
+		doc.text("Listado de Obras en Curso", 14, 14);
+		doc.setFontSize(10);
+		doc.text(`Fecha: ${formatearFecha(new Date().toISOString())}`, 14, 20);
+
+		const rows = obras.map((obra) => [
+			String(obra.nro_obra ?? "-"),
+			fixMojibake(String(obra.detalle ?? "-")),
+			obra.grupos?.length ? obra.grupos.map((g) => g.denominacion).join(", ") : "-",
+			formatearFecha(obra.fecha_programacion_inicio),
+			formatearFecha(obra.fecha_recepcion_provisoria),
+			formatearFecha(obra.fecha_visto),
+		]);
+
+		autoTable(doc, {
+			startY: 24,
+			head: [[
+				"Nro. Obra",
+				"Detalle",
+				"Grupos",
+				"Fecha Programacion Inicio",
+				"Fecha Recepcion Provisoria",
+				"Fecha Visto",
+			]],
+			body: rows,
+			theme: "grid",
+			styles: { fontSize: 8, cellPadding: 2 },
+			headStyles: { fillColor: [31, 41, 55] },
+		});
+
+		doc.save(`obras_en_curso_${formatDateForFile()}.pdf`);
+	};
+
+	const buildPdfPedidoCotizacion = (obras) => {
+		const doc = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+		doc.setFontSize(16);
+		doc.text("Listado de Pedidos de Cotizacion", 14, 14);
+		doc.setFontSize(10);
+		doc.text(`Fecha: ${formatearFecha(new Date().toISOString())}`, 14, 20);
+
+		const rows = obras.map((obra) => [
+			String(obra.nro_obra ?? "-"),
+			fixMojibake(String(obra.detalle ?? "-")),
+			obra.grupos?.length ? obra.grupos.map((g) => g.denominacion).join(", ") : "-",
+			formatearFecha(obra.fecha_visto),
+			formatearFecha(obra.fecha_ingreso),
+		]);
+
+		autoTable(doc, {
+			startY: 24,
+			head: [["Nro. Obra", "Detalle", "Grupos", "Fecha Visto", "Fecha Ingreso"]],
+			body: rows,
+			theme: "grid",
+			styles: { fontSize: 8, cellPadding: 2 },
+			headStyles: { fillColor: [31, 41, 55] },
+		});
+
+		doc.save(`pedidos_cotizacion_${formatDateForFile()}.pdf`);
+	};
+
+	const handleGenerarPdfPanel = async () => {
+		const result = await Swal.fire({
+			icon: "question",
+			title: "Generar PDF",
+			text: "Seleccione el tipo de listado",
+			showCancelButton: true,
+			showDenyButton: true,
+			confirmButtonText: "Obras en curso",
+			denyButtonText: "Pedido de cotizacion",
+			cancelButtonText: "Cancelar",
+		});
+
+		if (result.isConfirmed) {
+			const obrasEnCurso = obrasOrdenadas.filter((o) => (o.estado || "").toLowerCase().replaceAll("_", "") === "encurso");
+			if (!obrasEnCurso.length) {
+				await Swal.fire({ icon: "info", title: "Sin datos", text: "No hay obras en curso para exportar." });
+				return;
+			}
+			buildPdfObrasEnCurso(obrasEnCurso);
+			return;
+		}
+
+		if (result.isDenied) {
+			const obrasPedida = obrasOrdenadas.filter((o) => (o.estado || "").toLowerCase() === "pedida");
+			if (!obrasPedida.length) {
+				await Swal.fire({ icon: "info", title: "Sin datos", text: "No hay obras en pedido de cotizacion para exportar." });
+				return;
+			}
+			buildPdfPedidoCotizacion(obrasPedida);
 		}
 	};
 
@@ -180,6 +284,7 @@ export default function Obras() {
 				/>
 				<div className="flex flex-col sm:flex-row gap-2">
 					<button className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => navigate('/crear-obra')}>Agregar Obra</button>
+					<button className="bg-emerald-600 hover:bg-emerald-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={handleGenerarPdfPanel}>Generar PDF</button>
 					<button className="bg-orange-500 hover:bg-orange-600 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => navigate('/obras/diagrama')}>Diagrama de Gantt</button>
 				</div>
 			</div>
