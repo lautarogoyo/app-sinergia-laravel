@@ -165,7 +165,7 @@ export default function Obras() {
 							Agregar Obra
 						</button>
 						<button
-							className="bg-emerald-600 hover:bg-emerald-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
+							className="bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
 							onClick={() => generarPdfPanelObras(obrasOrdenadas)}
 						>
 							Generar PDF
