@@ -75,7 +75,7 @@ export default function Header() {
                 `${navLinkBase} ${isActive ? navLinkActive : ''}`}
             >
               <Icon name="supplier" className="w-6 h-6 flex-shrink-0" />
-              {visible ? <span className="whitespace-nowrap">Proveedores</span> : <span className="sr-only">Proveedores</span>}
+              {visible ? <span className="whitespace-nowrap">Personas</span> : <span className="sr-only">Personas</span>}
             </NavLink>
             
             <NavLink 
