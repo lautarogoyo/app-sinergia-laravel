@@ -16,7 +16,8 @@ class Grupo extends Model
     use HasFactory;
     protected $table = 'grupos';
      protected $fillable = [
-        'denominacion'
+        'denominacion',
+        'estado'
     ];
     public function empleados() : HasMany
     {
