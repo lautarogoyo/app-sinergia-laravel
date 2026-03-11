@@ -24,7 +24,12 @@ class GrupoController extends Controller
      */
     public function store(Request $request)
     {
-       $grupo = Grupo::create($request->only('denominacion'));
+        $validated = $request->validate([
+            'denominacion' => 'required|string|max:255',
+            'estado' => 'sometimes|nullable|string|max:50',
+        ]);
+
+        $grupo = Grupo::create($validated);
 
         return response()->json([
             'message' => 'Grupo creado exitosamente',
@@ -48,10 +53,11 @@ class GrupoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-   public function update(Request $request, Grupo $grupo)
+    public function update(Request $request, Grupo $grupo)
     {
         $validated = $request->validate([
-            'denominacion' => 'required|max:255'
+            'denominacion' => 'sometimes|required|string|max:255',
+            'estado' => 'sometimes|nullable|string|max:50',
         ]);
 
         $grupo->update($validated);
