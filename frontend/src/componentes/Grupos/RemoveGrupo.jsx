@@ -1,80 +1,59 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useGrupoById } from "../hooks/useGrupos.jsx";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { DeleteGrupo } from "../api/grupos.js";
-import { useForm } from "react-hook-form";
-
+import { useGrupoById } from "../hooks/useGrupos";
+import { DeleteGrupo } from "../api/grupos";
 
 export default function RemoveGrupo() {
-    const { id } = useParams();
-    const navigate = useNavigate();
-    const queryClient = useQueryClient();
-    const { data, isLoading } = useGrupoById(id);
-    const {handleSubmit } = useForm();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-    const { mutate } = useMutation({
-    mutationFn: (data) => DeleteGrupo(id, data),
+  const { data: grupo, isLoading } = useGrupoById(id);
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: () => DeleteGrupo(id),
     onSuccess: () => {
-        queryClient.invalidateQueries(["grupos"]);
-        navigate("/grupos");
+      queryClient.invalidateQueries(["grupos"]);
+      navigate("/personas"); // o "/grupos" según tu flujo
     },
-    onError: (error) => {
-        console.error("Error al eliminar el grupo", error);
-    },
-    });
+    onError: (e) => console.error("Error al eliminar el grupo", e),
+  });
 
-    const onSubmit = handleSubmit((data) => {
-        mutate(data);
-    });
+  if (isLoading) return <p className="p-8 text-gray-500">Cargando...</p>;
 
+  if (!grupo) {
     return (
-        <>
-        {isLoading && 
-        <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
-            <div className="relative">
-            
-            {/* Texto de carga */}
-                <div className="mt-8 text-center">
-                    <h2 className="text-3xl font-bold text-white mb-4 animate-pulse">Cargando Grupo</h2>
-                    
-                    {/* Barra de progreso */}
-                    <div className="w-80 h-3 bg-gray-700 rounded-full overflow-hidden shadow-lg">
-                        <div className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-full animate-loading-bar"></div>
-                    </div>
-                    
-                    {/* Puntos animados */}
-                    <div className="mt-4 flex justify-center gap-2">
-                        <span className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></span>
-                        <span className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></span>
-                        <span className="w-3 h-3 bg-blue-300 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></span>
-                    </div>
-                </div>
-            </div>
-        </div>}
-        {!isLoading &&
-        <div className="p-6 relative mb-[100%] flex-1">
-            <h1 className="text-3xl text-gray-800 mb-6 font-sans">Eliminar Grupo</h1>
-            <form className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" onSubmit={onSubmit}>
-                <p className="mb-4 text-red-600">¿Está seguro que desea eliminar al grupo <strong>{data?.denominacion}</strong>? Esta acción no se puede deshacer.</p>
-                <div className="flex items-center">
-                    <button 
-                        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline m-5 cursor-pointer"
-                        type="submit"
-                    >
-                        Confirmar Eliminación
-                    </button>
-                    <button
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline cursor-pointer"
-                        type="button"
-                        onClick={() => navigate("/grupos")}
-                    >
-                        Cancelar
-                    </button>
-                </div>
-            </form>
+      <div className="p-8 bg-gray-100 w-full flex flex-col items-center">
+        <div className="w-full max-w-xl bg-white shadow-2xl rounded-xl border border-gray-300 p-6">
+          <h1 className="text-3xl text-gray-800 mb-4 font-sans">Eliminar Grupo</h1>
+          <p className="text-gray-600 mb-6">No se encontró el grupo solicitado.</p>
+          <button type="button" onClick={() => navigate("/personas")}
+            className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150">
+            Volver
+          </button>
         </div>
-        }
-    </>
+      </div>
     );
-    
+  }
+
+  return (
+    <div className="p-8 bg-gray-100 w-full flex flex-col items-center">
+      <div className="w-full max-w-xl bg-white shadow-2xl rounded-xl border border-gray-300 p-6">
+        <h1 className="text-3xl text-gray-800 mb-4 font-sans">Eliminar Grupo</h1>
+        <p className="mb-6 text-red-600 text-lg">
+          ¿Está seguro que desea eliminar el grupo <strong>{grupo.denominacion}</strong>? Esta acción no se puede deshacer.
+        </p>
+        <div className="flex gap-2">
+          <button type="button" onClick={() => mutate()} disabled={isPending}
+            className="bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 disabled:opacity-50">
+            {isPending ? "Eliminando..." : "Confirmar Eliminación"}
+          </button>
+          <button type="button" onClick={() => navigate("/personas")}
+            className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
