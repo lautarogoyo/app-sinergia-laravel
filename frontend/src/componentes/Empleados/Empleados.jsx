@@ -10,6 +10,8 @@ export default function Empleados() {
   const textHeader = "text-xl lg:text-xl";
   const textContent = "text-xl lg:text-xl";
   const { data: empleados = [], isLoading, isError } = useEmpleados();
+  const formatTipoDocumentoLabel = (value) =>
+    String(value ?? "").replaceAll("_", " ");
   
   
   if (isLoading) return (
@@ -129,7 +131,7 @@ export default function Empleados() {
                             onClick={() => window.open(`${backendUrl}/api/empleados/${empleado.id}/documentaciones/${doc.id}/download`, '_blank')}
                             title={mensaje}
                           >
-                            {doc.tipo_documento.descripcion.toUpperCase()}
+                            {formatTipoDocumentoLabel(doc.tipo_documento.descripcion).toUpperCase()}
                             <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-1 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
                               {mensaje}
                             </span>

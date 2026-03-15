@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEmpleadoById } from "../hooks/useEmpleados.jsx";
+import { useTipoDocumento } from "../hooks/useTipoDocumento.jsx";
 import {
   useCreateDocumentacion,
   useUpdateDocumentacion,
-  useDeleteDocumentacion
+  useDeleteDocumentacion,
 } from "../hooks/useDocumentaciones.jsx";
 
 export default function EditDocument() {
@@ -16,6 +17,10 @@ export default function EditDocument() {
 
   const { data: empleado, isLoading: isLoadingEmpleado, isError } =
     useEmpleadoById(id);
+  const { data: tiposDocumentoResponse } = useTipoDocumento();
+  const tiposDocumento = tiposDocumentoResponse?.tipos_documento ?? [];
+  const formatTipoDocumentoLabel = (value) =>
+    String(value ?? "").replaceAll("_", " ");
 
   useEffect(() => {
     if (empleado?.documentaciones) {
@@ -23,52 +28,42 @@ export default function EditDocument() {
     }
   }, [empleado]);
 
-  /* ---------- NUEVO DOCUMENTO ---------- */
   const [file, setFile] = useState(false);
   const [newFile, setNewFile] = useState(null);
   const [newTipo, setNewTipo] = useState("");
   const [newFecha, setNewFecha] = useState("");
 
-  /* ---------- HANDLERS EXISTENTES ---------- */
   const handleTipoDocumentoChange = (docId, value) => {
-    setDocumentaciones(prev =>
-      prev.map(doc =>
-        doc.id === docId
-          ? { ...doc, tipo_documento_id: value, hasChanges: true }
-          : doc
+    setDocumentaciones((prev) =>
+      prev.map((doc) =>
+        doc.id === docId ? { ...doc, tipo_documento_id: value, hasChanges: true } : doc
       )
     );
   };
 
-  const handleDocumentacionChange = (docId, file) => {
-    setDocumentaciones(prev =>
-      prev.map(doc =>
-        doc.id === docId
-          ? { ...doc, newFile: file, hasChanges: true }
-          : doc
+  const handleDocumentacionChange = (docId, nextFile) => {
+    setDocumentaciones((prev) =>
+      prev.map((doc) =>
+        doc.id === docId ? { ...doc, newFile: nextFile, hasChanges: true } : doc
       )
     );
   };
 
   const handleFechaVencimientoChange = (docId, value) => {
-    setDocumentaciones(prev =>
-      prev.map(doc =>
-        doc.id === docId
-          ? { ...doc, fecha_vencimiento: value, hasChanges: true }
-          : doc
+    setDocumentaciones((prev) =>
+      prev.map((doc) =>
+        doc.id === docId ? { ...doc, fecha_vencimiento: value, hasChanges: true } : doc
       )
     );
   };
 
-  /* ---------- MUTATIONS ---------- */
   const updateMutation = useUpdateDocumentacion(id);
   const createMutation = useCreateDocumentacion(id);
   const deleteMutation = useDeleteDocumentacion(id);
 
-  /* ---------- CREATE ---------- */
   const handleAgregarNuevo = () => {
     if (!newFile || !newTipo || !newFecha) {
-      alert("Seleccioná tipo, archivo y fecha de vencimiento");
+      alert("Selecciona tipo, archivo y fecha de vencimiento");
       return;
     }
 
@@ -87,14 +82,13 @@ export default function EditDocument() {
       },
       onError: (error) => {
         console.error(error.response?.data);
-        alert("Error al crear documentación");
-      }
+        alert("Error al crear documentacion");
+      },
     });
   };
 
-  /* ---------- DELETE ---------- */
   const handleEliminar = (docId) => {
-    if (!confirm("¿Estás seguro de eliminar este documento?")) {
+    if (!confirm("Estas seguro de eliminar este documento?")) {
       return;
     }
 
@@ -104,16 +98,15 @@ export default function EditDocument() {
       },
       onError: (error) => {
         console.error(error.response?.data);
-        alert("Error al eliminar documentación");
-      }
+        alert("Error al eliminar documentacion");
+      },
     });
   };
 
-  /* ---------- UPDATE ---------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const changes = documentaciones.filter(doc => doc.hasChanges);
+    const changes = documentaciones.filter((doc) => doc.hasChanges);
 
     if (changes.length === 0) {
       alert("No hay cambios para guardar.");
@@ -122,13 +115,13 @@ export default function EditDocument() {
 
     try {
       await Promise.all(
-        changes.map(doc => {
+        changes.map((doc) => {
           const formData = new FormData();
 
           const tipoId = doc.tipo_documento_id ?? doc.tipo_documento?.id;
           if (!tipoId) throw new Error("Falta tipo_documento");
 
-          formData.append("tipo_documento_id", tipoId);
+          formData.append("tipo_documento_id", String(tipoId));
           formData.append("estado", "vigente");
 
           if (doc.newFile) {
@@ -136,10 +129,7 @@ export default function EditDocument() {
           }
 
           if (doc.fecha_vencimiento) {
-            formData.append(
-              "fecha_vencimiento",
-              doc.fecha_vencimiento.slice(0, 10)
-            );
+            formData.append("fecha_vencimiento", doc.fecha_vencimiento.slice(0, 10));
           }
 
           return updateMutation.mutateAsync({
@@ -152,36 +142,34 @@ export default function EditDocument() {
       navigate("/empleados");
     } catch (err) {
       console.error(err);
-      alert("Error al editar documentaciones");
+      console.error(err?.response?.data);
+      alert(
+        err?.response?.data?.message ||
+          err?.response?.data?.errors?.tipo_documento_id?.[0] ||
+          "Error al editar documentaciones"
+      );
     }
   };
 
   if (exit) navigate("/empleados");
 
-  /* ---------- UI ---------- */
   if (isLoadingEmpleado) {
     return (
-     <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
-      <div className="relative">
-        
-        {/* Texto de carga */}
-        <div className="mt-8 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4 animate-pulse">Cargando Documento</h2>
-          
-          {/* Barra de progreso */}
-          <div className="w-80 h-3 bg-gray-700 rounded-full overflow-hidden shadow-lg">
-            <div className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-full animate-loading-bar"></div>
-          </div>
-          
-          {/* Puntos animados */}
-          <div className="mt-4 flex justify-center gap-2">
-            <span className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{animationDelay: '0ms'}}></span>
-            <span className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '150ms'}}></span>
-            <span className="w-3 h-3 bg-blue-300 rounded-full animate-bounce" style={{animationDelay: '300ms'}}></span>
+      <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
+        <div className="relative">
+          <div className="mt-8 text-center">
+            <h2 className="text-3xl font-bold text-white mb-4 animate-pulse">Cargando Documento</h2>
+            <div className="w-80 h-3 bg-gray-700 rounded-full overflow-hidden shadow-lg">
+              <div className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-full animate-loading-bar"></div>
+            </div>
+            <div className="mt-4 flex justify-center gap-2">
+              <span className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></span>
+              <span className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></span>
+              <span className="w-3 h-3 bg-blue-300 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     );
   }
 
@@ -192,7 +180,6 @@ export default function EditDocument() {
   return (
     <div className="min-h-screen py-8 px-8">
       <div className="w-full max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-6">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             Documentaciones de {empleado?.nombre} {empleado?.apellido}
@@ -200,20 +187,18 @@ export default function EditDocument() {
           <p className="text-gray-600">Gestiona los documentos del empleado</p>
         </div>
 
-        {/* Documentaciones Existentes */}
         <div className="space-y-4 mb-8">
           <h2 className="text-2xl font-semibold text-gray-800">Documentos Registrados</h2>
           {documentaciones.length === 0 ? (
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-              <p className="text-yellow-800">No hay documentos registrados aún</p>
+              <p className="text-yellow-800">No hay documentos registrados aun</p>
             </div>
           ) : (
-            documentaciones.map(doc => (
+            documentaciones.map((doc) => (
               <div
                 key={doc.id}
                 className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500 relative"
               >
-                {/* Botón Eliminar */}
                 <button
                   onClick={() => handleEliminar(doc.id)}
                   className="absolute top-4 right-4 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md transition duration-200 text-sm"
@@ -223,64 +208,47 @@ export default function EditDocument() {
                 </button>
 
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-end">
-                  {/* Tipo de Documento */}
                   <div className="lg:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Tipo de Documento
                     </label>
                     <select
-                      value={doc.tipo_documento_id ?? doc.tipo_documento?.id}
-                      onChange={e =>
-                        handleTipoDocumentoChange(doc.id, e.target.value)
-                      }
+                      value={String(doc.tipo_documento_id ?? doc.tipo_documento?.id ?? "")}
+                      onChange={(e) => handleTipoDocumentoChange(doc.id, e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="">Seleccionar...</option>
-                      <option value="1">Seguro</option>
-                      <option value="2">Examen Médico</option>
-                      <option value="3">Monotributo</option>
-                      <option value="4">ART/SVO</option>
-                      <option value="5">Capacitación</option>
-                      <option value="6">EPP</option>
-                      <option value="7">Constancia AFIP</option>
+                      {tiposDocumento.map((tipo) => (
+                        <option key={tipo.id} value={String(tipo.id)}>
+                          {formatTipoDocumentoLabel(tipo.descripcion).toUpperCase()}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
-                  {/* Fecha Vencimiento */}
                   <div className="lg:col-span-1">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Fecha Vencimiento
                     </label>
                     <input
                       type="date"
-                      value={
-                        doc.fecha_vencimiento
-                          ? doc.fecha_vencimiento.split("T")[0]
-                          : ""
-                      }
-                      onChange={e =>
-                        handleFechaVencimientoChange(doc.id, e.target.value)
-                      }
+                      value={doc.fecha_vencimiento ? doc.fecha_vencimiento.split("T")[0] : ""}
+                      onChange={(e) => handleFechaVencimientoChange(doc.id, e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
 
-                  {/* Archivo */}
                   <div className="lg:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Reemplazar Archivo
                     </label>
                     <input
                       type="file"
-                      onChange={e =>
-                        handleDocumentacionChange(doc.id, e.target.files[0])
-                      }
+                      onChange={(e) => handleDocumentacionChange(doc.id, e.target.files[0])}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     {doc.newFile && (
-                      <p className="text-sm text-green-600 mt-1">
-                        ✓ Nuevo archivo: {doc.newFile.name}
-                      </p>
+                      <p className="text-sm text-green-600 mt-1">Nuevo archivo: {doc.newFile.name}</p>
                     )}
                   </div>
                 </div>
@@ -289,10 +257,9 @@ export default function EditDocument() {
           )}
         </div>
 
-        {/* Nuevo Documento */}
         <div className="mb-6">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">Agregar Nuevo Documento</h2>
-          
+
           {!file ? (
             <button
               onClick={() => setFile(true)}
@@ -303,29 +270,25 @@ export default function EditDocument() {
           ) : (
             <div className="bg-white rounded-lg shadow-md p-6 border-2 border-green-500">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Tipo Documento */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Tipo de Documento *
                   </label>
                   <select
                     value={newTipo}
-                    onChange={e => setNewTipo(e.target.value)}
+                    onChange={(e) => setNewTipo(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   >
                     <option value="">Seleccionar tipo...</option>
-                    <option value="1">Seguro</option>
-                    <option value="2">Examen Médico</option>
-                    <option value="3">Monotributo</option>
-                    <option value="4">ART/SVO</option>
-                    <option value="5">Capacitación</option>
-                    <option value="6">EPP</option>
-                    <option value="7">Constancia AFIP</option>
+                    {tiposDocumento.map((tipo) => (
+                      <option key={tipo.id} value={String(tipo.id)}>
+                        {formatTipoDocumentoLabel(tipo.descripcion)}
+                      </option>
+                    ))}
                   </select>
-                  {newTipo && <p className="text-sm text-green-600 mt-1">✓ Seleccionado</p>}
+                  {newTipo && <p className="text-sm text-green-600 mt-1">Seleccionado</p>}
                 </div>
 
-                {/* Fecha Vencimiento */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Fecha Vencimiento *
@@ -333,31 +296,29 @@ export default function EditDocument() {
                   <input
                     type="date"
                     value={newFecha}
-                    onChange={e => setNewFecha(e.target.value)}
+                    onChange={(e) => setNewFecha(e.target.value)}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
-                  {newFecha && <p className="text-sm text-green-600 mt-1">✓ Seleccionada</p>}
+                  {newFecha && <p className="text-sm text-green-600 mt-1">Seleccionada</p>}
                 </div>
 
-                {/* Archivo */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Archivo *
                   </label>
                   <input
                     type="file"
-                    onChange={e => setNewFile(e.target.files[0])}
+                    onChange={(e) => setNewFile(e.target.files[0])}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
                   {newFile && (
                     <p className="text-sm text-green-600 mt-2">
-                      ✓ Archivo: {newFile.name} ({(newFile.size / 1024).toFixed(2)} KB)
+                      Archivo: {newFile.name} ({(newFile.size / 1024).toFixed(2)} KB)
                     </p>
                   )}
                 </div>
               </div>
 
-              {/* Botones */}
               <div className="mt-6 flex gap-3">
                 <button
                   onClick={handleAgregarNuevo}
@@ -382,7 +343,6 @@ export default function EditDocument() {
           )}
         </div>
 
-        {/* Botones Acción */}
         <div className="flex gap-4">
           <button
             onClick={handleSubmit}
