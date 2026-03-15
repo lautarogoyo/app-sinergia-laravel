@@ -17,8 +17,8 @@ class Grupo extends Model
     protected $table = 'grupos';
      protected $fillable = [
         'denominacion',
-        'estado',
-     ];
+        'estado'
+    ];
     public function empleados() : HasMany
     {
         return $this->hasMany(Empleado::class);
