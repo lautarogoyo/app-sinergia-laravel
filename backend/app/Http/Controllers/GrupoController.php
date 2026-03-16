@@ -26,7 +26,7 @@ class GrupoController extends Controller
     {
         $validated = $request->validate([
             'denominacion' => 'required|string|max:255',
-            'estado' => 'nullable|string|max:255'
+            'estado' => 'required|string|max:255'
         ]);
 
         $grupo = Grupo::create($validated);
@@ -57,7 +57,7 @@ class GrupoController extends Controller
     {
         $validated = $request->validate([
             'denominacion' => 'required|string|max:255',
-            'estado' => 'nullable|string|max:255'
+            'estado' => 'required|string|max:255'
         ]);
 
         $grupo->update($validated);
