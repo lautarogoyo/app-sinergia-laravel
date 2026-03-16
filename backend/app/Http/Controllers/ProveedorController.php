@@ -22,36 +22,27 @@ class ProveedorController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+     */public function store(Request $request)
     {
-       $validator = $request->validate([
-        'nombre' => 'required|max:255',
-        'apellido' => 'nullable|max:255',
-        'telefono' => 'nullable|digits:10',
-        'email' => 'nullable|email',
-        'monotributista' => 'nullable|boolean',
-        'direccion' => 'nullable|max:255',
-        'comentario' => 'nullable|max:1000',
-        'fecha_ingreso' => 'required|date',
-        'usuario_id' => 'required|exists:usuarios,id'
+        $validator = $request->validate([
+            'nombre'         => 'required|max:255',
+            'apellido'       => 'sometimes|nullable|max:255',
+            'telefono'       => 'sometimes|nullable|max:255',
+            'email'          => 'sometimes|nullable|email',
+            'monotributista' => 'sometimes|nullable|boolean',
+            'direccion'      => 'sometimes|nullable|max:255',
+            'comentario'     => 'sometimes|nullable|max:1000',
         ]);
+
+        $validator['fecha_ingreso'] = now()->toDateString();
 
         $proveedor = Proveedor::create($validator);
 
-
-        if (!$proveedor) {
-            return response()->json([
-                'message' => 'Error al crear el proveedor',
-                'status' => 500
-            ], 500);
-        }
-
         return response()->json([
             'proveedor' => $proveedor,
-            'status' => 201
+            'status'    => 201
         ], 201);
-    }
+    }   
 
     /**
      * Display the specified resource.
@@ -79,7 +70,7 @@ class ProveedorController extends Controller
             'direccion' => 'sometimes|nullable|max:255',
             'comentario' => 'sometimes|nullable|max:1000',
             'fecha_ingreso' => 'sometimes|date',
-            'usuario_id' => 'sometimes|exists:usuarios,id'
+            'usuario_id' => 'nullable|exists:usuarios,id'
         ]);
 
         $proveedor->update($validated);
@@ -96,13 +87,20 @@ class ProveedorController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy(Proveedor $proveedor)
-    {
+{
+    try {
         $proveedor->delete();
-
         return response()->json([
             'message' => 'Proveedor eliminado',
-            'status' => 200
-        ]);
+            'status'  => 200
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'No se pudo eliminar el proveedor',
+            'error'   => $e->getMessage(),
+            'status'  => 500
+        ], 500);
     }
+}
 
 }
