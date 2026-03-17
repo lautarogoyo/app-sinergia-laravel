@@ -3,8 +3,14 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 
+const ESTADOS_GRUPO = ["pendiente", "apto", "activo"];
+
 export default function CreateGrupo() {
-	const { register, handleSubmit, formState: {errors}, reset } = useForm();
+	const { register, handleSubmit, formState: {errors}, reset } = useForm({
+    defaultValues: {
+      estado: "pendiente",
+    },
+  });
 
 
     const navigate = useNavigate();
@@ -50,6 +56,27 @@ export default function CreateGrupo() {
 				{errors?.denominacion?.message && (
 					<p className="text-red-600 text-sm font-semibold">{errors.denominacion.message}</p>
 				)}
+
+        <div className="flex flex-col">
+          <label htmlFor="estado" className="mb-2 text-lg font-medium text-gray-700">
+            Estado
+          </label>
+          <select
+            id="estado"
+            {...register("estado", { required: "El estado es obligatorio" })}
+            className="w-full px-4 py-2 rounded border border-gray-300 text-lg focus:outline-none focus:ring focus:border-blue-400"
+          >
+            {ESTADOS_GRUPO.map((estado) => (
+              <option key={estado} value={estado}>
+                {estado}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {errors?.estado?.message && (
+          <p className="text-red-600 text-sm font-semibold">{errors.estado.message}</p>
+        )}
 
 				<div className="flex gap-3 justify-end pt-2">
 					<button
