@@ -26,10 +26,13 @@ class GrupoController extends Controller
     {
         $validated = $request->validate([
             'denominacion' => 'required|string|max:255',
-            'estado' => 'required|string|max:255'
+            'estado' => 'nullable|in:pendiente,apto,activo'
         ]);
 
-        $grupo = Grupo::create($validated);
+        $grupo = Grupo::create([
+            'denominacion' => $validated['denominacion'],
+            'estado' => $validated['estado'] ?? 'pendiente',
+        ]);
 
         return response()->json([
             'message' => 'Grupo creado exitosamente',
@@ -56,11 +59,13 @@ class GrupoController extends Controller
     public function update(Request $request, Grupo $grupo)
     {
         $validated = $request->validate([
-            'denominacion' => 'required|string|max:255',
-            'estado' => 'required|string|max:255'
+            'denominacion' => 'sometimes|required|string|max:255',
+            'estado' => 'sometimes|required|in:pendiente,apto,activo'
         ]);
 
-        $grupo->update($validated);
+        if ($validated !== []) {
+            $grupo->update($validated);
+        }
 
         return response()->json([
             'message' => 'Grupo actualizado exitosamente',
