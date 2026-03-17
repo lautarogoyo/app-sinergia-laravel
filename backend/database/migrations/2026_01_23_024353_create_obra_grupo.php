@@ -21,13 +21,13 @@ return new class extends Migration
 
         if (Schema::hasTable('obras')) {
             Schema::table('obra_grupo', function (Blueprint $table) {
-                $table->foreign('obra_id')->references('id')->on('obras')->onUpdate('cascade')->onDelete('restrict');
+                $table->foreign('obra_id')->references('id')->on('obras')->onUpdate('cascade')->onDelete('cascade');
             });
         }
 
         if (Schema::hasTable('grupos')) {
             Schema::table('obra_grupo', function (Blueprint $table) {
-                $table->foreign('grupo_id')->references('id')->on('grupos')->onUpdate('cascade')->onDelete('restrict');
+                $table->foreign('grupo_id')->references('id')->on('grupos')->onUpdate('cascade')->onDelete('cascade');
             });
         }
     }

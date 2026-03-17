@@ -28,7 +28,7 @@ class Proveedor extends Model
     ];
     
     protected $casts = [
-        'fecha_ingreso' => 'date: d-m-Y',
+        'fecha_ingreso' => 'date:d-m-Y',
         'monotributista' => 'boolean',
         ];
     public function usuario() : BelongsTo

@@ -20,7 +20,7 @@ return new class extends Migration
 
         if (Schema::hasTable('obras')) {
             Schema::table('comentarios', function (Blueprint $table) {
-                $table->foreign('obra_id')->references('id')->on('obras')->onUpdate('cascade')->onDelete('restrict');
+                $table->foreign('obra_id')->references('id')->on('obras')->onUpdate('cascade')->onDelete('cascade');
             });
         }
     }

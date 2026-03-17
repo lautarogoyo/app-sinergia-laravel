@@ -13,9 +13,8 @@ return new class extends Migration
             $table->foreign('obra_id')
                 ->references('id')
                 ->on('obras')
-                ->onDelete('cascade')
-                  ->onUpdate('cascade')
-                  ->onDelete('restrict');
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
         });
     }
 
