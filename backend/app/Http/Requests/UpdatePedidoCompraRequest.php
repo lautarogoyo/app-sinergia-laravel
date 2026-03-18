@@ -30,6 +30,9 @@ class UpdatePedidoCompraRequest extends FormRequest
             'estado_contratista' => 'sometimes|nullable|string|max:50',
             'estado_pedido' => 'sometimes|nullable|string|max:50',
             'estado' => 'sometimes|nullable|string|max:50',
+            'estado_contratista_id' => 'sometimes|nullable|exists:estado_contratistas,id',
+            'estado_pedido_id' => 'sometimes|nullable|exists:estado_pedidos,id',
+            'estado_registro_id' => 'sometimes|nullable|exists:estado_registros,id',
             'observaciones' => 'sometimes|nullable|string',
         ];
     }

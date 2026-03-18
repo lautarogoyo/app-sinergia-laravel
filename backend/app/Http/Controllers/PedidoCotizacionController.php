@@ -6,7 +6,6 @@ use App\Models\PedidoCotizacion;
 use App\Http\Requests\StorePedidoCotizacionRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Obra;
-use App\Models\Grupo;
 
 class PedidoCotizacionController extends Controller
 {
@@ -15,7 +14,7 @@ class PedidoCotizacionController extends Controller
      */
     public function index(Obra $obra)
     {
-        $pedidos = $obra->pedidosCotizacion()->with(['obra'])->get();
+        $pedidos = $obra->pedidosCotizacion()->with(['obra.estadoObra', 'estadoCotizacion', 'estadoComparativa'])->get();
 
         return response()->json([
             'pedidos' => $pedidos,
@@ -28,6 +27,14 @@ class PedidoCotizacionController extends Controller
     public function store(StorePedidoCotizacionRequest $request, Obra $obra)
     {
         $data = $request->validated();
+
+        if (array_key_exists('estado_cotizacion_id', $data)) {
+            unset($data['estado_cotizacion']);
+        }
+
+        if (array_key_exists('estado_comparativa_id', $data)) {
+            unset($data['estado_comparativa']);
+        }
 
         if ($request->hasFile('archivo_cotizacion')) {
             $file = $request->file('archivo_cotizacion');
@@ -48,7 +55,7 @@ class PedidoCotizacionController extends Controller
         $pedido = $obra->pedidosCotizacion()->create($data);
 
         return response()->json([
-            'pedido' => $pedido->load(['obra']),
+            'pedido' => $pedido->load(['obra.estadoObra', 'estadoCotizacion', 'estadoComparativa']),
             'status' => 201
         ], 201);
     }
@@ -67,7 +74,7 @@ class PedidoCotizacionController extends Controller
         }
 
         return response()->json([
-            'pedido' => $pedido->load(['obra']),
+            'pedido' => $pedido->load(['obra.estadoObra', 'estadoCotizacion', 'estadoComparativa']),
             'status' => 200
         ]);
     }
@@ -89,6 +96,14 @@ class PedidoCotizacionController extends Controller
         }
 
         $data = $request->validated();
+
+        if (array_key_exists('estado_cotizacion_id', $data)) {
+            unset($data['estado_cotizacion']);
+        }
+
+        if (array_key_exists('estado_comparativa_id', $data)) {
+            unset($data['estado_comparativa']);
+        }
 
         if ($request->hasFile('archivo_cotizacion')) {
             if ($pedido->path_archivo_cotizacion) {
@@ -115,7 +130,7 @@ class PedidoCotizacionController extends Controller
         $pedido->update($data);
 
         return response()->json([
-            'pedido' => $pedido->load(['obra']),
+            'pedido' => $pedido->load(['obra.estadoObra', 'estadoCotizacion', 'estadoComparativa']),
             'status' => 200
         ]);
     }

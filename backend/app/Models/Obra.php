@@ -2,33 +2,35 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\ResolvesEstadoCatalog;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Models\Comentario;
-use App\Models\PedidoCotizacion;
-use App\Models\Grupo;
-use App\Models\OrdenCompra;
-use App\Models\PedidoCompra;
 
 
 class Obra extends Model
 {
     /** @use HasFactory<\Database\Factories\ObraFactory> */
     use HasFactory;
+    use ResolvesEstadoCatalog;
+
     protected $table = 'obras';
     protected $fillable = [
-    'nro_obra',
-    'detalle',
-    'estado',
-    'fecha_visto',
-    'fecha_ingreso',
-    'fecha_programacion_inicio',
-    'fecha_recepcion_provisoria',
-    'fecha_recepcion_definitiva',
-    'detalle_caratula'];
+        'nro_obra',
+        'detalle',
+        'estado_obra_id',
+        'fecha_visto',
+        'fecha_ingreso',
+        'fecha_programacion_inicio',
+        'fecha_recepcion_provisoria',
+        'fecha_recepcion_definitiva',
+        'detalle_caratula',
+    ];
+
+    protected $appends = ['estado'];
 
     protected $casts = [
         'fecha_visto' => 'date',
@@ -65,6 +67,20 @@ class Obra extends Model
     {
         return $this->hasMany(PedidoCompra::class);
     }
-}
 
+    public function estadoObra(): BelongsTo
+    {
+        return $this->belongsTo(EstadoObra::class, 'estado_obra_id');
+    }
+
+    public function getEstadoAttribute(): ?string
+    {
+        return $this->estadoObra?->descripcion;
+    }
+
+    public function setEstadoAttribute(?string $value): void
+    {
+        $this->attributes['estado_obra_id'] = $this->resolveEstadoCatalogId($value, EstadoObra::class);
+    }
+}
 

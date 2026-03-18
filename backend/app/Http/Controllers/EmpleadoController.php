@@ -9,7 +9,7 @@ class EmpleadoController extends Controller
 {
     public function index()
     {
-        $empleados = Empleado::with(['documentaciones.tipoDocumento', 'grupo'])->get();
+        $empleados = Empleado::with(['estadoEmpleado', 'documentaciones.tipoDocumento', 'documentaciones.estadoDocumentacion', 'grupo.estadoGrupo'])->get();
         $data = [
             'empleados' => $empleados,
             'status' => 200
@@ -19,17 +19,27 @@ class EmpleadoController extends Controller
 
     public function store(StoreEmpleadoRequest $request)
     {
-        $empleado = Empleado::create($request->validated());
+        $data = $request->validated();
+
+        if (array_key_exists('estado_empleado_id', $data)) {
+            unset($data['estado']);
+        }
+
+        if (! array_key_exists('estado_empleado_id', $data) && ! array_key_exists('estado', $data)) {
+            $data['estado'] = 'activo';
+        }
+
+        $empleado = Empleado::create($data);
 
         return response()->json([
-            'empleado' => $empleado,
+            'empleado' => $empleado->load(['estadoEmpleado', 'grupo.estadoGrupo']),
             'status' => 201
         ], 201);
     }
 
     public function show(Empleado $empleado)
     {
-        $empleado->load(['documentaciones.tipoDocumento', 'grupo']);
+        $empleado->load(['estadoEmpleado', 'documentaciones.tipoDocumento', 'documentaciones.estadoDocumentacion', 'grupo.estadoGrupo']);
 
         return response()->json([
             'empleado' => $empleado,
@@ -51,11 +61,17 @@ class EmpleadoController extends Controller
 
     public function update(StoreEmpleadoRequest $request, Empleado $empleado)
     {
-        $empleado->update($request->validated());
+        $data = $request->validated();
+
+        if (array_key_exists('estado_empleado_id', $data)) {
+            unset($data['estado']);
+        }
+
+        $empleado->update($data);
 
         return response()->json([
             'message' => 'Empleado actualizado',
-            'empleado' => $empleado,
+            'empleado' => $empleado->load(['estadoEmpleado', 'documentaciones.tipoDocumento', 'documentaciones.estadoDocumentacion', 'grupo.estadoGrupo']),
             'status' => 200
         ]);
     }
