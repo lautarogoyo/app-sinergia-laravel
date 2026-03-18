@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreDocumentacionRequest extends FormRequest
 {
@@ -27,7 +28,14 @@ class StoreDocumentacionRequest extends FormRequest
             'tipo_documento_id' => $isUpdate ? 'sometimes|exists:tipos_documento,id' : 'required|exists:tipos_documento,id',
             'archivo'           => $isUpdate ? 'nullable|file|max:10240' : 'required|file|max:10240',
             'fecha_vencimiento' => 'nullable|date',
-            'estado'            => $isUpdate ? 'nullable|in:vigente,vencido' : 'required|in:vigente,vencido'
+            'estado' => [
+                $isUpdate ? 'sometimes' : 'nullable',
+                'nullable',
+                Rule::in(['vigente', 'vencido']),
+            ],
+            'estado_documentacion_id' => $isUpdate
+                ? 'sometimes|nullable|exists:estado_documentaciones,id'
+                : 'nullable|exists:estado_documentaciones,id'
         ];
     }
 }

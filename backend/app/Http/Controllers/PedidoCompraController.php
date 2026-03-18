@@ -16,7 +16,7 @@ class PedidoCompraController extends Controller
      */
     public function index()
     {
-        $pedidos = PedidoCompra::with(['rubros', 'obra'])->get();
+        $pedidos = PedidoCompra::with(['rubros', 'obra.estadoObra', 'grupo.estadoGrupo', 'estadoContratista', 'estadoPedido', 'estadoRegistro'])->get();
         return response()->json([
             'pedido_compra' => $pedidos,
             'status' => 200
@@ -30,6 +30,22 @@ class PedidoCompraController extends Controller
     public function store(StorePedidoCompraRequest $request)
     {
         $data = $request->validated();
+
+        if (array_key_exists('estado_contratista_id', $data)) {
+            unset($data['estado_contratista']);
+        }
+
+        if (array_key_exists('estado_pedido_id', $data)) {
+            unset($data['estado_pedido']);
+        }
+
+        if (array_key_exists('estado_registro_id', $data)) {
+            unset($data['estado']);
+        }
+
+        if (! array_key_exists('estado_registro_id', $data) && ! array_key_exists('estado', $data)) {
+            $data['estado'] = 'activo';
+        }
 
         if ($request->hasFile('archivo')) {
             $file = $request->file('archivo');
@@ -48,7 +64,7 @@ class PedidoCompraController extends Controller
 
         return response()->json([
             'message' => 'Pedido de compra creado',
-            'pedido_compra' => $pedido,
+            'pedido_compra' => $pedido->load(['rubros', 'obra.estadoObra', 'grupo.estadoGrupo', 'estadoContratista', 'estadoPedido', 'estadoRegistro']),
             'status' => 201
         ], 201);
     }
@@ -60,7 +76,7 @@ class PedidoCompraController extends Controller
     public function show(PedidoCompra $pedido)
     {
         return response()->json([
-            'pedido_compra' => $pedido->load(['rubros', 'obra']),
+            'pedido_compra' => $pedido->load(['rubros', 'obra.estadoObra', 'grupo.estadoGrupo', 'estadoContratista', 'estadoPedido', 'estadoRegistro']),
             'status' => 200
         ]);
     }
@@ -72,6 +88,18 @@ class PedidoCompraController extends Controller
     public function update(UpdatePedidoCompraRequest $request, PedidoCompra $pedido)
     {
         $data = $request->validated();
+
+        if (array_key_exists('estado_contratista_id', $data)) {
+            unset($data['estado_contratista']);
+        }
+
+        if (array_key_exists('estado_pedido_id', $data)) {
+            unset($data['estado_pedido']);
+        }
+
+        if (array_key_exists('estado_registro_id', $data)) {
+            unset($data['estado']);
+        }
 
         // Si viene nuevo archivo de presupuesto
         if ($request->hasFile('archivo')) {
@@ -101,7 +129,7 @@ class PedidoCompraController extends Controller
 
         return response()->json([
             'message' => 'Pedido de compra actualizado',
-            'pedido_compra' => $pedido,
+            'pedido_compra' => $pedido->load(['rubros', 'obra.estadoObra', 'grupo.estadoGrupo', 'estadoContratista', 'estadoPedido', 'estadoRegistro']),
             'status' => 200
         ], 200);
     }

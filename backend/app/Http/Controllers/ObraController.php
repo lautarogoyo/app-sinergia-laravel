@@ -14,7 +14,17 @@ class ObraController extends Controller
     */
     public function index()
     {
-        $obras = Obra::with('grupos', 'pedidosCotizacion', 'ordenCompra', 'comentarios', 'pedidoCompra')->get();
+        $obras = Obra::with(
+            'estadoObra',
+            'grupos.estadoGrupo',
+            'pedidosCotizacion.estadoCotizacion',
+            'pedidosCotizacion.estadoComparativa',
+            'ordenCompra',
+            'comentarios',
+            'pedidoCompra.estadoContratista',
+            'pedidoCompra.estadoPedido',
+            'pedidoCompra.estadoRegistro'
+        )->get();
         return response()->json(['obras' => $obras, 'status' => 200]);
     }
 
@@ -26,7 +36,8 @@ class ObraController extends Controller
         $validated = $request -> validate([
             'nro_obra' => 'required|max:255|unique:obras,nro_obra',
             'detalle' => 'required|max:255',
-            'estado' => 'required|in:pedida,cotizada,enCurso,finalizada',
+            'estado' => 'nullable|in:pedida,cotizada,enCurso,finalizada',
+            'estado_obra_id' => 'nullable|exists:estado_obras,id',
             'fecha_visto' => 'required|date',
             'fecha_ingreso' => 'required|date',
             'fecha_programacion_inicio' => 'nullable|date',
@@ -41,6 +52,14 @@ class ObraController extends Controller
         $grupo_ids = $validated['grupo_id'] ?? [];
         unset($validated['grupo_id']);
 
+        if (array_key_exists('estado_obra_id', $validated)) {
+            unset($validated['estado']);
+        }
+
+        if (! isset($validated['estado']) && ! isset($validated['estado_obra_id'])) {
+            $validated['estado'] = 'pedida';
+        }
+
         $obra = Obra::create($validated);
 
         // Asociar los grupos a la obra
@@ -48,7 +67,7 @@ class ObraController extends Controller
             $obra->grupos()->attach($grupo_ids);
         }
 
-        return response()->json(['obra' => $obra->load('grupos'), 'status' => 201], 201);
+        return response()->json(['obra' => $obra->load('estadoObra', 'grupos.estadoGrupo'), 'status' => 201], 201);
 
     }
     
@@ -58,7 +77,7 @@ class ObraController extends Controller
     public function show(Obra $obra)
     {
         return response()->json(
-            ['obra' => $obra->load('grupos', 'pedidosCotizacion', 'comentarios', 'ordenCompra', 'pedidoCompra'), 'status' => 200]
+            ['obra' => $obra->load('estadoObra', 'grupos.estadoGrupo', 'pedidosCotizacion.estadoCotizacion', 'pedidosCotizacion.estadoComparativa', 'comentarios', 'ordenCompra', 'pedidoCompra.estadoContratista', 'pedidoCompra.estadoPedido', 'pedidoCompra.estadoRegistro'), 'status' => 200]
         );
     }
 
@@ -71,7 +90,8 @@ class ObraController extends Controller
         $validated = $request->validate([
             'nro_obra' => 'sometimes|required|max:255',
             'detalle' => 'sometimes|required|max:255',
-            'estado' => 'sometimes|required|in:pedida,cotizada,enCurso,finalizada',
+            'estado' => 'sometimes|nullable|in:pedida,cotizada,enCurso,finalizada',
+            'estado_obra_id' => 'sometimes|nullable|exists:estado_obras,id',
             'fecha_visto' => 'sometimes|required|date',
             'fecha_ingreso' => 'sometimes|required|date',
             'fecha_programacion_inicio' => 'sometimes|nullable|date',
@@ -86,6 +106,10 @@ class ObraController extends Controller
         $grupo_ids = $validated['grupo_id'] ?? null;
         unset($validated['grupo_id']);
 
+        if (array_key_exists('estado_obra_id', $validated)) {
+            unset($validated['estado']);
+        }
+
         $obra->update($validated);
 
         // Solo actualizar la relación muchos-a-muchos si se envió grupo_id explícitamente
@@ -98,7 +122,7 @@ class ObraController extends Controller
         }
 
         return response()->json(
-            ['obra' => $obra->load('grupos', 'pedidosCotizacion', 'comentarios', 'ordenCompra', 'pedidoCompra'), 'status' => 200]
+            ['obra' => $obra->load('estadoObra', 'grupos.estadoGrupo', 'pedidosCotizacion.estadoCotizacion', 'pedidosCotizacion.estadoComparativa', 'comentarios', 'ordenCompra', 'pedidoCompra.estadoContratista', 'pedidoCompra.estadoPedido', 'pedidoCompra.estadoRegistro'), 'status' => 200]
         );
     }
 

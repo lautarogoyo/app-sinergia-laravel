@@ -12,7 +12,7 @@ class GrupoController extends Controller
      */
     public function index()
     {
-        $grupos = Grupo::all();
+        $grupos = Grupo::with('estadoGrupo')->get();
         return response()->json([
             'grupos' => $grupos,
             'status' => 200
@@ -26,17 +26,25 @@ class GrupoController extends Controller
     {
         $validated = $request->validate([
             'denominacion' => 'required|string|max:255',
-            'estado' => 'nullable|in:pendiente,apto,activo'
+            'estado' => 'nullable|in:pendiente,apto,activo',
+            'estado_grupo_id' => 'nullable|exists:estado_grupos,id'
         ]);
 
-        $grupo = Grupo::create([
+        $data = [
             'denominacion' => $validated['denominacion'],
-            'estado' => $validated['estado'] ?? 'pendiente',
-        ]);
+        ];
+
+        if (isset($validated['estado_grupo_id'])) {
+            $data['estado_grupo_id'] = $validated['estado_grupo_id'];
+        } else {
+            $data['estado'] = $validated['estado'] ?? 'pendiente';
+        }
+
+        $grupo = Grupo::create($data);
 
         return response()->json([
             'message' => 'Grupo creado exitosamente',
-            'grupo' => $grupo,
+            'grupo' => $grupo->load('estadoGrupo'),
             'status' => 201
         ], 201);
     }
@@ -47,7 +55,7 @@ class GrupoController extends Controller
     public function show(Grupo $grupo)
     {
         return response()->json([
-            'grupo' => $grupo,
+            'grupo' => $grupo->load('estadoGrupo'),
             'status' => 200
         ]);
     }
@@ -60,8 +68,13 @@ class GrupoController extends Controller
     {
         $validated = $request->validate([
             'denominacion' => 'sometimes|required|string|max:255',
-            'estado' => 'sometimes|required|in:pendiente,apto,activo'
+            'estado' => 'sometimes|nullable|in:pendiente,apto,activo',
+            'estado_grupo_id' => 'sometimes|nullable|exists:estado_grupos,id'
         ]);
+
+        if (array_key_exists('estado_grupo_id', $validated)) {
+            unset($validated['estado']);
+        }
 
         if ($validated !== []) {
             $grupo->update($validated);
@@ -69,7 +82,7 @@ class GrupoController extends Controller
 
         return response()->json([
             'message' => 'Grupo actualizado exitosamente',
-            'grupo' => $grupo,
+            'grupo' => $grupo->load('estadoGrupo'),
             'status' => 200
         ]);
     }
