@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class EstadoComparativa extends EstadoCatalogo
 {
-    protected $table = 'estado_comparativas';
+    protected $table = 'Estado_Comparativa';
+
+    protected $primaryKey = 'estado_comparativa_id';
 
     public function pedidosCotizacion(): HasMany
     {
-        return $this->hasMany(PedidoCotizacion::class, 'estado_comparativa_id');
+        return $this->hasMany(PedidoCotizacion::class, 'id_estado_comparativa', 'estado_comparativa_id');
     }
 }

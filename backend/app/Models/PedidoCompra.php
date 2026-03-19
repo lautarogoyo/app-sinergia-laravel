@@ -2,102 +2,69 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\ResolvesEstadoCatalog;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\HasCompositePrimaryKey;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class PedidoCompra extends Model
+class PedidoCompra extends SinergiaModel
 {
-    /** @use HasFactory<\Database\Factories\PedidoCompraFactory> */
-    use HasFactory;
-    use ResolvesEstadoCatalog;
+    use HasCompositePrimaryKey;
 
-    protected $table = 'pedidos_compra';
-    protected $fillable = [
-        'rol',
-        'path_presupuesto',
-        'path_material',
-        'fecha_pedido',
-        'fecha_entrega_estimada',
-        'estado_contratista_id',
-        'estado_pedido_id',
-        'estado_registro_id',
-        'observaciones',
-        'obra_id',
-        'grupo_id',
-        'proveedores',
-    ];
+    protected $table = 'Pedido_Compra';
 
-    protected $appends = ['estado_contratista', 'estado_pedido', 'estado'];
+    protected $primaryKey = ['obra_id', 'pedido_compra_id'];
+
+    public $incrementing = false;
+
+    protected $keyType = 'array';
 
     protected $casts = [
         'fecha_pedido' => 'date',
         'fecha_entrega_estimada' => 'date',
-        'proveedores' => 'array',
     ];
 
-    public function rubros() : BelongsToMany
+    public function obra(): BelongsTo
     {
-        return $this->belongsToMany(Rubro::class, 'compra_rubro',
-            'pedido_id',
-            'rubro_id')->withTimestamps();
-    }
-
-    public function obra() : BelongsTo
-    {
-        return $this->belongsTo(Obra::class);
-    }
-    
-    public function grupo(): BelongsTo
-    {
-        return $this->belongsTo(\App\Models\Grupo::class);
+        return $this->belongsTo(Obra::class, 'obra_id', 'obra_id');
     }
 
     public function estadoContratista(): BelongsTo
     {
-        return $this->belongsTo(EstadoContratista::class, 'estado_contratista_id');
+        return $this->belongsTo(EstadoContratista::class, 'id_estado_contratista', 'estado_contratista_id');
     }
 
     public function estadoPedido(): BelongsTo
     {
-        return $this->belongsTo(EstadoPedido::class, 'estado_pedido_id');
+        return $this->belongsTo(EstadoPedido::class, 'id_estado_pedido', 'estado_pedido_id');
     }
 
     public function estadoRegistro(): BelongsTo
     {
-        return $this->belongsTo(EstadoRegistro::class, 'estado_registro_id');
+        return $this->belongsTo(EstadoRegistro::class, 'id_estado_registro', 'estado_registro_id');
     }
 
-    public function getEstadoContratistaAttribute(): ?string
+    public function rolPedido(): BelongsTo
     {
-        return $this->estadoContratista?->descripcion;
+        return $this->belongsTo(RolPedido::class, 'id_rol', 'rol_id');
     }
 
-    public function setEstadoContratistaAttribute(?string $value): void
+    public function compraRubros(): HasMany
     {
-        $this->attributes['estado_contratista_id'] = $this->resolveEstadoCatalogId($value, EstadoContratista::class);
+        return $this->hasMany(CompraRubro::class, 'pedido_compra_id', 'pedido_compra_id')
+            ->where('obra_id', $this->obra_id);
     }
 
-    public function getEstadoPedidoAttribute(): ?string
+    public function rubros(): BelongsToMany
     {
-        return $this->estadoPedido?->descripcion;
+        return $this->belongsToMany(
+            Rubro::class,
+            'Compra_Rubro',
+            'pedido_compra_id',
+            'rubro_id',
+            'pedido_compra_id',
+            'rubro_id'
+        )->withPivot('obra_id')
+            ->wherePivot('obra_id', $this->obra_id);
     }
-
-    public function setEstadoPedidoAttribute(?string $value): void
-    {
-        $this->attributes['estado_pedido_id'] = $this->resolveEstadoCatalogId($value, EstadoPedido::class);
-    }
-
-    public function getEstadoAttribute(): ?string
-    {
-        return $this->estadoRegistro?->descripcion;
-    }
-
-    public function setEstadoAttribute(?string $value): void
-    {
-        $this->attributes['estado_registro_id'] = $this->resolveEstadoCatalogId($value, EstadoRegistro::class);
-    }
-
 }

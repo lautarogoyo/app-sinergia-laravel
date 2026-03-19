@@ -2,48 +2,49 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Models\Usuario;
-use App\Models\Rubro;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Proveedor extends Model
+class Proveedor extends SinergiaModel
 {
-    /** @use HasFactory<\Database\Factories\ProveedorFactory> */
-    use HasFactory;
-    protected $table = 'proveedores';
-    protected $fillable = [
-        'nombre',
-        'apellido',
-        'telefono',
-        'email',
-        'monotributista',
-        'direccion',
-        'comentario',
-        'fecha_ingreso',
+    use SoftDeletes;
 
-    ];
-    
+    protected $table = 'Proveedor';
+
+    protected $primaryKey = 'proveedor_id';
+
     protected $casts = [
-        'fecha_ingreso' => 'date:d-m-Y',
+        'fecha_ingreso' => 'date',
         'monotributista' => 'boolean',
-        ];
-    public function usuario() : BelongsTo
+        'deleted_at' => 'datetime',
+    ];
+
+    public function usuario(): BelongsTo
     {
-        return $this->belongsTo(Usuario::class);
+        return $this->belongsTo(Usuario::class, 'usuario_id', 'usuario_id');
     }
 
-    public function rubros() : BelongsToMany
+    public function proveedorRubros(): HasMany
+    {
+        return $this->hasMany(ProveedorRubro::class, 'proveedor_id', 'proveedor_id');
+    }
+
+    public function rubros(): BelongsToMany
     {
         return $this->belongsToMany(
             Rubro::class,
-            'rubro_proveedor',
+            'Proveedor_Rubro',
+            'proveedor_id',
+            'rubro_id',
             'proveedor_id',
             'rubro_id'
-        )->withTimestamps();
+        );
     }
 
+    public function compraRubroProveedores(): HasMany
+    {
+        return $this->hasMany(CompraRubroProveedor::class, 'proveedor_id', 'proveedor_id');
+    }
 }

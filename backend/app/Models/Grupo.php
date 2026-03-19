@@ -2,61 +2,45 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\ResolvesEstadoCatalog;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Grupo extends Model
+class Grupo extends SinergiaModel
 {
-    /** @use HasFactory<\Database\Factories\GrupoFactory> */
-    use HasFactory;
-    use ResolvesEstadoCatalog;
+    protected $table = 'Grupo';
 
-    protected $table = 'grupos';
-
-    protected $fillable = [
-        'denominacion',
-        'estado_grupo_id',
-    ];
-
-    protected $appends = ['estado'];
-    public function empleados() : HasMany
-    {
-        return $this->hasMany(Empleado::class);
-    }
-
-    public function obras() : BelongsToMany
-    {
-        return $this->belongsToMany(Obra::class,'obra_grupo',
-            'grupo_id',
-            'obra_id')->withTimestamps();
-    }
-
-    public function rubros() : BelongsToMany
-    {
-        return $this->belongsToMany(
-            Rubro::class,
-            'rubro_grupo',
-            'grupo_id',
-            'rubro_id'
-        )->withTimestamps();
-    }
+    protected $primaryKey = 'grupo_id';
 
     public function estadoGrupo(): BelongsTo
     {
-        return $this->belongsTo(EstadoGrupo::class, 'estado_grupo_id');
+        return $this->belongsTo(EstadoGrupo::class, 'id_estado', 'estado_grupo_id');
     }
 
-    public function getEstadoAttribute(): ?string
+    public function empleados(): HasMany
     {
-        return $this->estadoGrupo?->descripcion;
+        return $this->hasMany(Empleado::class, 'id_grupo', 'grupo_id');
     }
 
-    public function setEstadoAttribute(?string $value): void
+    public function obraGrupos(): HasMany
     {
-        $this->attributes['estado_grupo_id'] = $this->resolveEstadoCatalogId($value, EstadoGrupo::class);
+        return $this->hasMany(ObraGrupo::class, 'id_grupo', 'grupo_id');
+    }
+
+    public function obras(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Obra::class,
+            'Obra_grupo',
+            'id_grupo',
+            'id_obra',
+            'grupo_id',
+            'obra_id'
+        );
+    }
+
+    public function compraRubroGrupos(): HasMany
+    {
+        return $this->hasMany(CompraRubroGrupo::class, 'grupo_id', 'grupo_id');
     }
 }

@@ -2,34 +2,28 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\HasCompositePrimaryKey;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\Obra;
 
-class OrdenCompra extends Model
+class OrdenCompra extends SinergiaModel
 {
-    /** @use HasFactory<\Database\Factories\OrdenCompraFactory> */
-    use HasFactory;
-    protected $table = 'ordenes_compra';
-    protected $fillable = [
-        'nro_orden_compra',
-        'detalle',
-        'fecha_inicio_orden_compra',
-        'fecha_fin_orden_compra',
-        'obra_id',
-    ];
+    use HasCompositePrimaryKey;
+
+    protected $table = 'Orden_Compra';
+
+    protected $primaryKey = ['obra_id', 'orden_compra_id'];
+
+    public $incrementing = false;
+
+    protected $keyType = 'array';
 
     protected $casts = [
         'fecha_inicio_orden_compra' => 'date',
-        'fecha_fin_orden_compra' => 'date',
+        'fecha_finalizacion_orden_compra' => 'date',
     ];
 
-    /**
-     * An orden de compra belongs to an obra
-     */
     public function obra(): BelongsTo
     {
-        return $this->belongsTo(Obra::class);
+        return $this->belongsTo(Obra::class, 'obra_id', 'obra_id');
     }
 }

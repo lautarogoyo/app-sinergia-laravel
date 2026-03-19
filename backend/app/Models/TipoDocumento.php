@@ -2,22 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\Documentacion;
 
-class TipoDocumento extends Model
+class TipoDocumento extends SinergiaModel
 {
-    use HasFactory;
-    protected $table = 'tipos_documento';
+    protected $table = 'TipoDocumento';
 
-    protected $fillable = [
-        'descripcion'
-    ];
+    protected $primaryKey = 'tipoDocumento_id';
 
-    public function documentaciones() : HasMany
+    public function documentaciones(): HasMany
     {
-        return $this->hasMany(Documentacion::class);
+        return $this->hasMany(Documentacion::class, 'id_tipoDocumento', 'tipoDocumento_id');
     }
 }

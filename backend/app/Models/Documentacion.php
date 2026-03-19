@@ -2,65 +2,37 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\ResolvesEstadoCatalog;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\HasCompositePrimaryKey;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Documentacion extends Model
+class Documentacion extends SinergiaModel
 {
-    use HasFactory;
-    use ResolvesEstadoCatalog;
+    use HasCompositePrimaryKey;
 
-    protected $table = 'documentaciones';
+    protected $table = 'Documentacion';
 
-    protected $fillable = [
-        'path',
-        'fecha_vencimiento',
-        'estado_documentacion_id',
-        'mime',
-        'size',
-        'empleado_id',
-        'tipo_documento_id',
-    ];
+    protected $primaryKey = ['empleado_id', 'documentacion_id'];
+
+    public $incrementing = false;
+
+    protected $keyType = 'array';
 
     protected $casts = [
         'fecha_vencimiento' => 'date',
     ];
 
-    protected $appends = ['url', 'estado'];
-
-    public function getUrlAttribute(): ?string
+    public function empleado(): BelongsTo
     {
-        if (! $this->path) {
-            return null;
-        }
-
-        return '/api/empleados/' . $this->empleado_id . '/documentaciones/' . $this->id . '/download';
+        return $this->belongsTo(Empleado::class, 'empleado_id', 'empleado_id');
     }
 
     public function tipoDocumento(): BelongsTo
     {
-        return $this->belongsTo(TipoDocumento::class);
-    }
-
-    public function empleado(): BelongsTo
-    {
-        return $this->belongsTo(Empleado::class);
+        return $this->belongsTo(TipoDocumento::class, 'id_tipoDocumento', 'tipoDocumento_id');
     }
 
     public function estadoDocumentacion(): BelongsTo
     {
-        return $this->belongsTo(EstadoDocumentacion::class, 'estado_documentacion_id');
-    }
-
-    public function getEstadoAttribute(): ?string
-    {
-        return $this->estadoDocumentacion?->descripcion;
-    }
-
-    public function setEstadoAttribute(?string $value): void
-    {
-        $this->attributes['estado_documentacion_id'] = $this->resolveEstadoCatalogId($value, EstadoDocumentacion::class);
+        return $this->belongsTo(EstadoDocumentacion::class, 'id_estado_documentacion', 'estado_documentacion_id');
     }
 }

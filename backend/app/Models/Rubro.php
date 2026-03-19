@@ -2,47 +2,34 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Models\PedidoCompra;
-use App\Models\Proveedor;
-use App\Models\Grupo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Rubro extends Model
+class Rubro extends SinergiaModel
 {
-    /** @use HasFactory<\Database\Factories\RubroFactory> */
-    use HasFactory;
-    protected $table = 'rubros';
-    protected $fillable = [
-        'descripcion'
-    ];
+    protected $table = 'Rubro';
 
-    public function pedidosCompra() : BelongsToMany
+    protected $primaryKey = 'rubro_id';
+
+    public function proveedorRubros(): HasMany
     {
-        return $this->belongsToMany(PedidoCompra::class, 'compra_rubro',
-            'rubro_id',
-            'pedido_id')->withTimestamps();
+        return $this->hasMany(ProveedorRubro::class, 'rubro_id', 'rubro_id');
     }
 
-    public function proveedores() : BelongsToMany
+    public function proveedores(): BelongsToMany
     {
         return $this->belongsToMany(
             Proveedor::class,
-            'rubro_proveedor',
+            'Proveedor_Rubro',
+            'rubro_id',
+            'proveedor_id',
             'rubro_id',
             'proveedor_id'
-        )->withTimestamps();
+        );
     }
 
-    public function grupos() : BelongsToMany
+    public function compraRubros(): HasMany
     {
-        return $this->belongsToMany(
-            Grupo::class,
-            'rubro_grupo',
-            'rubro_id',
-            'grupo_id'
-        )->withTimestamps();
+        return $this->hasMany(CompraRubro::class, 'rubro_id', 'rubro_id');
     }
 }

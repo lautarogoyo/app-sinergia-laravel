@@ -2,85 +2,67 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\ResolvesEstadoCatalog;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-
-class Obra extends Model
+class Obra extends SinergiaModel
 {
-    /** @use HasFactory<\Database\Factories\ObraFactory> */
-    use HasFactory;
-    use ResolvesEstadoCatalog;
+    use SoftDeletes;
 
-    protected $table = 'obras';
-    protected $fillable = [
-        'nro_obra',
-        'detalle',
-        'estado_obra_id',
-        'fecha_visto',
-        'fecha_ingreso',
-        'fecha_programacion_inicio',
-        'fecha_recepcion_provisoria',
-        'fecha_recepcion_definitiva',
-        'detalle_caratula',
-    ];
+    protected $table = 'Obra';
 
-    protected $appends = ['estado'];
+    protected $primaryKey = 'obra_id';
 
     protected $casts = [
-        'fecha_visto' => 'date',
         'fecha_ingreso' => 'date',
+        'fecha_visto' => 'date',
         'fecha_programacion_inicio' => 'date',
         'fecha_recepcion_provisoria' => 'date',
         'fecha_recepcion_definitiva' => 'date',
+        'deleted_at' => 'datetime',
     ];
-
-
-    public function ordenCompra() : HasOne
-    {
-        return $this->hasOne(OrdenCompra::class);
-    }
-
-    public function comentarios () : HasMany
-    {
-        return $this->hasMany(Comentario::class);
-    }
-    
-    public function pedidosCotizacion () : HasMany
-    {
-        return $this->hasMany(PedidoCotizacion::class);
-    }
-
-    public function grupos() : BelongsToMany
-    {
-        return $this->belongsToMany(Grupo::class,'obra_grupo',
-            'obra_id',
-            'grupo_id')->withTimestamps();
-    }
-
-    public function pedidoCompra() : HasMany
-    {
-        return $this->hasMany(PedidoCompra::class);
-    }
 
     public function estadoObra(): BelongsTo
     {
-        return $this->belongsTo(EstadoObra::class, 'estado_obra_id');
+        return $this->belongsTo(EstadoObra::class, 'id_estado_obra', 'estado_obra_id');
     }
 
-    public function getEstadoAttribute(): ?string
+    public function pedidosCompra(): HasMany
     {
-        return $this->estadoObra?->descripcion;
+        return $this->hasMany(PedidoCompra::class, 'obra_id', 'obra_id');
     }
 
-    public function setEstadoAttribute(?string $value): void
+    public function pedidosCotizacion(): HasMany
     {
-        $this->attributes['estado_obra_id'] = $this->resolveEstadoCatalogId($value, EstadoObra::class);
+        return $this->hasMany(PedidoCotizacion::class, 'obra_id', 'obra_id');
+    }
+
+    public function comentarios(): HasMany
+    {
+        return $this->hasMany(Comentario::class, 'obra_id', 'obra_id');
+    }
+
+    public function ordenesCompra(): HasMany
+    {
+        return $this->hasMany(OrdenCompra::class, 'obra_id', 'obra_id');
+    }
+
+    public function obraGrupos(): HasMany
+    {
+        return $this->hasMany(ObraGrupo::class, 'id_obra', 'obra_id');
+    }
+
+    public function grupos(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Grupo::class,
+            'Obra_grupo',
+            'id_obra',
+            'id_grupo',
+            'obra_id',
+            'grupo_id'
+        );
     }
 }
-

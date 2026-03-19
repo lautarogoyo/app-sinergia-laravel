@@ -2,40 +2,28 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\Proveedor;
+use Illuminate\Support\Facades\Hash;
 
-class Usuario extends Model
+class Usuario extends SinergiaModel
 {
-    /** @use HasFactory<\Database\Factories\UsuarioFactory> */
-    use HasFactory;
+    protected $table = 'Usuario';
 
-    // Añadir campos asignables
-    protected $fillable = [
-        'nombre',
-        'apellido',
-        'email',
-        'contrasenia',
-    ];
+    protected $primaryKey = 'usuario_id';
 
-    // Ocultar la contraseña al serializar
     protected $hidden = [
         'contrasenia',
     ];
 
-    // Mutator para hashear la contrasenia siempre que se asigne
-    public function setContraseniaAttribute($value)
+    public function setContraseniaAttribute($value): void
     {
         if ($value !== null && $value !== '') {
             $this->attributes['contrasenia'] = Hash::needsRehash($value) ? Hash::make($value) : $value;
         }
     }
 
-    public function proveedores() : HasMany
+    public function proveedores(): HasMany
     {
-        return $this->hasMany(Proveedor::class);
+        return $this->hasMany(Proveedor::class, 'usuario_id', 'usuario_id');
     }
 }

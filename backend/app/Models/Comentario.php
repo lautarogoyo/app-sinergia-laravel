@@ -2,22 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\HasCompositePrimaryKey;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Models\Obra;
 
-class Comentario extends Model
+class Comentario extends SinergiaModel
 {
-    /** @use HasFactory<\Database\Factories\ComentarioFactory> */
-    use HasFactory;
-    protected $table = 'comentarios';
-    protected $fillable = [
-        'denominacion',
-    ];
+    use HasCompositePrimaryKey;
 
-    public function obra () : BelongsTo
+    protected $table = 'Comentario';
+
+    protected $primaryKey = ['obra_id', 'comentario_id'];
+
+    public $incrementing = false;
+
+    protected $keyType = 'array';
+
+    public function obra(): BelongsTo
     {
-        return $this->belongsTo(Obra::class);
+        return $this->belongsTo(Obra::class, 'obra_id', 'obra_id');
     }
 }

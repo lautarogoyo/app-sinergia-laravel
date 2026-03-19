@@ -2,66 +2,37 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\ResolvesEstadoCatalog;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Concerns\HasCompositePrimaryKey;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class PedidoCotizacion extends Model
+class PedidoCotizacion extends SinergiaModel
 {
-    use HasFactory;
-    use ResolvesEstadoCatalog;
+    use HasCompositePrimaryKey;
 
-    protected $table = 'pedidos_cotizacion';
+    protected $table = 'Pedido_Cotizacion';
 
-    protected $fillable = [
-        'path_archivo_cotizacion',
-        'path_archivo_mano_obra',
-        'fecha_cierre_cotizacion',
-        'estado_cotizacion_id',
-        'estado_comparativa_id',
-        'obra_id'
-    ];
+    protected $primaryKey = ['obra_id', 'pedido_cotizacion_id'];
 
-    protected $appends = ['estado_cotizacion', 'estado_comparativa'];
+    public $incrementing = false;
+
+    protected $keyType = 'array';
 
     protected $casts = [
         'fecha_cierre_cotizacion' => 'date',
     ];
 
-
     public function obra(): BelongsTo
     {
-        return $this->belongsTo(Obra::class);
+        return $this->belongsTo(Obra::class, 'obra_id', 'obra_id');
     }
 
     public function estadoCotizacion(): BelongsTo
     {
-        return $this->belongsTo(EstadoCotizacion::class, 'estado_cotizacion_id');
+        return $this->belongsTo(EstadoCotizacion::class, 'id_estado_cotizacion', 'estado_cotizacion_id');
     }
 
     public function estadoComparativa(): BelongsTo
     {
-        return $this->belongsTo(EstadoComparativa::class, 'estado_comparativa_id');
-    }
-
-    public function getEstadoCotizacionAttribute(): ?string
-    {
-        return $this->estadoCotizacion?->descripcion;
-    }
-
-    public function setEstadoCotizacionAttribute(?string $value): void
-    {
-        $this->attributes['estado_cotizacion_id'] = $this->resolveEstadoCatalogId($value, EstadoCotizacion::class);
-    }
-
-    public function getEstadoComparativaAttribute(): ?string
-    {
-        return $this->estadoComparativa?->descripcion;
-    }
-
-    public function setEstadoComparativaAttribute(?string $value): void
-    {
-        $this->attributes['estado_comparativa_id'] = $this->resolveEstadoCatalogId($value, EstadoComparativa::class);
+        return $this->belongsTo(EstadoComparativa::class, 'id_estado_comparativa', 'estado_comparativa_id');
     }
 }
