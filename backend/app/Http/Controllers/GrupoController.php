@@ -22,8 +22,6 @@ class GrupoController extends Controller
     {
         $validated = $request->validate([
             'denominacion'   => 'required|string|max:255',
-            // CORRECCIÓN: estado como string directo
-            'estado'         => 'nullable|in:pendiente,apto,activo',
             'estado_grupo_id' => 'nullable|exists:Estado_Grupo,estado_grupo_id',
         ]);
 
@@ -34,7 +32,6 @@ class GrupoController extends Controller
         }
 
         // CORRECCIÓN: estado string directo, default pendiente
-        $data['estado'] = $validated['estado'] ?? 'pendiente';
 
         $grupo = Grupo::create($data);
 
@@ -57,7 +54,6 @@ class GrupoController extends Controller
     {
         $validated = $request->validate([
             'denominacion'    => 'sometimes|required|string|max:255',
-            'estado'          => 'sometimes|nullable|in:pendiente,apto,activo',
             'estado_grupo_id' => 'sometimes|nullable|exists:Estado_Grupo,estado_grupo_id',
         ]);
 

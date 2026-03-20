@@ -19,10 +19,6 @@ return new class extends Migration
             $table->date('fecha_entrega_estimada')->nullable();
             $table->text('observaciones')->nullable();
             // CORRECCIÓN: estados como strings directos (lo que realmente guarda el sistema)
-            $table->string('estado_contratista')->default('Falta Cargar')->nullable();
-            $table->string('estado_pedido')->default('pendiente');
-            $table->string('estado')->default('activo'); // activo/archivado
-            $table->string('rol')->default('cotizar');
             // FKs opcionales para catálogos (si se usan en el futuro)
             $table->unsignedInteger('id_estado_contratista')->nullable();
             $table->unsignedInteger('id_estado_pedido')->nullable();
@@ -79,8 +75,6 @@ return new class extends Migration
             $table->string('path_archivo_mano_obra')->nullable();
             $table->date('fecha_cierre_cotizacion')->nullable();
             // CORRECCIÓN: estados como strings directos
-            $table->string('estado_cotizacion')->nullable();
-            $table->string('estado_comparativa')->nullable();
             // FKs opcionales
             $table->unsignedInteger('id_estado_cotizacion')->nullable();
             $table->unsignedInteger('id_estado_comparativa')->nullable();
@@ -149,7 +143,6 @@ return new class extends Migration
             $table->unsignedBigInteger('size')->nullable();
             $table->date('fecha_vencimiento')->nullable();
             // CORRECCIÓN: estado como string directo
-            $table->string('estado')->default('vigente')->nullable();
             $table->unsignedInteger('id_tipoDocumento');
             $table->unsignedInteger('id_estado_documentacion')->nullable();
 

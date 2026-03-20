@@ -79,8 +79,6 @@ return new class extends Migration
         Schema::create('Grupo', function (Blueprint $table) {
             $table->increments('grupo_id');
             $table->string('denominacion');
-            // CORRECCIÓN: estado como string directo, id_estado nullable
-            $table->string('estado')->default('pendiente');
             $table->unsignedInteger('id_estado')->nullable();
 
             $table->foreign('id_estado')
@@ -102,7 +100,6 @@ return new class extends Migration
             $table->date('fecha_recepcion_definitiva')->nullable();
             $table->string('detalle_caratula')->nullable();
             // CORRECCIÓN: estado como string directo (no FK), id_estado_obra nullable
-            $table->string('estado')->default('pedida');
             $table->unsignedInteger('id_estado_obra')->nullable();
             $table->softDeletes();
 
@@ -123,7 +120,6 @@ return new class extends Migration
             // CORRECCIÓN: id_grupo nullable — un empleado puede no tener grupo
             $table->unsignedInteger('id_grupo')->nullable();
             // CORRECCIÓN: estado como string directo, id_estado nullable
-            $table->string('estado')->default('activo');
             $table->unsignedInteger('id_estado')->nullable();
             $table->softDeletes();
 
