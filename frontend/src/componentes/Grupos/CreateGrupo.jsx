@@ -1,17 +1,20 @@
 import { PostGrupo } from "../api/grupos.js";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import { useEstadosGrupo } from "../hooks/useGrupos.jsx";
 
-const ESTADOS_GRUPO = ["pendiente", "apto", "activo"];
 
 export default function CreateGrupo() {
 	const { register, handleSubmit, formState: {errors}, reset } = useForm({
     defaultValues: {
-      estado: "pendiente",
+			estado_grupo_id: "",
     },
   });
 
+  	const {data, isLoading} = useEstadosGrupo();
+	const estados = data?.estados ?? [];
+	
 
     const navigate = useNavigate();
     const queryClient = useQueryClient();
@@ -27,8 +30,14 @@ export default function CreateGrupo() {
     },
   });
 
-	const onSubmit = handleSubmit((data) => {
-		mutate(data);
+	const onSubmit = handleSubmit((formData) => {
+		const payload = {
+			denominacion: formData.denominacion,
+			...(formData.estado_grupo_id
+				? { estado_grupo_id: Number(formData.estado_grupo_id) }
+				: {}),
+		};
+		mutate(payload);
 	});
 
 	return (
@@ -58,24 +67,26 @@ export default function CreateGrupo() {
 				)}
 
         <div className="flex flex-col">
-          <label htmlFor="estado" className="mb-2 text-lg font-medium text-gray-700">
+					<label htmlFor="estado_grupo_id" className="mb-2 text-lg font-medium text-gray-700">
             Estado
           </label>
           <select
-            id="estado"
-            {...register("estado", { required: "El estado es obligatorio" })}
+						id="estado_grupo_id"
+						{...register("estado_grupo_id", { required: "El estado es obligatorio" })}
             className="w-full px-4 py-2 rounded border border-gray-300 text-lg focus:outline-none focus:ring focus:border-blue-400"
+						disabled={isLoading}
           >
-            {ESTADOS_GRUPO.map((estado) => (
-              <option key={estado} value={estado}>
-                {estado}
+						<option value="">Seleccione un estado</option>
+						{estados.map((estado) => (
+							<option key={estado.estado_grupo_id} value={estado.estado_grupo_id}>
+								{estado.descripcion}
               </option>
             ))}
           </select>
         </div>
 
-        {errors?.estado?.message && (
-          <p className="text-red-600 text-sm font-semibold">{errors.estado.message}</p>
+				{errors?.estado_grupo_id?.message && (
+					<p className="text-red-600 text-sm font-semibold">{errors.estado_grupo_id.message}</p>
         )}
 
 				<div className="flex gap-3 justify-end pt-2">

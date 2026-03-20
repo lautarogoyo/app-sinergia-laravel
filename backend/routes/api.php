@@ -18,6 +18,7 @@ use App\Http\Controllers\PedidoCompraController;
 use App\Http\Controllers\CompraRubroController;
 use App\Http\Controllers\ProveedorRubroGrupoController;
 use App\Http\Controllers\ObraAdjudicadaController;
+use App\Http\Controllers\EstadoGrupoController;
 
 Route::apiResource('empleados', EmpleadoController::class);
 
@@ -82,3 +83,5 @@ Route::delete(
     'pedidos_cotizacion/{pedido}/grupos/{grupo}',
     [PedidoCotizacionController::class, 'quitarGrupo']
 );
+
+Route::get('estado_grupos', [EstadoGrupoController::class, 'index']);

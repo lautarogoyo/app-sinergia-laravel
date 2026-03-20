@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchGrupoById, fetchGrupos, UpdateGrupo } from '../api/grupos';
+import { fetchEstadoGrupo, fetchGrupoById, fetchGrupos, UpdateGrupo } from '../api/grupos';
 
 export const useGrupos = () => {
   return useQuery({
@@ -13,6 +13,14 @@ export const useGrupoById = (id) => {
   return useQuery({
     queryKey: ['grupo', id],
     queryFn : () => fetchGrupoById(id),
+    refetchOnWindowFocus: false
+  });
+}
+
+export const useEstadosGrupo = () => {
+  return useQuery({
+    queryKey: ['estadosGrupo'],
+    queryFn: () => fetchEstadoGrupo(),
     refetchOnWindowFocus: false
   });
 }

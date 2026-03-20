@@ -25,3 +25,8 @@ export const DeleteGrupo = async (id) => {
   const {data} = await axios.delete(`${backendUrl}/api/grupos/${id}`);
   return data;
 }
+
+export const fetchEstadoGrupo = async () => {
+  const { data } = await axios.get(`${backendUrl}/api/estado_grupos`);
+  return data;
+}
