@@ -2,19 +2,19 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UpdateGrupo } from "../api/grupos.js";
-import { useGrupoById } from "../hooks/useGrupos.jsx";
+import { useEstadosGrupo, useGrupoById } from "../hooks/useGrupos.jsx";
 import { useEffect } from "react";
-
-const ESTADOS_GRUPO = ["pendiente", "apto", "activo"];
 
 export default function EditGrupo() {
     const { id } = useParams();
-    const { register, handleSubmit, formState: {errors}, reset } = useForm({
+    const { register, handleSubmit, formState: {errors}, reset, setValue } = useForm({
         defaultValues: {
-            estado: "pendiente",
+            estado_grupo_id: "",
         },
     });
     const { data, isLoading } = useGrupoById(id);
+    const { data: estadosData, isLoading: isLoadingEstados } = useEstadosGrupo();
+    const estados = estadosData?.estados ?? [];
     
     const navigate = useNavigate();
     const queryClient = useQueryClient();
@@ -22,17 +22,22 @@ export default function EditGrupo() {
     // Cargar los datos del grupo cuando se obtienen
     useEffect(() => {
         if (data) {
+            const estadoGrupoId = data?.id_estado ?? data?.estadoGrupo?.estado_grupo_id ?? "";
             reset({
                 denominacion: data.denominacion,
-                estado: data.estado ?? "pendiente",
+                estado_grupo_id: String(estadoGrupoId),
             });
+
+            if (estadoGrupoId !== "") {
+                setValue("estado_grupo_id", String(estadoGrupoId));
+            }
         }
-    }, [data, reset]);
+    }, [data, reset, setValue]);
 
     const { mutate } = useMutation({
-    mutationFn: (data) => UpdateGrupo(id, data),
+    mutationFn: (payload) => UpdateGrupo(id, payload),
     onSuccess: () => {
-        queryClient.invalidateQueries(["grupos"]);
+        queryClient.invalidateQueries({ queryKey: ["grupos"] });
         navigate("/grupos");
     },
     onError: (error) => {
@@ -40,8 +45,14 @@ export default function EditGrupo() {
     },
     });
 
-    const onSubmit = handleSubmit (data => {
-        mutate(data);
+    const onSubmit = handleSubmit((formData) => {
+        const payload = {
+            denominacion: formData.denominacion,
+            ...(formData.estado_grupo_id
+                ? { estado_grupo_id: Number(formData.estado_grupo_id) }
+                : {}),
+        };
+        mutate(payload);
     })
     
     return (
@@ -96,24 +107,26 @@ export default function EditGrupo() {
 				)}
 
                 <div className="flex flex-col">
-                    <label htmlFor="estado" className="mb-2 text-lg font-medium text-gray-700">
+                    <label htmlFor="estado_grupo_id" className="mb-2 text-lg font-medium text-gray-700">
                         Estado
                     </label>
                     <select
-                        id="estado"
-                        {...register("estado", { required: "El estado es obligatorio" })}
+                        id="estado_grupo_id"
+                        {...register("estado_grupo_id", { required: "El estado es obligatorio" })}
                         className="w-full px-4 py-2 rounded border border-gray-300 text-lg focus:outline-none focus:ring focus:border-blue-400"
+                        disabled={isLoadingEstados}
                     >
-                        {ESTADOS_GRUPO.map((estado) => (
-                            <option key={estado} value={estado}>
-                                {estado}
+                        <option value="">Seleccione un estado</option>
+                        {estados.map((estado) => (
+                            <option key={estado.estado_grupo_id} value={estado.estado_grupo_id}>
+                                {estado.descripcion?.toUpperCase()}
                             </option>
                         ))}
                     </select>
                 </div>
 
-                {errors?.estado?.message && (
-                    <p className="text-red-600 text-sm font-semibold">{errors.estado.message}</p>
+                {errors?.estado_grupo_id?.message && (
+                    <p className="text-red-600 text-sm font-semibold">{errors.estado_grupo_id.message}</p>
                 )}
 
 				<div className="flex gap-3 justify-end pt-2">

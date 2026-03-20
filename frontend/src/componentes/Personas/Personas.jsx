@@ -126,8 +126,10 @@ export default function Personas() {
             ) : gruposFiltrados.length === 0 ? (
               <TableEmpty cols={3} mensaje="No hay grupos para mostrar." />
             ) : (
-              gruposFiltrados.map((g) => (
-                <tr key={g.id} className="hover:bg-gray-200 transition-colors duration-150">
+              gruposFiltrados.map((g) => {
+                const grupoId = g.grupo_id ?? g.id;
+                return (
+                <tr key={grupoId} className="hover:bg-gray-200 transition-colors duration-150">
                   <td className={tdClass}>{g.denominacion || "Sin nombre"}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-center gap-2">
@@ -136,7 +138,7 @@ export default function Personas() {
                       </span>
                       <select
                         value={g.estado ?? "pendiente"}
-                        onChange={(e) => updateEstado({ id: g.id, estado: e.target.value })}
+                        onChange={(e) => updateEstado({ id: grupoId, estado: e.target.value })}
                         className="px-3 py-2 rounded border border-gray-300 text-sm font-semibold focus:outline-none focus:ring focus:border-blue-400"
                       >
                         {ESTADOS_GRUPO.map((e) => <option key={e} value={e}>{e}</option>)}
@@ -145,12 +147,13 @@ export default function Personas() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex gap-2 justify-center flex-wrap">
-                      <button type="button" onClick={() => navigate(`/editargrupo/${g.id}`)} className={btnBlue}>Editar</button>
-                      <button type="button" onClick={() => navigate(`/eliminargrupo/${g.id}`)} className={btnRed}>Eliminar</button>
+                      <button type="button" onClick={() => navigate(`/editargrupo/${grupoId}`)} className={btnBlue}>Editar</button>
+                      <button type="button" onClick={() => navigate(`/eliminargrupo/${grupoId}`)} className={btnRed}>Eliminar</button>
                     </div>
                   </td>
                 </tr>
-              ))
+                );
+              })
             )}
           </tbody>
         </table>

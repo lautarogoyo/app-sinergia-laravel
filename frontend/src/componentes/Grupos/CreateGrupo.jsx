@@ -79,7 +79,7 @@ export default function CreateGrupo() {
 						<option value="">Seleccione un estado</option>
 						{estados.map((estado) => (
 							<option key={estado.estado_grupo_id} value={estado.estado_grupo_id}>
-								{estado.descripcion}
+								{estado.descripcion?.toUpperCase()}
               </option>
             ))}
           </select>

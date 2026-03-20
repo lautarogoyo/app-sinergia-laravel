@@ -1,9 +1,11 @@
 import {useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useGrupos } from "../hooks/useGrupos.jsx";
 
 
 export default function Grupos() {
 	const [filtro, setFiltro] = useState("");
+	const navigate = useNavigate();
 	const { isLoading, isError, data: grupos = [] } = useGrupos();
 
 	if (isLoading) return (
@@ -34,9 +36,10 @@ export default function Grupos() {
 
 	const gruposFiltrados = grupos.filter((g) => {
 		const val = filtro.toLowerCase();
+		const grupoId = g.grupo_id ?? g.id;
 		return (
 			(g.denominacion ?? "").toLowerCase().includes(val) ||
-			(g.id ?? "").toString().includes(val)
+			(grupoId ?? "").toString().includes(val)
 		);
 	});
 
@@ -57,7 +60,7 @@ export default function Grupos() {
 					onChange={(e) => setFiltro(e.target.value)}
 				/>
 				<div className="mt-2">
-					<button className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => window.location.href = `/crear-grupo`}>Agregar Grupo</button>
+					<button className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => navigate("/crear-grupo")}>Agregar Grupo</button>
 				</div>
 			</div>
 
@@ -72,20 +75,22 @@ export default function Grupos() {
 					</thead>
 					<tbody className="bg-gray-50 divide-y divide-gray-200 text-center">
 						{gruposFiltrados.length > 0 ? (
-							gruposFiltrados.map((grupo) => (
-								<tr key={grupo.id} className="hover:bg-gray-200 transition-colors duration-150">
+							gruposFiltrados.map((grupo) => {
+								const grupoId = grupo.grupo_id ?? grupo.id;
+								return (
+								<tr key={grupoId} className="hover:bg-gray-200 transition-colors duration-150">
 									<td className="text-lg text-gray-800 px-4 py-3">{grupo.denominacion ?? "Sin nombre"}</td>
 									<td className="px-6 py-4">
 										<div className="flex gap-2 justify-center flex-wrap">
 											<button
 											className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-											onClick={() => (window.location.href = `/editargrupo/${grupo.id}`)}
+											onClick={() => navigate(`/editargrupo/${grupoId}`)}
 										>
 											Editar
 										</button>
 										<button
 											className="bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-											onClick={() => (window.location.href = `/eliminargrupo/${grupo.id}`)}
+											onClick={() => navigate(`/eliminargrupo/${grupoId}`)}
 										>
 											Eliminar
 										</button>
@@ -93,7 +98,8 @@ export default function Grupos() {
 										</div>
 									</td>
 								</tr>
-							))
+							);
+							})
 						) : (
 							<tr>
 								<td colSpan="2" className="px-6 py-4 text-center text-gray-500">
