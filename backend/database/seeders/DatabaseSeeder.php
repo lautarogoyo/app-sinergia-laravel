@@ -2,26 +2,27 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Database\Seeders\TipoDocumentoSeeder;
+use Illuminate\Support\Facades\DB;
+use App\Models\User;
 
+/**
+ * CORRECCIÓN: Seeders para todas las tablas de catálogo que son requeridas
+ * por las FKs. Sin estos seeders la aplicación no puede funcionar correctamente
+ * porque las FKs referencian IDs que no existen.
+ */
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
         $this->call([
+            EstadoCatalogoSeeder::class,
             TipoDocumentoSeeder::class,
+            RolPedidoSeeder::class,
         ]);
 
-        // User::factory(10)->create();
-
         User::factory()->create([
-            'name' => 'Test User',
+            'name'  => 'Test User',
             'email' => 'test@example.com',
         ]);
     }

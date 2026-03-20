@@ -12,6 +12,10 @@ class Grupo extends SinergiaModel
 
     protected $primaryKey = 'grupo_id';
 
+    /**
+     * CORRECCIÓN: estado es un campo string directo en la tabla.
+     * estadoGrupo() sigue disponible si se usa la FK opcional.
+     */
     public function estadoGrupo(): BelongsTo
     {
         return $this->belongsTo(EstadoGrupo::class, 'id_estado', 'estado_grupo_id');

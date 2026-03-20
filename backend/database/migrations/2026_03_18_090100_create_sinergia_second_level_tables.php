@@ -10,16 +10,27 @@ return new class extends Migration
     {
         Schema::create('Pedido_Compra', function (Blueprint $table) {
             $table->unsignedInteger('obra_id');
+            // CORRECCIÓN: autoIncrement no funciona en PK compuesta en MySQL.
+            // Usamos unsignedInteger y generamos el ID en el modelo con un observer/boot.
             $table->unsignedInteger('pedido_compra_id');
             $table->string('path_presupuesto')->nullable();
             $table->string('path_material')->nullable();
             $table->date('fecha_pedido');
             $table->date('fecha_entrega_estimada')->nullable();
-            $table->string('observaciones')->nullable();
+            $table->text('observaciones')->nullable();
+            // CORRECCIÓN: estados como strings directos (lo que realmente guarda el sistema)
+            $table->string('estado_contratista')->default('Falta Cargar')->nullable();
+            $table->string('estado_pedido')->default('pendiente');
+            $table->string('estado')->default('activo'); // activo/archivado
+            $table->string('rol')->default('cotizar');
+            // FKs opcionales para catálogos (si se usan en el futuro)
             $table->unsignedInteger('id_estado_contratista')->nullable();
-            $table->unsignedInteger('id_estado_pedido');
-            $table->unsignedInteger('id_estado_registro');
-            $table->unsignedInteger('id_rol');
+            $table->unsignedInteger('id_estado_pedido')->nullable();
+            $table->unsignedInteger('id_estado_registro')->nullable();
+            $table->unsignedInteger('id_rol')->nullable();
+            // Relaciones directas usadas por el frontend
+            $table->unsignedInteger('grupo_id')->nullable();
+            $table->json('proveedores')->nullable(); // array de strings de proveedores
 
             $table->primary(['obra_id', 'pedido_compra_id']);
 
@@ -52,16 +63,27 @@ return new class extends Migration
                 ->on('RolPedido')
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
+
+            $table->foreign('grupo_id')
+                ->references('grupo_id')
+                ->on('Grupo')
+                ->onUpdate('cascade')
+                ->onDelete('set null');
         });
 
         Schema::create('Pedido_Cotizacion', function (Blueprint $table) {
             $table->unsignedInteger('obra_id');
             $table->unsignedInteger('pedido_cotizacion_id');
-            $table->string('path_archivo')->nullable();
+            // CORRECCIÓN: nombres de columnas alineados con lo que usa el controller
+            $table->string('path_archivo_cotizacion')->nullable();
             $table->string('path_archivo_mano_obra')->nullable();
             $table->date('fecha_cierre_cotizacion')->nullable();
-            $table->unsignedInteger('id_estado_cotizacion');
-            $table->unsignedInteger('id_estado_comparativa');
+            // CORRECCIÓN: estados como strings directos
+            $table->string('estado_cotizacion')->nullable();
+            $table->string('estado_comparativa')->nullable();
+            // FKs opcionales
+            $table->unsignedInteger('id_estado_cotizacion')->nullable();
+            $table->unsignedInteger('id_estado_comparativa')->nullable();
 
             $table->primary(['obra_id', 'pedido_cotizacion_id']);
 
@@ -87,7 +109,9 @@ return new class extends Migration
         Schema::create('Comentario', function (Blueprint $table) {
             $table->unsignedInteger('obra_id');
             $table->unsignedInteger('comentario_id');
-            $table->string('detalle');
+            // CORRECCIÓN: el modelo y controller usan 'denominacion', no 'detalle'
+            $table->text('denominacion');
+            $table->timestamps();
 
             $table->primary(['obra_id', 'comentario_id']);
 
@@ -101,10 +125,12 @@ return new class extends Migration
         Schema::create('Orden_Compra', function (Blueprint $table) {
             $table->unsignedInteger('obra_id');
             $table->unsignedInteger('orden_compra_id');
-            $table->integer('nro_oc');
-            $table->string('detalle');
+            // CORRECCIÓN: nro_orden_compra como string (el frontend envía strings)
+            $table->string('nro_orden_compra')->nullable();
+            $table->text('detalle')->nullable();
             $table->date('fecha_inicio_orden_compra')->nullable();
-            $table->date('fecha_finalizacion_orden_compra')->nullable();
+            // CORRECCIÓN: nombre alineado con controller (fecha_fin_orden_compra)
+            $table->date('fecha_fin_orden_compra')->nullable();
 
             $table->primary(['obra_id', 'orden_compra_id']);
 
@@ -119,9 +145,13 @@ return new class extends Migration
             $table->unsignedInteger('empleado_id');
             $table->unsignedInteger('documentacion_id');
             $table->string('path');
-            $table->date('fecha_vencimiento');
+            $table->string('mime')->nullable();
+            $table->unsignedBigInteger('size')->nullable();
+            $table->date('fecha_vencimiento')->nullable();
+            // CORRECCIÓN: estado como string directo
+            $table->string('estado')->default('vigente')->nullable();
             $table->unsignedInteger('id_tipoDocumento');
-            $table->unsignedInteger('id_estado_documentacion');
+            $table->unsignedInteger('id_estado_documentacion')->nullable();
 
             $table->primary(['empleado_id', 'documentacion_id']);
 

@@ -7,100 +7,88 @@ use Illuminate\Http\Request;
 
 class ProveedorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $proveedores = Proveedor::with('usuario')->get();
-        $data = [
+
+        return response()->json([
             'proveedores' => $proveedores,
-            'status' => 200
-        ];
-        return response()->json($data, 200);
+            'status'      => 200,
+        ], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */public function store(Request $request)
+    public function store(Request $request)
     {
-        $validator = $request->validate([
-            'nombre'         => 'required|max:255',
-            'apellido'       => 'sometimes|nullable|max:255',
-            'telefono'       => 'sometimes|nullable|max:255',
-            'email'          => 'sometimes|nullable|email',
+        $validated = $request->validate([
+            'nombre'         => 'required|string|max:255',
+            'apellido'       => 'sometimes|nullable|string|max:255',
+            'telefono'       => 'sometimes|nullable|string|max:20',
+            'email'          => 'sometimes|nullable|email|max:255',
+            // CORRECCIÓN: monotributista nullable con default false
             'monotributista' => 'sometimes|nullable|boolean',
-            'direccion'      => 'sometimes|nullable|max:255',
-            'comentario'     => 'sometimes|nullable|max:1000',
+            'direccion'      => 'sometimes|nullable|string|max:255',
+            'comentario'     => 'sometimes|nullable|string|max:1000',
+            // CORRECCIÓN: usuario_id nullable — no requerido para crear proveedor
+            'usuario_id'     => 'sometimes|nullable|exists:Usuario,usuario_id',
         ]);
 
-        $validator['fecha_ingreso'] = now()->toDateString();
+        $validated['fecha_ingreso']  = now()->toDateString();
+        $validated['monotributista'] = $validated['monotributista'] ?? false;
 
-        $proveedor = Proveedor::create($validator);
+        $proveedor = Proveedor::create($validated);
 
         return response()->json([
             'proveedor' => $proveedor,
-            'status'    => 201
+            'status'    => 201,
         ], 201);
-    }   
+    }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Proveedor $proveedor)
     {
         return response()->json([
             'proveedor' => $proveedor->load('usuario'),
-            'status' => 200
+            'status'    => 200,
         ]);
     }
 
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Proveedor $proveedor)
     {
         $validated = $request->validate([
-            'nombre' => 'sometimes|required|max:255',
-            'apellido' => 'sometimes|nullable|max:255',
-            'telefono' => 'sometimes|nullable|digits:10',
-            'email' => 'sometimes|nullable|email',
-            'monotributista' => 'sometimes|boolean',
-            'direccion' => 'sometimes|nullable|max:255',
-            'comentario' => 'sometimes|nullable|max:1000',
-            'fecha_ingreso' => 'sometimes|date',
-            'usuario_id' => 'nullable|exists:usuarios,id'
+            'nombre'         => 'sometimes|required|string|max:255',
+            'apellido'       => 'sometimes|nullable|string|max:255',
+            'telefono'       => 'sometimes|nullable|string|max:20',
+            'email'          => 'sometimes|nullable|email|max:255',
+            'monotributista' => 'sometimes|nullable|boolean',
+            'direccion'      => 'sometimes|nullable|string|max:255',
+            'comentario'     => 'sometimes|nullable|string|max:1000',
+            'fecha_ingreso'  => 'sometimes|date',
+            'usuario_id'     => 'sometimes|nullable|exists:Usuario,usuario_id',
         ]);
 
         $proveedor->update($validated);
 
         return response()->json([
-            'message' => 'Proveedor actualizado',
+            'message'   => 'Proveedor actualizado',
             'proveedor' => $proveedor,
-            'status' => 200
+            'status'    => 200,
         ]);
     }
 
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Proveedor $proveedor)
-{
-    try {
-        $proveedor->delete();
-        return response()->json([
-            'message' => 'Proveedor eliminado',
-            'status'  => 200
-        ], 200);
-    } catch (\Exception $e) {
-        return response()->json([
-            'message' => 'No se pudo eliminar el proveedor',
-            'error'   => $e->getMessage(),
-            'status'  => 500
-        ], 500);
-    }
-}
+    {
+        try {
+            $proveedor->delete();
 
+            return response()->json([
+                'message' => 'Proveedor eliminado',
+                'status'  => 200,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'No se pudo eliminar el proveedor',
+                'error'   => $e->getMessage(),
+                'status'  => 500,
+            ], 500);
+        }
+    }
 }

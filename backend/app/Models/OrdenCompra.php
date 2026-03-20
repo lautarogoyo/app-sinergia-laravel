@@ -19,8 +19,26 @@ class OrdenCompra extends SinergiaModel
 
     protected $casts = [
         'fecha_inicio_orden_compra' => 'date',
-        'fecha_finalizacion_orden_compra' => 'date',
+        // CORRECCIÓN: nombre alineado con la migración y el controller
+        'fecha_fin_orden_compra'    => 'date',
     ];
+
+    /**
+     * CORRECCIÓN: genera orden_compra_id automáticamente.
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (self $model) {
+            if (empty($model->orden_compra_id)) {
+                $model->orden_compra_id = $model->resolveNextSequentialId(
+                    'orden_compra_id',
+                    'obra_id'
+                );
+            }
+        });
+    }
 
     public function obra(): BelongsTo
     {

@@ -79,7 +79,9 @@ return new class extends Migration
         Schema::create('Grupo', function (Blueprint $table) {
             $table->increments('grupo_id');
             $table->string('denominacion');
-            $table->unsignedInteger('id_estado');
+            // CORRECCIÓN: estado como string directo, id_estado nullable
+            $table->string('estado')->default('pendiente');
+            $table->unsignedInteger('id_estado')->nullable();
 
             $table->foreign('id_estado')
                 ->references('estado_grupo_id')
@@ -90,15 +92,18 @@ return new class extends Migration
 
         Schema::create('Obra', function (Blueprint $table) {
             $table->increments('obra_id');
-            $table->integer('nro_obra');
-            $table->string('detalle');
+            // CORRECCIÓN: nro_obra como string para admitir "OBR-2024-001", unique
+            $table->string('nro_obra')->unique();
+            $table->text('detalle');
             $table->date('fecha_ingreso');
             $table->date('fecha_visto');
             $table->date('fecha_programacion_inicio')->nullable();
             $table->date('fecha_recepcion_provisoria')->nullable();
             $table->date('fecha_recepcion_definitiva')->nullable();
             $table->string('detalle_caratula')->nullable();
-            $table->unsignedInteger('id_estado_obra');
+            // CORRECCIÓN: estado como string directo (no FK), id_estado_obra nullable
+            $table->string('estado')->default('pedida');
+            $table->unsignedInteger('id_estado_obra')->nullable();
             $table->softDeletes();
 
             $table->foreign('id_estado_obra')
@@ -115,8 +120,11 @@ return new class extends Migration
             $table->string('telefono');
             $table->string('cbu')->nullable();
             $table->string('alias')->nullable();
-            $table->unsignedInteger('id_grupo');
-            $table->unsignedInteger('id_estado');
+            // CORRECCIÓN: id_grupo nullable — un empleado puede no tener grupo
+            $table->unsignedInteger('id_grupo')->nullable();
+            // CORRECCIÓN: estado como string directo, id_estado nullable
+            $table->string('estado')->default('activo');
+            $table->unsignedInteger('id_estado')->nullable();
             $table->softDeletes();
 
             $table->foreign('id_grupo')
@@ -138,12 +146,14 @@ return new class extends Migration
             $table->string('apellido')->nullable();
             $table->string('telefono')->nullable();
             $table->string('email')->nullable();
-            $table->boolean('monotributista');
+            // CORRECCIÓN: nullable con default false — no siempre se sabe al crear
+            $table->boolean('monotributista')->default(false)->nullable();
             $table->string('direccion')->nullable();
             $table->string('comentario')->nullable();
             $table->date('fecha_ingreso');
             $table->string('metodo_pago')->nullable();
-            $table->unsignedInteger('usuario_id');
+            // CORRECCIÓN: usuario_id nullable — proveedor puede existir sin usuario del sistema
+            $table->unsignedInteger('usuario_id')->nullable();
             $table->softDeletes();
 
             $table->foreign('usuario_id')

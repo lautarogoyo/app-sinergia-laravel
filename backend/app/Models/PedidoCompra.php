@@ -20,13 +20,40 @@ class PedidoCompra extends SinergiaModel
     protected $keyType = 'array';
 
     protected $casts = [
-        'fecha_pedido' => 'date',
-        'fecha_entrega_estimada' => 'date',
+        'fecha_pedido'            => 'date',
+        'fecha_entrega_estimada'  => 'date',
+        // CORRECCIÓN: proveedores guardados como JSON array de strings
+        'proveedores'             => 'array',
     ];
+
+    /**
+     * CORRECCIÓN: genera pedido_compra_id automáticamente por scope de obra.
+     * Resuelve la falta de autoincrement en PK compuesta.
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (self $model) {
+            if (empty($model->pedido_compra_id)) {
+                $model->pedido_compra_id = $model->resolveNextSequentialId(
+                    'pedido_compra_id',
+                    'obra_id'
+                );
+            }
+        });
+    }
+
+    // ─── Relaciones ──────────────────────────────────────────────────────────
 
     public function obra(): BelongsTo
     {
         return $this->belongsTo(Obra::class, 'obra_id', 'obra_id');
+    }
+
+    public function grupo(): BelongsTo
+    {
+        return $this->belongsTo(Grupo::class, 'grupo_id', 'grupo_id');
     }
 
     public function estadoContratista(): BelongsTo

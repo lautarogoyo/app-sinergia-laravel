@@ -6,34 +6,29 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatePedidoCompraRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
-     public function rules(): array
+    public function rules(): array
     {
         return [
-            'rol' => 'sometimes|required|string|max:255',
-            'archivo' => 'sometimes|file|max:10240',
-            'archivo_material' => 'sometimes|file|max:10240',
-            'fecha_pedido' => 'sometimes|required|date',
+            'rol'                    => 'sometimes|required|string|in:cotizar,comprar',
+            'archivo'                => 'sometimes|nullable|file|max:10240',
+            'archivo_material'       => 'sometimes|nullable|file|max:10240',
+            'fecha_pedido'           => 'sometimes|required|date',
             'fecha_entrega_estimada' => 'sometimes|nullable|date',
-            'estado_contratista' => 'sometimes|nullable|string|max:50',
-            'estado_pedido' => 'sometimes|nullable|string|max:50',
-            'estado' => 'sometimes|nullable|string|max:50',
-            'estado_contratista_id' => 'sometimes|nullable|exists:estado_contratistas,id',
-            'estado_pedido_id' => 'sometimes|nullable|exists:estado_pedidos,id',
-            'estado_registro_id' => 'sometimes|nullable|exists:estado_registros,id',
-            'observaciones' => 'sometimes|nullable|string',
+            // CORRECCIÓN: mismos valores que el store
+            'estado_contratista'     => 'sometimes|nullable|string|in:Falta Cargar,Solicitado,Entregado',
+            'estado_pedido'          => 'sometimes|nullable|string|in:pendiente,pedido',
+            'estado'                 => 'sometimes|nullable|string|in:activo,archivado',
+            'observaciones'          => 'sometimes|nullable|string|max:2000',
+            'grupo_id'               => 'sometimes|nullable|exists:Grupo,grupo_id',
+            'rubros_ids'             => 'sometimes|nullable|array',
+            'rubros_ids.*'           => 'integer|exists:Rubro,rubro_id',
+            'proveedores'            => 'sometimes|nullable|array',
+            'proveedores.*'          => 'string|max:255',
         ];
     }
 }

@@ -21,6 +21,23 @@ class PedidoCotizacion extends SinergiaModel
         'fecha_cierre_cotizacion' => 'date',
     ];
 
+    /**
+     * CORRECCIÓN: genera pedido_cotizacion_id automáticamente.
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (self $model) {
+            if (empty($model->pedido_cotizacion_id)) {
+                $model->pedido_cotizacion_id = $model->resolveNextSequentialId(
+                    'pedido_cotizacion_id',
+                    'obra_id'
+                );
+            }
+        });
+    }
+
     public function obra(): BelongsTo
     {
         return $this->belongsTo(Obra::class, 'obra_id', 'obra_id');

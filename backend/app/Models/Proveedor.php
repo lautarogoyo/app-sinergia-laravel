@@ -16,11 +16,15 @@ class Proveedor extends SinergiaModel
     protected $primaryKey = 'proveedor_id';
 
     protected $casts = [
-        'fecha_ingreso' => 'date',
+        'fecha_ingreso'  => 'date',
         'monotributista' => 'boolean',
-        'deleted_at' => 'datetime',
+        'deleted_at'     => 'datetime',
     ];
 
+    /**
+     * CORRECCIÓN: usuario() es nullable — proveedor existe sin usuario del sistema.
+     * BelongsTo con FK nullable simplemente retorna null si no hay usuario asignado.
+     */
     public function usuario(): BelongsTo
     {
         return $this->belongsTo(Usuario::class, 'usuario_id', 'usuario_id');

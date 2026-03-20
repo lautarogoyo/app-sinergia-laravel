@@ -18,6 +18,10 @@ class Empleado extends SinergiaModel
         'deleted_at' => 'datetime',
     ];
 
+    /**
+     * CORRECCIÓN: grupo() con nullable — id_grupo es nullable en la migración,
+     * por eso se usa leftJoin implícito a través de BelongsTo (no rompe si es null).
+     */
     public function grupo(): BelongsTo
     {
         return $this->belongsTo(Grupo::class, 'id_grupo', 'grupo_id');

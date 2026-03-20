@@ -21,6 +21,23 @@ class Documentacion extends SinergiaModel
         'fecha_vencimiento' => 'date',
     ];
 
+    /**
+     * CORRECCIÓN: genera documentacion_id automáticamente por empleado.
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (self $model) {
+            if (empty($model->documentacion_id)) {
+                $model->documentacion_id = $model->resolveNextSequentialId(
+                    'documentacion_id',
+                    'empleado_id'
+                );
+            }
+        });
+    }
+
     public function empleado(): BelongsTo
     {
         return $this->belongsTo(Empleado::class, 'empleado_id', 'empleado_id');
