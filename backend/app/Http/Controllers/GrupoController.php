@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Grupo;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class GrupoController extends Controller
 {
@@ -21,7 +22,7 @@ class GrupoController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'denominacion'   => 'required|string|max:255',
+            'denominacion'   => 'required|string|max:255|unique:Grupo,denominacion',
             'estado_grupo_id' => 'nullable|exists:Estado_Grupo,estado_grupo_id',
         ]);
 
@@ -53,7 +54,13 @@ class GrupoController extends Controller
     public function update(Request $request, Grupo $grupo)
     {
         $validated = $request->validate([
-            'denominacion'    => 'sometimes|required|string|max:255',
+            'denominacion'    => [
+                'sometimes',
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('Grupo', 'denominacion')->ignore($grupo->grupo_id, 'grupo_id'),
+            ],
             'estado_grupo_id' => 'sometimes|nullable|exists:Estado_Grupo,estado_grupo_id',
         ]);
 

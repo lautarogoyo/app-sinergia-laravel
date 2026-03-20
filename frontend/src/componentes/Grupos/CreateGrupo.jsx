@@ -6,7 +6,7 @@ import { useEstadosGrupo } from "../hooks/useGrupos.jsx";
 
 
 export default function CreateGrupo() {
-	const { register, handleSubmit, formState: {errors}, reset } = useForm({
+	const { register, handleSubmit, setError, clearErrors, formState: {errors}, reset } = useForm({
     defaultValues: {
 			estado_grupo_id: "",
     },
@@ -27,10 +27,20 @@ export default function CreateGrupo() {
     },
     onError: (error) => {
       console.error("Error al crear el grupo", error);
+			const backendMessage = error?.response?.data?.errors?.denominacion?.[0];
+
+			if (backendMessage) {
+				setError("denominacion", {
+					type: "server",
+					message: "No se puede ingresar grupo",
+				});
+			}
     },
   });
 
 	const onSubmit = handleSubmit((formData) => {
+		clearErrors("denominacion");
+
 		const payload = {
 			denominacion: formData.denominacion,
 			...(formData.estado_grupo_id
