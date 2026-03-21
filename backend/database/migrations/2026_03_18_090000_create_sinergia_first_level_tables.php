@@ -138,16 +138,17 @@ return new class extends Migration
 
         Schema::create('Proveedor', function (Blueprint $table) {
             $table->increments('proveedor_id');
-            $table->string('nombre');
-            $table->string('apellido')->nullable();
+            $table->string('nombre_apellido');
             $table->string('telefono')->nullable();
             $table->string('email')->nullable();
             // CORRECCIÓN: nullable con default false — no siempre se sabe al crear
-            $table->boolean('monotributista')->default(false)->nullable();
             $table->string('direccion')->nullable();
-            $table->string('comentario')->nullable();
+            $table->string('ciudad')->nullable();
+            $table->boolean('monotributista')->default(false)->nullable();
+            $table->string('calificacion')->nullable();
+            $table->string('contacto')->nullable();
+            $table->string('observacion')->nullable();
             $table->date('fecha_ingreso');
-            $table->string('metodo_pago')->nullable();
             // CORRECCIÓN: usuario_id nullable — proveedor puede existir sin usuario del sistema
             $table->unsignedInteger('usuario_id')->nullable();
             $table->softDeletes();

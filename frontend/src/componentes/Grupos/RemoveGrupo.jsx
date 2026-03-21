@@ -14,7 +14,7 @@ export default function RemoveGrupo() {
     mutationFn: () => DeleteGrupo(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["grupos"] });
-      navigate("/grupos");
+      navigate("/personas");
     },
     onError: (e) => console.error("Error al eliminar el grupo", e),
   });
@@ -27,7 +27,7 @@ export default function RemoveGrupo() {
         <div className="w-full max-w-xl bg-white shadow-2xl rounded-xl border border-gray-300 p-6">
           <h1 className="text-3xl text-gray-800 mb-4 font-sans">Eliminar Grupo</h1>
           <p className="text-gray-600 mb-6">No se encontró el grupo solicitado.</p>
-          <button type="button" onClick={() => navigate("/grupos")}
+          <button type="button" onClick={() => navigate("/personas")}
             className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150">
             Volver
           </button>
@@ -48,7 +48,7 @@ export default function RemoveGrupo() {
             className="bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 disabled:opacity-50">
             {isPending ? "Eliminando..." : "Confirmar Eliminación"}
           </button>
-          <button type="button" onClick={() => navigate("/grupos")}
+          <button type="button" onClick={() => navigate("/personas")}
             className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150">
             Cancelar
           </button>

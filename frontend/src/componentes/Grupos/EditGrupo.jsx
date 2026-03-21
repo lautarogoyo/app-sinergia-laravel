@@ -34,11 +34,11 @@ export default function EditGrupo() {
         }
     }, [data, reset, setValue]);
 
-    const { mutate } = useMutation({
+    const { mutate, isPending } = useMutation({
     mutationFn: (payload) => UpdateGrupo(id, payload),
     onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["grupos"] });
-        navigate("/grupos");
+        navigate("/personas");
     },
     onError: (error) => {
         console.error("Error al editar el grupo", error);
@@ -57,7 +57,7 @@ export default function EditGrupo() {
     
     return (
         <>
-        {isLoading && 
+        {(isLoading || isPending) && 
         <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
             <div className="relative">
             
@@ -79,7 +79,7 @@ export default function EditGrupo() {
             </div>
         </div>
     </div>}
-        {!isLoading &&
+        {!isLoading && !isPending &&
         <div className="p-8 bg-gray-100 lg:w-full flex flex-col items-center">
 			<h2 className="text-3xl font-extrabold mb-6 text-gray-800 tracking-wide text-center">
 				Editar Grupo
@@ -141,7 +141,8 @@ export default function EditGrupo() {
 					</button>
 					<button
 						type="submit"
-						className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150"
+						disabled={isPending}
+						className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						Editar
 					</button>

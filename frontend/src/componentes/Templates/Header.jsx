@@ -70,7 +70,7 @@ export default function Header() {
             </NavLink>
             
             <NavLink 
-              to="/proveedores" 
+              to="/personas" 
               className={({ isActive }) => 
                 `${navLinkBase} ${isActive ? navLinkActive : ''}`}
             >

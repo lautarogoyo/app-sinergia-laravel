@@ -26,7 +26,6 @@ function AppRouter() {
             <Route path="/empleados" element={<Empleados />} />
             <Route path="/obras" element={<Obras />} />
             <Route path="/obras/diagrama" element={<DiagramaObras />} />
-            <Route path="/proveedores" element={<Personas />} />
             <Route path="/personas" element={<Personas />} />
             <Route path="/crear-persona" element={<CreatePersona />} />
             <Route path="/editarpersona/:id" element={<EditPersona />} />

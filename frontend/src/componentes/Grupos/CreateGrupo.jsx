@@ -23,7 +23,7 @@ export default function CreateGrupo() {
     mutationFn: PostGrupo,
     onSuccess: () => {
       queryClient.invalidateQueries(["grupos"]);
-      navigate("/grupos");
+      navigate("/personas");
     },
     onError: (error) => {
       console.error("Error al crear el grupo", error);
