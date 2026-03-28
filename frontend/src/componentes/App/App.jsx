@@ -23,20 +23,16 @@ export default function App() {
     return <div className="min-h-screen bg-blue-950" />;
   }
 
-  if (!autenticado) {
-    return (
-      <div className=''>
-        <Login onLoginSuccess={() => setAutenticado(true)} />
-      </div>
-    );
-  }
-
   return (
     <>
-      <div className="flex">
-        <Header onLogout={() => setAutenticado(false)} />
-        <AppRouter />
-      </div>
+      {!autenticado ? (
+        <Login onLoginSuccess={() => setAutenticado(true)} />
+      ) : (
+        <div className="flex">
+          <Header onLogout={() => setAutenticado(false)} />
+          <AppRouter />
+        </div>
+      )}
     </>
   );
 
