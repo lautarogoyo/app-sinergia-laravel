@@ -23,6 +23,7 @@ function AppRouter() {
     return (
         <Routes>
             <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="/login" element={<Navigate to="/" replace />} />
             <Route path="/home" element={<Home />} />
             <Route path="/empleados" element={<Empleados />} />
             <Route path="/obras" element={<Obras />} />
