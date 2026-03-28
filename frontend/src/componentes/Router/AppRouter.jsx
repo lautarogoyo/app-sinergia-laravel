@@ -1,6 +1,6 @@
 import Empleados from "../Empleados/Empleados.jsx";
 import Home from "../Home/Home.jsx";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import CreateEmpleado from "../Empleados/CreateEmpleado.jsx";
 import EditeEmpleado from "../Empleados/EditeEmpleado.jsx";
 import RemoveEmpleado from "../Empleados/RemoveEmpleado.jsx";
@@ -22,6 +22,7 @@ import RemovePersona from "../Personas/RemovePersona.jsx";
 function AppRouter() {
     return (
         <Routes>
+            <Route path="/" element={<Navigate to="/home" replace />} />
             <Route path="/home" element={<Home />} />
             <Route path="/empleados" element={<Empleados />} />
             <Route path="/obras" element={<Obras />} />
@@ -43,7 +44,7 @@ function AppRouter() {
             <Route path="/obras" element={<div>Obras</div>} />
             <Route path="/obra/:id/gestionar" element={<Gestionar />} />
             <Route path="/empleados" element={<div>Empleados</div>} />
-            <Route path="/salir" element={<div>Salir</div>} />
+            <Route path="/salir" element={<Navigate to="/home" replace />} />
         </Routes>
     );
 }

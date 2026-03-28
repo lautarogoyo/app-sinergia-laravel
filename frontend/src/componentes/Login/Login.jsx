@@ -1,9 +1,13 @@
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Icon from '../Icons/Icons.jsx';
+import { loginUsuario } from '../api/login.js';
 
-export default function Login() {
+export default function Login({ onLoginSuccess }) {
+  const navigate = useNavigate();
   const [cargando, setCargando] = useState(false);
+  const [errorGeneral, setErrorGeneral] = useState('');
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
       usuario: '',
@@ -11,14 +15,27 @@ export default function Login() {
     },
   });
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     setCargando(true);
-    console.log('Datos de login:', data);
-    
-    // Simular pequeño delay
-    setTimeout(() => {
+    setErrorGeneral('');
+
+    const resultado = await loginUsuario(data.usuario, data.contrasena);
+
+    if (!resultado.success) {
+      setErrorGeneral(resultado.message);
       setCargando(false);
-    }, 500);
+      return;
+    }
+
+    // Login exitoso
+    console.log('Login exitoso:', resultado.user);
+    if (onLoginSuccess) {
+      onLoginSuccess(resultado.user);
+    }
+
+    navigate('/home', { replace: true });
+    
+    setCargando(false);
   };
 
   return (
@@ -36,6 +53,12 @@ export default function Login() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            {errorGeneral && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {errorGeneral}
+              </div>
+            )}
+            
             {errors.usuario && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
                 {errors.usuario.message || 'El usuario es requerido'}

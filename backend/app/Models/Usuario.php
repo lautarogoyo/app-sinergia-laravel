@@ -2,14 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
 
-class Usuario extends SinergiaModel
+class Usuario extends Authenticatable
 {
+    use HasApiTokens;
+
     protected $table = 'Usuario';
 
     protected $primaryKey = 'usuario_id';
+
+    public $timestamps = false;
+
+    protected $guarded = [];
 
     protected $hidden = [
         'contrasenia',

@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Usuario;
 use Illuminate\Database\Seeder;
 
 class UsuarioSeeder extends Seeder
@@ -12,6 +12,14 @@ class UsuarioSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        Usuario::updateOrCreate(
+            ['nombreUsuario' => 'LautaroSinergia'],
+            [
+                'email' => 'lautaro@sinergia.local',
+                'nombre' => 'Lautaro',
+                'apellido' => 'Admin',
+                'contrasenia' => 'LautaroSinergia',
+            ]
+        );
     }
 }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import Icon from '../Icons/Icons';
+import { logoutUsuario, limpiarSesion } from '../api/login.js';
 
 const Logo = ({ className }) => (
   <img 
@@ -10,21 +11,31 @@ const Logo = ({ className }) => (
   />
 );
 
-export default function Header() {
+export default function Header({ onLogout }) {
+  const navigate = useNavigate();
   const [visible, setVisible] = useState(true);
+  const [cerrandoSesion, setCerrandoSesion] = useState(false);
+  const [logoutError, setLogoutError] = useState('');
+
+  const handleLogout = async () => {
+    setCerrandoSesion(true);
+    setLogoutError('');
+
+    const resultado = await logoutUsuario();
+
+    // Incluso si la sesión ya expiró, cerramos el estado local y volvemos al login.
+    if (!resultado.success && resultado.message !== 'No autenticado') {
+      setLogoutError(resultado.message);
+    }
+
+    limpiarSesion();
+    if (onLogout) {
+      onLogout();
+    }
+    navigate('/', { replace: true });
+    setCerrandoSesion(false);
+  };
   
-  const iconAnimation = `w-6 h-6 flex-shrink-0 transition-all duration-300 ${
-    visible ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
-  }`;
-  
-  const arrowAnimationShow = `fixed left-0 top-4 z-50 m-2 p-2 text-gray-600 hover:text-gray-900 
-    bg-white/80 backdrop-blur-sm rounded-r-lg shadow-md hover:shadow-lg 
-    transition-all duration-300 transform hover:scale-110 ${visible ? 'opacity-0 -translate-x-10' : 'opacity-100'}`;
-    
-  const arrowAnimationHide = `absolute right-3 top-2 p-1 text-gray-600 hover:text-gray-900 
-    bg-white/50 rounded-full hover:bg-white/80 transition-all duration-300 
-    transform hover:scale-110`;
-    
   const headerAnimation = `min-h-screen transition-all duration-300 ease-in-out 
     bg-gradient-to-b from-white to-gray-50 shadow-lg overflow-hidden ${visible ? 'w-72' : 'w-16'}`;
     
@@ -105,15 +116,27 @@ export default function Header() {
               {visible ? <span className="whitespace-nowrap">Obras</span> : <span className="sr-only">Obras</span>}
             </NavLink>
           </div>
+
+          {logoutError && visible && (
+            <div className="px-4 mt-3 text-xs text-red-600 text-center">
+              {logoutError}
+            </div>
+          )}
           
           <div className="mt-auto px-3 mb-6">
-            <NavLink 
-              to="/salir" 
-              className={`${navLinkBase} mt-2 text-red-600 hover:bg-red-50`}
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={cerrandoSesion}
+              className={`${navLinkBase} mt-2 text-red-600 hover:bg-red-50 w-full disabled:opacity-60 disabled:cursor-not-allowed`}
             >
               <Icon name="closeSesion" className="w-6 h-6 flex-shrink-0" />
-              {visible ? <span className="whitespace-nowrap">Cerrar sesión</span> : <span className="sr-only">Cerrar sesión</span>}
-            </NavLink>
+              {visible ? (
+                <span className="whitespace-nowrap">{cerrandoSesion ? 'Cerrando...' : 'Cerrar sesión'}</span>
+              ) : (
+                <span className="sr-only">Cerrar sesión</span>
+              )}
+            </button>
           </div>
         </nav>
       </div>

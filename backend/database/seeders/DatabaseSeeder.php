@@ -3,8 +3,6 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use App\Models\User;
 
 /**
  * CORRECCIÓN: Seeders para todas las tablas de catálogo que son requeridas
@@ -19,11 +17,7 @@ class DatabaseSeeder extends Seeder
             EstadoCatalogoSeeder::class,
             TipoDocumentoSeeder::class,
             RolPedidoSeeder::class,
-        ]);
-
-        User::factory()->create([
-            'name'  => 'Test User',
-            'email' => 'test@example.com',
+            UsuarioSeeder::class,
         ]);
     }
 }

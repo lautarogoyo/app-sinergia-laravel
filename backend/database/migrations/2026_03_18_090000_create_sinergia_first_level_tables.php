@@ -60,6 +60,7 @@ return new class extends Migration
 
         Schema::create('Usuario', function (Blueprint $table) {
             $table->increments('usuario_id');
+            $table->string('nombreUsuario')->unique();
             $table->string('email');
             $table->string('contrasenia');
             $table->string('nombre');

@@ -19,6 +19,7 @@ use App\Http\Controllers\CompraRubroController;
 use App\Http\Controllers\ProveedorRubroGrupoController;
 use App\Http\Controllers\ObraAdjudicadaController;
 use App\Http\Controllers\EstadoGrupoController;
+use App\Http\Controllers\AuthController;
 
 Route::apiResource('empleados', EmpleadoController::class);
 
@@ -85,3 +86,13 @@ Route::delete(
 );
 
 Route::get('estado_grupos', [EstadoGrupoController::class, 'index']);
+
+//LOGIN
+
+
+Route::post('/auth/login', [AuthController::class, 'login']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
+    Route::get('/auth/me', [AuthController::class, 'me']);
+});
