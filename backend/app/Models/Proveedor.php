@@ -5,29 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Proveedor extends SinergiaModel
 {
-    use SoftDeletes;
-
     protected $table = 'Proveedor';
-
     protected $primaryKey = 'proveedor_id';
 
     protected $casts = [
-        'fecha_ingreso'  => 'date',
-        'monotributista' => 'boolean',
-        'deleted_at'     => 'datetime',
+        'fecha_ingreso' => 'date',
     ];
 
-    /**
-     * CORRECCIÓN: usuario() es nullable — proveedor existe sin usuario del sistema.
-     * BelongsTo con FK nullable simplemente retorna null si no hay usuario asignado.
-     */
     public function usuario(): BelongsTo
     {
         return $this->belongsTo(Usuario::class, 'usuario_id', 'usuario_id');
+    }
+
+    public function tipoFacturacion(): BelongsTo
+    {
+        return $this->belongsTo(TipoFacturacion::class, 'tipo_facturacion_id', 'tipo_facturacion_id');
     }
 
     public function proveedorRubros(): HasMany

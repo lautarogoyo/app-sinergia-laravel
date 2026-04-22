@@ -30,6 +30,11 @@ class Usuario extends Authenticatable
         }
     }
 
+    public function grupos(): HasMany
+    {
+        return $this->hasMany(Grupo::class, 'usuario_id', 'usuario_id');
+    }
+
     public function proveedores(): HasMany
     {
         return $this->hasMany(Proveedor::class, 'usuario_id', 'usuario_id');

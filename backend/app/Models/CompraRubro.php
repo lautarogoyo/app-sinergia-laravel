@@ -12,17 +12,14 @@ class CompraRubro extends SinergiaModel
     use HasCompositePrimaryKey;
 
     protected $table = 'Compra_Rubro';
-
-    protected $primaryKey = ['obra_id', 'pedido_compra_id', 'rubro_id'];
-
+    protected $primaryKey = ['nro_obra', 'pedido_compra_id', 'rubro_id'];
     public $incrementing = false;
-
     protected $keyType = 'array';
 
     public function pedidoCompra(): BelongsTo
     {
         return $this->belongsTo(PedidoCompra::class, 'pedido_compra_id', 'pedido_compra_id')
-            ->where('Pedido_Compra.obra_id', $this->obra_id);
+            ->where('Pedido_Compra.nro_obra', $this->nro_obra);
     }
 
     public function rubro(): BelongsTo
@@ -33,14 +30,14 @@ class CompraRubro extends SinergiaModel
     public function compraRubroProveedores(): HasMany
     {
         return $this->hasMany(CompraRubroProveedor::class, 'rubro_id', 'rubro_id')
-            ->where('obra_id', $this->obra_id)
+            ->where('nro_obra', $this->nro_obra)
             ->where('pedido_compra_id', $this->pedido_compra_id);
     }
 
     public function compraRubroGrupos(): HasMany
     {
         return $this->hasMany(CompraRubroGrupo::class, 'rubro_id', 'rubro_id')
-            ->where('obra_id', $this->obra_id)
+            ->where('nro_obra', $this->nro_obra)
             ->where('pedido_compra_id', $this->pedido_compra_id);
     }
 
@@ -53,8 +50,8 @@ class CompraRubro extends SinergiaModel
             'proveedor_id',
             'rubro_id',
             'proveedor_id'
-        )->withPivot(['obra_id', 'pedido_compra_id'])
-            ->wherePivot('obra_id', $this->obra_id)
+        )->withPivot(['nro_obra', 'pedido_compra_id'])
+            ->wherePivot('nro_obra', $this->nro_obra)
             ->wherePivot('pedido_compra_id', $this->pedido_compra_id);
     }
 
@@ -67,8 +64,8 @@ class CompraRubro extends SinergiaModel
             'grupo_id',
             'rubro_id',
             'grupo_id'
-        )->withPivot(['obra_id', 'pedido_compra_id'])
-            ->wherePivot('obra_id', $this->obra_id)
+        )->withPivot(['nro_obra', 'pedido_compra_id'])
+            ->wherePivot('nro_obra', $this->nro_obra)
             ->wherePivot('pedido_compra_id', $this->pedido_compra_id);
     }
 }

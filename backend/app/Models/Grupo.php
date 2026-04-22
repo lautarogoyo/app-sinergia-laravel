@@ -9,21 +9,30 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Grupo extends SinergiaModel
 {
     protected $table = 'Grupo';
-
     protected $primaryKey = 'grupo_id';
 
-    /**
-     * CORRECCIÓN: estado es un campo string directo en la tabla.
-     * estadoGrupo() sigue disponible si se usa la FK opcional.
-     */
+    protected $casts = [
+        'fecha_ingreso' => 'date',
+    ];
+
+    public function usuario(): BelongsTo
+    {
+        return $this->belongsTo(Usuario::class, 'usuario_id', 'usuario_id');
+    }
+
+    public function tipoFacturacion(): BelongsTo
+    {
+        return $this->belongsTo(TipoFacturacion::class, 'tipo_facturacion_id', 'tipo_facturacion_id');
+    }
+
     public function estadoGrupo(): BelongsTo
     {
-        return $this->belongsTo(EstadoGrupo::class, 'id_estado', 'estado_grupo_id');
+        return $this->belongsTo(EstadoGrupo::class, 'estado_grupo_id', 'estado_grupo_id');
     }
 
     public function empleados(): HasMany
     {
-        return $this->hasMany(Empleado::class, 'id_grupo', 'grupo_id');
+        return $this->hasMany(Empleado::class, 'grupo_id', 'grupo_id');
     }
 
     public function obraGrupos(): HasMany
@@ -35,11 +44,11 @@ class Grupo extends SinergiaModel
     {
         return $this->belongsToMany(
             Obra::class,
-            'Obra_grupo',
+            'Obra_Grupo',
             'id_grupo',
-            'id_obra',
+            'nro_obra',
             'grupo_id',
-            'obra_id'
+            'nro_obra'
         );
     }
 

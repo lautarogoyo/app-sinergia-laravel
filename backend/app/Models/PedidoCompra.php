@@ -2,84 +2,49 @@
 
 namespace App\Models;
 
-use App\Models\Concerns\HasCompositePrimaryKey;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PedidoCompra extends SinergiaModel
 {
-    use HasCompositePrimaryKey;
-
     protected $table = 'Pedido_Compra';
-
-    protected $primaryKey = ['obra_id', 'pedido_compra_id'];
-
-    public $incrementing = false;
-
-    protected $keyType = 'array';
+    protected $primaryKey = 'pedido_compra_id';
 
     protected $casts = [
-        'fecha_pedido'            => 'date',
-        'fecha_entrega_estimada'  => 'date',
-        // CORRECCIÓN: proveedores guardados como JSON array de strings
-        'proveedores'             => 'array',
+        'fecha_pedido'           => 'date',
+        'fecha_entrega_estimada' => 'date',
     ];
-
-    /**
-     * CORRECCIÓN: genera pedido_compra_id automáticamente por scope de obra.
-     * Resuelve la falta de autoincrement en PK compuesta.
-     */
-    protected static function boot(): void
-    {
-        parent::boot();
-
-        static::creating(function (self $model) {
-            if (empty($model->pedido_compra_id)) {
-                $model->pedido_compra_id = $model->resolveNextSequentialId(
-                    'pedido_compra_id',
-                    'obra_id'
-                );
-            }
-        });
-    }
-
-    // ─── Relaciones ──────────────────────────────────────────────────────────
 
     public function obra(): BelongsTo
     {
-        return $this->belongsTo(Obra::class, 'obra_id', 'obra_id');
-    }
-
-    public function grupo(): BelongsTo
-    {
-        return $this->belongsTo(Grupo::class, 'grupo_id', 'grupo_id');
-    }
-
-    public function estadoContratista(): BelongsTo
-    {
-        return $this->belongsTo(EstadoContratista::class, 'id_estado_contratista', 'estado_contratista_id');
-    }
-
-    public function estadoPedido(): BelongsTo
-    {
-        return $this->belongsTo(EstadoPedido::class, 'id_estado_pedido', 'estado_pedido_id');
-    }
-
-    public function estadoRegistro(): BelongsTo
-    {
-        return $this->belongsTo(EstadoRegistro::class, 'id_estado_registro', 'estado_registro_id');
+        return $this->belongsTo(Obra::class, 'nro_obra', 'nro_obra');
     }
 
     public function rolPedido(): BelongsTo
     {
-        return $this->belongsTo(RolPedido::class, 'id_rol', 'rol_id');
+        return $this->belongsTo(RolPedido::class, 'rol_pedido_id', 'rol_id');
+    }
+
+    public function estadoContratista(): BelongsTo
+    {
+        return $this->belongsTo(EstadoContratista::class, 'estado_contratista_id', 'estado_contratista_id');
+    }
+
+    public function estadoPedido(): BelongsTo
+    {
+        return $this->belongsTo(EstadoPedido::class, 'estado_pedido_id', 'estado_pedido_id');
+    }
+
+    public function estadoRegistro(): BelongsTo
+    {
+        return $this->belongsTo(EstadoRegistro::class, 'estado_registro_id', 'estado_registro_id');
     }
 
     public function compraRubros(): HasMany
     {
         return $this->hasMany(CompraRubro::class, 'pedido_compra_id', 'pedido_compra_id')
-            ->where('obra_id', $this->obra_id);
+            ->where('nro_obra', $this->nro_obra);
     }
 
     public function rubros(): BelongsToMany
@@ -91,7 +56,7 @@ class PedidoCompra extends SinergiaModel
             'rubro_id',
             'pedido_compra_id',
             'rubro_id'
-        )->withPivot('obra_id')
-            ->wherePivot('obra_id', $this->obra_id);
+        )->withPivot('nro_obra')
+            ->wherePivot('nro_obra', $this->nro_obra);
     }
 }

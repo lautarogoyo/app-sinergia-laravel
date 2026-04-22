@@ -10,17 +10,14 @@ class CompraRubroProveedor extends SinergiaModel
     use HasCompositePrimaryKey;
 
     protected $table = 'Compra_Rubro_Proveedor';
-
-    protected $primaryKey = ['obra_id', 'pedido_compra_id', 'rubro_id', 'proveedor_id'];
-
+    protected $primaryKey = ['nro_obra', 'pedido_compra_id', 'rubro_id', 'proveedor_id'];
     public $incrementing = false;
-
     protected $keyType = 'array';
 
     public function compraRubro(): BelongsTo
     {
         return $this->belongsTo(CompraRubro::class, 'rubro_id', 'rubro_id')
-            ->where('Compra_Rubro.obra_id', $this->obra_id)
+            ->where('Compra_Rubro.nro_obra', $this->nro_obra)
             ->where('Compra_Rubro.pedido_compra_id', $this->pedido_compra_id);
     }
 
