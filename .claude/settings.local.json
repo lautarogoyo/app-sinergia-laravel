@@ -5,7 +5,9 @@
       "Bash(git -C C:/xampp_new/htdocs/app-sinergia-laravel log --oneline -5)",
       "Bash(git -C C:/xampp_new/htdocs/app-sinergia-laravel add CLAUDE.md .claude/)",
       "Bash(git -C C:/xampp_new/htdocs/app-sinergia-laravel commit -m ' *)",
-      "Bash(php artisan *)"
+      "Bash(php artisan *)",
+      "Bash(claude skills *)",
+      "Bash(npx skills *)"
     ]
   }
 }
