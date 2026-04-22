@@ -75,3 +75,17 @@ Backend API prefix is `/api/`. Nested resources: `obras/{obra}/ordenes_compra`, 
 - PHP: 4-space indent, LF line endings (enforced by `.editorconfig` + Pint)
 - React: PascalCase component files, `use` prefix for hooks
 - Commit messages in Spanish, imperative, concise (matching repo history style)
+
+
+Approach
+Think before acting. Read existing files before writing code.
+Be concise in output but thorough in reasoning.
+Prefer editing over rewriting whole files.
+Do not re-read files you have already read unless the file may have changed.
+Skip files over 100KB unless explicitly required.
+Suggest running /cost when a session is running long to monitor cache ratio.
+Recommend starting a new session when switching to an unrelated task.
+Test your code before declaring done.
+No sycophantic openers or closing fluff.
+Keep solutions simple and direct.
+User instructions always override this file.

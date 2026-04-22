@@ -30,11 +30,9 @@ class ObraController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            // CORRECCIÓN: nro_obra como string para admitir "OBR-2024-001"
             'nro_obra'                    => 'required|string|max:255|unique:Obra,nro_obra',
             'detalle'                     => 'required',
-            'estado'                      => 'nullable|in:pedida,cotizada,enCurso,finalizada',
-            'estado_obra_id'              => 'nullable|exists:Estado_Obra,estado_obra_id',
+            'id_estado_obra'              => 'required|exists:Estado_Obra,estado_obra_id',
             'fecha_visto'                 => 'required|date',
             'fecha_ingreso'               => 'required|date',
             'fecha_programacion_inicio'   => 'nullable|date',
@@ -47,15 +45,6 @@ class ObraController extends Controller
 
         $grupoIds = $validated['grupo_id'] ?? [];
         unset($validated['grupo_id']);
-
-        // CORRECCIÓN: si viene estado_obra_id, no tocar el campo estado
-        if (isset($validated['estado_obra_id'])) {
-            unset($validated['estado']);
-        }
-
-        if (!isset($validated['estado']) && !isset($validated['estado_obra_id'])) {
-            $validated['estado'] = 'pedida';
-        }
 
         $obra = Obra::create($validated);
 
@@ -91,8 +80,7 @@ class ObraController extends Controller
         $validated = $request->validate([
             'nro_obra'                    => 'sometimes|required|string|max:255',
             'detalle'                     => 'sometimes|required',
-            'estado'                      => 'sometimes|nullable|in:pedida,cotizada,enCurso,finalizada',
-            'estado_obra_id'              => 'sometimes|nullable|exists:Estado_Obra,estado_obra_id',
+            'id_estado_obra'              => 'sometimes|required|exists:Estado_Obra,estado_obra_id',
             'fecha_visto'                 => 'sometimes|required|date',
             'fecha_ingreso'               => 'sometimes|required|date',
             'fecha_programacion_inicio'   => 'sometimes|nullable|date',
@@ -105,10 +93,6 @@ class ObraController extends Controller
 
         $grupoIds = $validated['grupo_id'] ?? null;
         unset($validated['grupo_id']);
-
-        if (isset($validated['estado_obra_id'])) {
-            unset($validated['estado']);
-        }
 
         $obra->update($validated);
 

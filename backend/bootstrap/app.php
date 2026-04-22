@@ -12,7 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->statefulApi();
+        // TODO: re-enable statefulApi() when auth is implemented
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
