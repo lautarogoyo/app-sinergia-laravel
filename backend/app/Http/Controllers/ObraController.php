@@ -30,17 +30,19 @@ class ObraController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nro_obra'                    => 'required|string|max:255|unique:Obra,nro_obra',
-            'detalle'                     => 'required',
-            'id_estado_obra'              => 'required|exists:Estado_Obra,estado_obra_id',
-            'fecha_visto'                 => 'required|date',
-            'fecha_ingreso'               => 'required|date',
-            'fecha_programacion_inicio'   => 'nullable|date',
-            'fecha_recepcion_provisoria'  => 'nullable|date',
-            'fecha_recepcion_definitiva'  => 'nullable|date',
-            'detalle_caratula'            => 'nullable|string',
-            'grupo_id'                    => 'nullable|array',
-            'grupo_id.*'                  => 'exists:Grupo,grupo_id',
+            'nro_obra'                         => 'required|string|max:50|unique:Obra,nro_obra',
+            'detalle'                          => 'required',
+            'estado_obra_id'                   => 'required|exists:Estado_Obra,estado_obra_id',
+            'fecha_visto'                      => 'required|date',
+            'fecha_ingreso'                    => 'required|date',
+            'fecha_programacion_inicio'        => 'nullable|date',
+            'fecha_recepcion_provisoria'       => 'nullable|date',
+            'fecha_recepcion_definitiva'       => 'nullable|date',
+            'fecha_inicio_orden_compra'        => 'nullable|date',
+            'fecha_finalizacion_orden_compra'  => 'nullable|date',
+            'detalle_caratula'                 => 'nullable|string',
+            'grupo_id'                         => 'nullable|array',
+            'grupo_id.*'                       => 'exists:Grupo,grupo_id',
         ]);
 
         $grupoIds = $validated['grupo_id'] ?? [];
@@ -78,17 +80,19 @@ class ObraController extends Controller
     public function update(Request $request, Obra $obra)
     {
         $validated = $request->validate([
-            'nro_obra'                    => 'sometimes|required|string|max:255',
-            'detalle'                     => 'sometimes|required',
-            'id_estado_obra'              => 'sometimes|required|exists:Estado_Obra,estado_obra_id',
-            'fecha_visto'                 => 'sometimes|required|date',
-            'fecha_ingreso'               => 'sometimes|required|date',
-            'fecha_programacion_inicio'   => 'sometimes|nullable|date',
-            'fecha_recepcion_provisoria'  => 'sometimes|nullable|date',
-            'fecha_recepcion_definitiva'  => 'sometimes|nullable|date',
-            'detalle_caratula'            => 'sometimes|nullable|string',
-            'grupo_id'                    => 'sometimes|nullable|array',
-            'grupo_id.*'                  => 'exists:Grupo,grupo_id',
+            'nro_obra'                         => 'sometimes|required|string|max:50',
+            'detalle'                          => 'sometimes|required',
+            'estado_obra_id'                   => 'sometimes|required|exists:Estado_Obra,estado_obra_id',
+            'fecha_visto'                      => 'sometimes|required|date',
+            'fecha_ingreso'                    => 'sometimes|required|date',
+            'fecha_programacion_inicio'        => 'sometimes|nullable|date',
+            'fecha_recepcion_provisoria'       => 'sometimes|nullable|date',
+            'fecha_recepcion_definitiva'       => 'sometimes|nullable|date',
+            'fecha_inicio_orden_compra'        => 'sometimes|nullable|date',
+            'fecha_finalizacion_orden_compra'  => 'sometimes|nullable|date',
+            'detalle_caratula'                 => 'sometimes|nullable|string',
+            'grupo_id'                         => 'sometimes|nullable|array',
+            'grupo_id.*'                       => 'exists:Grupo,grupo_id',
         ]);
 
         $grupoIds = $validated['grupo_id'] ?? null;
@@ -123,10 +127,10 @@ class ObraController extends Controller
         try {
             DB::transaction(function () use ($obra) {
                 $obra->pedidosCotizacion()
-                    ->get(['obra_id', 'pedido_cotizacion_id', 'path_archivo_cotizacion', 'path_archivo_mano_obra'])
+                    ->get(['nro_obra', 'pedido_cotizacion_id', 'path_archivo', 'path_archivo_mano_obra'])
                     ->each(function ($pedido) {
-                        if ($pedido->path_archivo_cotizacion) {
-                            Storage::disk('public')->delete($pedido->path_archivo_cotizacion);
+                        if ($pedido->path_archivo) {
+                            Storage::disk('public')->delete($pedido->path_archivo);
                         }
                         if ($pedido->path_archivo_mano_obra) {
                             Storage::disk('public')->delete($pedido->path_archivo_mano_obra);
@@ -134,7 +138,7 @@ class ObraController extends Controller
                     });
 
                 $obra->pedidoCompra()
-                    ->get(['obra_id', 'pedido_compra_id', 'path_presupuesto', 'path_material'])
+                    ->get(['nro_obra', 'pedido_compra_id', 'path_presupuesto', 'path_material'])
                     ->each(function ($pedido) {
                         if ($pedido->path_presupuesto) {
                             Storage::disk('public')->delete($pedido->path_presupuesto);

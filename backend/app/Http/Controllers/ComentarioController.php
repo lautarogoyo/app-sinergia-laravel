@@ -8,9 +8,6 @@ use Illuminate\Http\Request;
 
 class ComentarioController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Obra $obra)
     {
         return response()->json([
@@ -19,42 +16,35 @@ class ComentarioController extends Controller
         ], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request, Obra $obra)
     {
-        $validated = $request -> validate([
-            'denominacion' => 'required|string',
+        $validated = $request->validate([
+            'detalle' => 'required|string',
         ]);
 
         $comentario = $obra->comentarios()->create($validated);
+
         return response()->json($comentario->load('obra'), 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Obra $obra, Comentario $comentario)
     {
-        if ($comentario->obra_id !== $obra->id) {
+        if ($comentario->nro_obra !== $obra->nro_obra) {
             return response()->json([
                 'message' => 'Comentario no encontrado',
                 'status' => 404
             ], 404);
         }
+
         return response()->json([
             'comentario' => $comentario->load('obra'),
             'status' => 200
         ], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-        */
     public function update(Request $request, Obra $obra, Comentario $comentario)
     {
-        if ($comentario->obra_id !== $obra->id) {
+        if ($comentario->nro_obra !== $obra->nro_obra) {
             return response()->json([
                 'message' => 'Este comentario no pertenece a la obra indicada',
                 'status' => 403
@@ -62,7 +52,7 @@ class ComentarioController extends Controller
         }
 
         $validated = $request->validate([
-            'denominacion' => 'required|string',
+            'detalle' => 'required|string',
         ]);
 
         $comentario->update($validated);
@@ -74,24 +64,20 @@ class ComentarioController extends Controller
         ], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Obra $obra, Comentario $comentario)
-{
-    if ($comentario->obra_id !== $obra->id) {
+    {
+        if ($comentario->nro_obra !== $obra->nro_obra) {
+            return response()->json([
+                'message' => 'Este comentario no pertenece a la obra indicada',
+                'status' => 403
+            ], 403);
+        }
+
+        $comentario->delete();
+
         return response()->json([
-            'message' => 'Este comentario no pertenece a la obra indicada',
-            'status' => 403
-        ], 403);
+            'message' => 'Comentario eliminado correctamente',
+            'status' => 200
+        ], 200);
     }
-
-    $comentario->delete();
-
-    return response()->json([
-        'message' => 'Comentario eliminado correctamente',
-        'status' => 200
-    ], 200);
-}
-
 }

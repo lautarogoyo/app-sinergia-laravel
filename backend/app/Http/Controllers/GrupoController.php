@@ -10,8 +10,7 @@ class GrupoController extends Controller
 {
     public function index()
     {
-        // CORRECCIÓN: cargamos estadoGrupo solo si existe la FK, estado directo siempre disponible
-        $grupos = Grupo::with('estadoGrupo')->get();
+        $grupos = Grupo::with(['estadoGrupo', 'tipoFacturacion', 'usuario'])->get();
 
         return response()->json([
             'grupos' => $grupos,
@@ -22,23 +21,23 @@ class GrupoController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'denominacion'   => 'required|string|max:255|unique:Grupo,denominacion',
-            'estado_grupo_id' => 'nullable|exists:Estado_Grupo,estado_grupo_id',
+            'nombre_apellido'     => 'required|string|max:200',
+            'usuario_id'          => 'required|exists:Usuario,usuario_id',
+            'tipo_facturacion_id' => 'required|exists:Tipo_Facturacion,tipo_facturacion_id',
+            'estado_grupo_id'     => 'required|exists:Estado_Grupo,estado_grupo_id',
+            'telefono'            => 'nullable|string|max:50',
+            'email'               => 'nullable|email|max:150',
+            'ciudad'              => 'nullable|string|max:100',
+            'calificacion'        => 'nullable|string|max:50',
+            'contacto'            => 'nullable|string|max:150',
+            'observacion'         => 'nullable|string',
         ]);
 
-        $data = ['denominacion' => $validated['denominacion']];
-
-        if (isset($validated['estado_grupo_id'])) {
-            $data['id_estado'] = $validated['estado_grupo_id'];
-        }
-
-        // CORRECCIÓN: estado string directo, default pendiente
-
-        $grupo = Grupo::create($data);
+        $grupo = Grupo::create($validated);
 
         return response()->json([
             'message' => 'Grupo creado exitosamente',
-            'grupo'   => $grupo->load('estadoGrupo'),
+            'grupo'   => $grupo->load(['estadoGrupo', 'tipoFacturacion', 'usuario']),
             'status'  => 201,
         ], 201);
     }
@@ -46,7 +45,7 @@ class GrupoController extends Controller
     public function show(Grupo $grupo)
     {
         return response()->json([
-            'grupo'  => $grupo->load('estadoGrupo'),
+            'grupo'  => $grupo->load(['estadoGrupo', 'tipoFacturacion', 'usuario']),
             'status' => 200,
         ]);
     }
@@ -54,28 +53,23 @@ class GrupoController extends Controller
     public function update(Request $request, Grupo $grupo)
     {
         $validated = $request->validate([
-            'denominacion'    => [
-                'sometimes',
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('Grupo', 'denominacion')->ignore($grupo->grupo_id, 'grupo_id'),
-            ],
-            'estado_grupo_id' => 'sometimes|nullable|exists:Estado_Grupo,estado_grupo_id',
+            'nombre_apellido'     => 'sometimes|required|string|max:200',
+            'usuario_id'          => 'sometimes|required|exists:Usuario,usuario_id',
+            'tipo_facturacion_id' => 'sometimes|required|exists:Tipo_Facturacion,tipo_facturacion_id',
+            'estado_grupo_id'     => 'sometimes|required|exists:Estado_Grupo,estado_grupo_id',
+            'telefono'            => 'sometimes|nullable|string|max:50',
+            'email'               => 'sometimes|nullable|email|max:150',
+            'ciudad'              => 'sometimes|nullable|string|max:100',
+            'calificacion'        => 'sometimes|nullable|string|max:50',
+            'contacto'            => 'sometimes|nullable|string|max:150',
+            'observacion'         => 'sometimes|nullable|string',
         ]);
 
-        if (isset($validated['estado_grupo_id'])) {
-            $validated['id_estado'] = $validated['estado_grupo_id'];
-            unset($validated['estado_grupo_id']);
-        }
-
-        if (!empty($validated)) {
-            $grupo->update($validated);
-        }
+        $grupo->update($validated);
 
         return response()->json([
             'message' => 'Grupo actualizado exitosamente',
-            'grupo'   => $grupo->load('estadoGrupo'),
+            'grupo'   => $grupo->load(['estadoGrupo', 'tipoFacturacion', 'usuario']),
             'status'  => 200,
         ]);
     }

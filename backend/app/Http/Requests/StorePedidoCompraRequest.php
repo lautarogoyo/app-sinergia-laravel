@@ -14,24 +14,18 @@ class StorePedidoCompraRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'rol'                    => 'required|string|in:cotizar,comprar',
+            'nro_obra'               => 'required|exists:Obra,nro_obra',
+            'rol_pedido_id'          => 'required|exists:Rol_Pedido,rol_id',
             'archivo'                => 'nullable|file|max:10240',
             'archivo_material'       => 'nullable|file|max:10240',
             'fecha_pedido'           => 'required|date',
             'fecha_entrega_estimada' => 'nullable|date',
-            // CORRECCIÓN: estados como strings directos (valores reales que usa el frontend)
-            'estado_contratista'     => 'nullable|string|in:Falta Cargar,Solicitado,Entregado',
-            'estado_pedido'          => 'nullable|string|in:pendiente,pedido',
-            'estado'                 => 'nullable|string|in:activo,archivado',
+            'estado_contratista_id'  => 'nullable|exists:Estado_Contratista,estado_contratista_id',
+            'estado_pedido_id'       => 'required|exists:Estado_Pedido,estado_pedido_id',
+            'estado_registro_id'     => 'required|exists:Estado_Registro,estado_registro_id',
             'observaciones'          => 'nullable|string|max:2000',
-            'obra_id'                => 'required|exists:Obra,obra_id',
-            'grupo_id'               => 'nullable|exists:Grupo,grupo_id',
-            // CORRECCIÓN: rubros como array de IDs existentes
             'rubros_ids'             => 'nullable|array',
             'rubros_ids.*'           => 'integer|exists:Rubro,rubro_id',
-            // CORRECCIÓN: proveedores como array de strings libres
-            'proveedores'            => 'nullable|array',
-            'proveedores.*'          => 'string|max:255',
         ];
     }
 }

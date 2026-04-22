@@ -28,17 +28,9 @@ class PedidoCotizacionController extends Controller
     {
         $data = $request->validated();
 
-        if (array_key_exists('estado_cotizacion_id', $data)) {
-            unset($data['estado_cotizacion']);
-        }
-
-        if (array_key_exists('estado_comparativa_id', $data)) {
-            unset($data['estado_comparativa']);
-        }
-
         if ($request->hasFile('archivo_cotizacion')) {
             $file = $request->file('archivo_cotizacion');
-            $data['path_archivo_cotizacion'] = $file->storeAs(
+            $data['path_archivo'] = $file->storeAs(
                 'cotizaciones', $file->getClientOriginalName(), 'public'
             );
         }
@@ -66,7 +58,7 @@ class PedidoCotizacionController extends Controller
      */
     public function show(Obra $obra, PedidoCotizacion $pedido)
     {
-        if ((int) $pedido->obra_id !== (int) $obra->id) {
+        if ($pedido->nro_obra !== $obra->nro_obra) {
             return response()->json([
                 'message' => 'Este pedido no pertenece a la obra',
                 'status' => 403
@@ -88,7 +80,7 @@ class PedidoCotizacionController extends Controller
     Obra $obra,
     PedidoCotizacion $pedido
     ) {
-        if ((int) $pedido->obra_id !== (int) $obra->id) {
+        if ($pedido->nro_obra !== $obra->nro_obra) {
             return response()->json([
                 'message' => 'Este pedido no pertenece a la obra',
                 'status' => 403
@@ -97,20 +89,12 @@ class PedidoCotizacionController extends Controller
 
         $data = $request->validated();
 
-        if (array_key_exists('estado_cotizacion_id', $data)) {
-            unset($data['estado_cotizacion']);
-        }
-
-        if (array_key_exists('estado_comparativa_id', $data)) {
-            unset($data['estado_comparativa']);
-        }
-
         if ($request->hasFile('archivo_cotizacion')) {
-            if ($pedido->path_archivo_cotizacion) {
-                Storage::disk('public')->delete($pedido->path_archivo_cotizacion);
+            if ($pedido->path_archivo) {
+                Storage::disk('public')->delete($pedido->path_archivo);
             }
             $file = $request->file('archivo_cotizacion');
-            $data['path_archivo_cotizacion'] = $file->storeAs(
+            $data['path_archivo'] = $file->storeAs(
                 'cotizaciones', $file->getClientOriginalName(), 'public'
             );
         }
@@ -141,15 +125,15 @@ class PedidoCotizacionController extends Controller
      */
    public function destroy(Obra $obra, PedidoCotizacion $pedido)
     {
-        if ((int) $pedido->obra_id !== (int) $obra->id) {
+        if ($pedido->nro_obra !== $obra->nro_obra) {
             return response()->json([
                 'message' => 'Este pedido no pertenece a la obra',
                 'status' => 403
             ], 403);
         }
 
-        if ($pedido->path_archivo_cotizacion) {
-            Storage::disk('public')->delete($pedido->path_archivo_cotizacion);
+        if ($pedido->path_archivo) {
+            Storage::disk('public')->delete($pedido->path_archivo);
         }
         if ($pedido->path_archivo_mano_obra) {
             Storage::disk('public')->delete($pedido->path_archivo_mano_obra);

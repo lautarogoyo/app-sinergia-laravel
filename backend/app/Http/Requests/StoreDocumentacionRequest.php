@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreDocumentacionRequest extends FormRequest
 {
@@ -17,22 +16,18 @@ class StoreDocumentacionRequest extends FormRequest
         $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
 
         return [
-            // CORRECCIÓN: tabla correcta 'TipoDocumento', PK 'tipoDocumento_id'
-            'tipo_documento_id' => [
+            'tipo_documentacion_id'   => [
                 $isUpdate ? 'sometimes' : 'required',
-                'exists:TipoDocumento,tipoDocumento_id',
-            ],
-            'archivo'           => $isUpdate ? 'nullable|file|max:10240' : 'required|file|max:10240',
-            'fecha_vencimiento' => 'nullable|date',
-            'estado' => [
-                $isUpdate ? 'sometimes' : 'nullable',
-                'nullable',
-                Rule::in(['vigente', 'vencido']),
+                'exists:Tipo_Documentacion,tipo_documentacion_id',
             ],
             'estado_documentacion_id' => [
-                $isUpdate ? 'sometimes' : 'nullable',
-                'nullable',
+                $isUpdate ? 'sometimes' : 'required',
                 'exists:Estado_Documentacion,estado_documentacion_id',
+            ],
+            'archivo'           => $isUpdate ? 'nullable|file|max:10240' : 'required|file|max:10240',
+            'fecha_vencimiento' => [
+                $isUpdate ? 'sometimes' : 'required',
+                'date',
             ],
         ];
     }
