@@ -14,6 +14,7 @@ use App\Http\Controllers\OrdenCompraController;
 use App\Http\Controllers\PedidoCompraController;
 use App\Http\Controllers\PedidoCotizacionController;
 use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\RubroController;
 use App\Http\Controllers\TipoDocumentoController;
 use App\Http\Controllers\UsuarioController;
@@ -72,7 +73,9 @@ Route::get('empleados/{empleado}/documentaciones/{documentacion}/download', [Doc
 Route::apiResource('tipos_documentacion', TipoDocumentoController::class);
 Route::get('estado_grupos', [EstadoGrupoController::class, 'index']);
 
-// TODO: FacturaController       → obras/{obra}/facturas
+// Facturas de obra
+Route::apiResource('obras/{obra}/facturas', FacturaController::class)->parameters(['facturas' => 'factura']);
+
 // TODO: GastoController         → obras/{obra}/gastos
 // TODO: ProveedorRubroController → proveedores/{proveedor}/rubros
 // TODO: ObraGrupoController     → obras/{obra}/grupos

@@ -54,6 +54,11 @@ class Obra extends SinergiaModel
         return $this->hasMany(OrdenCompra::class, 'nro_obra', 'nro_obra');
     }
 
+    public function facturas(): HasMany
+    {
+        return $this->hasMany(Factura::class, 'nro_obra', 'nro_obra');
+    }
+
     public function gastos(): HasMany
     {
         return $this->hasMany(Gasto::class, 'nro_obra', 'nro_obra');
