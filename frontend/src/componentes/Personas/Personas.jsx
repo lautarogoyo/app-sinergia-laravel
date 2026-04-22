@@ -66,9 +66,12 @@ export default function Personas() {
           placeholder="Filtrar por proveedor, contacto, estado o grupo..."
           className="w-full px-4 py-2 rounded border border-gray-300 text-lg focus:outline-none focus:ring focus:border-blue-400 mb-4"
         />
-        <div className="flex flex-col sm:flex-row gap-2">
-          <button type="button" onClick={() => navigate("/crear-persona")} className={btnBlue}>Nuevo Proveedor</button>
-          <button type="button" onClick={() => navigate("/crear-grupo")} className={btnBlue}>Nuevo Contratista</button>
+        <div className="flex flex-col sm:flex-row gap-2 justify-between">
+          <div className="flex gap-2">
+            <button type="button" onClick={() => navigate("/crear-persona")} className={btnBlue}>Nuevo Proveedor</button>
+            <button type="button" onClick={() => navigate("/crear-grupo")} className={btnBlue}>Nuevo Contratista</button>
+          </div>
+          <button type="button" onClick={() => navigate("/rubros")} className={btnBlue}>Rubros</button>
         </div>
       </div>
 

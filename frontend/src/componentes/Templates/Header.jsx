@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Icon from '../Icons/Icons';
-import { logoutUsuario, limpiarSesion } from '../api/login.js';
 
 const Logo = ({ className }) => (
   <img 
@@ -14,26 +13,10 @@ const Logo = ({ className }) => (
 export default function Header({ onLogout }) {
   const navigate = useNavigate();
   const [visible, setVisible] = useState(true);
-  const [cerrandoSesion, setCerrandoSesion] = useState(false);
-  const [logoutError, setLogoutError] = useState('');
 
-  const handleLogout = async () => {
-    setCerrandoSesion(true);
-    setLogoutError('');
-
-    const resultado = await logoutUsuario();
-
-    // Incluso si la sesión ya expiró, cerramos el estado local y volvemos al login.
-    if (!resultado.success && resultado.message !== 'No autenticado') {
-      setLogoutError(resultado.message);
-    }
-
-    limpiarSesion();
-    if (onLogout) {
-      onLogout();
-    }
+  const handleLogout = () => {
+    if (onLogout) onLogout();
     navigate('/', { replace: true });
-    setCerrandoSesion(false);
   };
   
   const headerAnimation = `min-h-screen transition-all duration-300 ease-in-out 
@@ -117,22 +100,15 @@ export default function Header({ onLogout }) {
             </NavLink>
           </div>
 
-          {logoutError && visible && (
-            <div className="px-4 mt-3 text-xs text-red-600 text-center">
-              {logoutError}
-            </div>
-          )}
-          
           <div className="mt-auto px-3 mb-6">
             <button
               type="button"
               onClick={handleLogout}
-              disabled={cerrandoSesion}
-              className={`${navLinkBase} mt-2 text-red-600 hover:bg-red-50 w-full disabled:opacity-60 disabled:cursor-not-allowed`}
+              className={`${navLinkBase} mt-2 text-red-600 hover:bg-red-50 w-full`}
             >
               <Icon name="closeSesion" className="w-6 h-6 flex-shrink-0" />
               {visible ? (
-                <span className="whitespace-nowrap">{cerrandoSesion ? 'Cerrando...' : 'Cerrar sesión'}</span>
+                <span className="whitespace-nowrap">Cerrar sesión</span>
               ) : (
                 <span className="sr-only">Cerrar sesión</span>
               )}

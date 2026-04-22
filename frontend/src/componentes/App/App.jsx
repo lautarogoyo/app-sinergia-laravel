@@ -1,38 +1,14 @@
-import { useEffect, useState } from 'react';
 import Header from '../Templates/Header.jsx';
 import AppRouter from '../Router/AppRouter.jsx';
-import Login from '../Login/Login.jsx';
-import { obtenerUsuarioActual } from '../api/login.js';
 
-
+// TODO: re-enable auth
 export default function App() {
-  const [autenticado, setAutenticado] = useState(false);
-  const [cargandoAuth, setCargandoAuth] = useState(true);
-
-  useEffect(() => {
-    const validarSesion = async () => {
-      const usuario = await obtenerUsuarioActual();
-      setAutenticado(Boolean(usuario));
-      setCargandoAuth(false);
-    };
-
-    validarSesion();
-  }, []);
-
-  if (cargandoAuth) {
-    return <div className="min-h-screen bg-blue-950" />;
-  }
-
   return (
     <>
-      {!autenticado ? (
-        <Login onLoginSuccess={() => setAutenticado(true)} />
-      ) : (
-        <div className="flex">
-          <Header onLogout={() => setAutenticado(false)} />
-          <AppRouter />
-        </div>
-      )}
+      <div className="flex">
+        <Header onLogout={() => {}} />
+        <AppRouter />
+      </div>
     </>
   );
 
