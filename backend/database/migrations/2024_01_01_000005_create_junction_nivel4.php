@@ -28,12 +28,12 @@ return new class extends Migration
 
             $table->primary(['nro_obra', 'pedido_compra_id', 'rubro_id', 'proveedor_id']);
 
-            // FK hacia la triple PK de Compra_Rubro
-            $table->foreign(['nro_obra', 'pedido_compra_id', 'rubro_id'])
+            // FK hacia la triple PK de Compra_Rubro (nombre corto — límite MySQL 64 chars)
+            $table->foreign(['nro_obra', 'pedido_compra_id', 'rubro_id'], 'fk_crp_compra_rubro')
                   ->references(['nro_obra', 'pedido_compra_id', 'rubro_id'])
                   ->on('Compra_Rubro');
 
-            $table->foreign('proveedor_id')
+            $table->foreign('proveedor_id', 'fk_crp_proveedor')
                   ->references('proveedor_id')->on('Proveedor');
         });
 
@@ -48,12 +48,12 @@ return new class extends Migration
 
             $table->primary(['nro_obra', 'pedido_compra_id', 'rubro_id', 'grupo_id']);
 
-            // FK hacia la triple PK de Compra_Rubro
-            $table->foreign(['nro_obra', 'pedido_compra_id', 'rubro_id'])
+            // FK hacia la triple PK de Compra_Rubro (nombre corto — límite MySQL 64 chars)
+            $table->foreign(['nro_obra', 'pedido_compra_id', 'rubro_id'], 'fk_crg_compra_rubro')
                   ->references(['nro_obra', 'pedido_compra_id', 'rubro_id'])
                   ->on('Compra_Rubro');
 
-            $table->foreign('grupo_id')
+            $table->foreign('grupo_id', 'fk_crg_grupo')
                   ->references('grupo_id')->on('Grupo');
         });
     }

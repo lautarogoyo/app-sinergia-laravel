@@ -64,7 +64,7 @@ return new class extends Migration
 
             // FK Orden_Compra (referencia solo nro_oc; nro_obra ya está en esta tabla)
             // Se usa nro_oc + nro_obra para apuntar a la PK compuesta de Orden_Compra
-            $table->foreign(['nro_oc', 'nro_obra'])
+            $table->foreign(['nro_oc', 'nro_obra'], 'fk_factura_orden_compra')
                   ->references(['nro_oc', 'nro_obra'])->on('Orden_Compra');
 
             // FK Proveedor (nullable — la factura puede ser de proveedor o grupo)
