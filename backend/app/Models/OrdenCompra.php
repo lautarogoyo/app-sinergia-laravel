@@ -15,6 +15,14 @@ class OrdenCompra extends SinergiaModel
     public $incrementing = false;
     protected $keyType = 'array';
 
+    protected $fillable = [
+        'nro_oc',
+        'nro_obra',
+        'grupo_id',
+        'detalle',
+        'importe',
+    ];
+
     protected $casts = [
         'importe' => 'decimal:2',
     ];

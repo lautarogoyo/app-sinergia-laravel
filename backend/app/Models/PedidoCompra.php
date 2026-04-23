@@ -11,6 +11,19 @@ class PedidoCompra extends SinergiaModel
     protected $table = 'Pedido_Compra';
     protected $primaryKey = 'pedido_compra_id';
 
+    protected $fillable = [
+        'nro_obra',
+        'rol_pedido_id',
+        'path_presupuesto',
+        'path_material',
+        'fecha_pedido',
+        'fecha_entrega_estimada',
+        'estado_contratista_id',
+        'estado_pedido_id',
+        'estado_registro_id',
+        'observaciones',
+    ];
+
     protected $casts = [
         'fecha_pedido'           => 'date',
         'fecha_entrega_estimada' => 'date',

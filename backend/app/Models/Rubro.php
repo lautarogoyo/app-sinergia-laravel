@@ -11,6 +11,10 @@ class Rubro extends SinergiaModel
 
     protected $primaryKey = 'rubro_id';
 
+    protected $fillable = [
+        'descripcion',
+    ];
+
     public function proveedorRubros(): HasMany
     {
         return $this->hasMany(ProveedorRubro::class, 'rubro_id', 'rubro_id');

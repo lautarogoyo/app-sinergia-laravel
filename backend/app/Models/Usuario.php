@@ -17,7 +17,13 @@ class Usuario extends Authenticatable
 
     public $timestamps = false;
 
-    protected $guarded = [];
+    protected $fillable = [
+        'nombre_usuario',
+        'nombre',
+        'apellido',
+        'email',
+        'contrasenia',
+    ];
 
     protected $hidden = [
         'contrasenia',

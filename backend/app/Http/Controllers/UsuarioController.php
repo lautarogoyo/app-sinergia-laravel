@@ -31,9 +31,10 @@ class UsuarioController extends Controller
 	public function store(Request $request)
 	{
 		$validated = $request->validate([
-			'nombre' => 'required|string|max:255',
-			'apellido' => 'required|string|max:255',
-			'email' => 'required|email|max:255|unique:usuarios,email',
+			'nombre_usuario' => 'required|string|max:100|unique:Usuario,nombre_usuario',
+			'nombre' => 'required|string|max:100',
+			'apellido' => 'required|string|max:100',
+			'email' => 'required|email|max:150|unique:Usuario,email',
 			'contrasenia' => 'required|string|min:6',
 		]);
 
@@ -50,14 +51,21 @@ class UsuarioController extends Controller
 	public function update(Request $request, Usuario $usuario)
 	{
 		$validated = $request->validate([
-			'nombre' => 'sometimes|required|string|max:255',
-			'apellido' => 'sometimes|required|string|max:255',
+			'nombre_usuario' => [
+				'sometimes',
+				'required',
+				'string',
+				'max:100',
+				Rule::unique('Usuario', 'nombre_usuario')->ignore($usuario->usuario_id, 'usuario_id'),
+			],
+			'nombre' => 'sometimes|required|string|max:100',
+			'apellido' => 'sometimes|required|string|max:100',
 			'email' => [
 				'sometimes',
 				'required',
 				'email',
-				'max:255',
-				Rule::unique('usuarios', 'email')->ignore($usuario->id)
+				'max:150',
+				Rule::unique('Usuario', 'email')->ignore($usuario->usuario_id, 'usuario_id'),
 			],
 			'contrasenia' => 'sometimes|required|string|min:6',
 		]);

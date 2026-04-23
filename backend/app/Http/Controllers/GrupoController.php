@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Grupo;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class GrupoController extends Controller
 {
@@ -30,7 +29,8 @@ class GrupoController extends Controller
             'ciudad'              => 'nullable|string|max:100',
             'calificacion'        => 'nullable|string|max:50',
             'contacto'            => 'nullable|string|max:150',
-            'observacion'         => 'nullable|string',
+            'observacion'         => 'nullable|string|max:255',
+            'fecha_ingreso'       => 'sometimes|date',
         ]);
 
         $grupo = Grupo::create($validated);
@@ -62,7 +62,8 @@ class GrupoController extends Controller
             'ciudad'              => 'sometimes|nullable|string|max:100',
             'calificacion'        => 'sometimes|nullable|string|max:50',
             'contacto'            => 'sometimes|nullable|string|max:150',
-            'observacion'         => 'sometimes|nullable|string',
+            'observacion'         => 'sometimes|nullable|string|max:255',
+            'fecha_ingreso'       => 'sometimes|date',
         ]);
 
         $grupo->update($validated);

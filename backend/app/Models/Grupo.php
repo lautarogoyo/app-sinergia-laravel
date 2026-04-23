@@ -11,6 +11,20 @@ class Grupo extends SinergiaModel
     protected $table = 'Grupo';
     protected $primaryKey = 'grupo_id';
 
+    protected $fillable = [
+        'nombre_apellido',
+        'usuario_id',
+        'tipo_facturacion_id',
+        'estado_grupo_id',
+        'telefono',
+        'email',
+        'ciudad',
+        'calificacion',
+        'contacto',
+        'observacion',
+        'fecha_ingreso',
+    ];
+
     protected $casts = [
         'fecha_ingreso' => 'date',
     ];

@@ -11,6 +11,20 @@ class Proveedor extends SinergiaModel
     protected $table = 'Proveedor';
     protected $primaryKey = 'proveedor_id';
 
+    protected $fillable = [
+        'nombre_apellido',
+        'usuario_id',
+        'tipo_facturacion_id',
+        'telefono',
+        'email',
+        'direccion',
+        'ciudad',
+        'calificacion',
+        'contacto',
+        'observacion',
+        'fecha_ingreso',
+    ];
+
     protected $casts = [
         'fecha_ingreso' => 'date',
     ];

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Factura;
 use App\Models\Obra;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class FacturaController extends Controller
 {
@@ -20,7 +21,12 @@ class FacturaController extends Controller
     {
         $validated = $request->validate([
             'nro_factura'   => 'required|string|max:50|unique:Factura,nro_factura',
-            'nro_oc'        => 'nullable|string|max:50',
+            'nro_oc'        => [
+                'nullable',
+                'string',
+                'max:50',
+                Rule::exists('Orden_Compra', 'nro_oc')->where(fn ($query) => $query->where('nro_obra', $obra->nro_obra)),
+            ],
             'proveedor_id'  => 'nullable|exists:Proveedor,proveedor_id',
             'grupo_id'      => 'nullable|exists:Grupo,grupo_id',
             'fecha'         => 'required|date',
@@ -67,15 +73,20 @@ class FacturaController extends Controller
         }
 
         $validated = $request->validate([
-            'nro_oc'        => 'nullable|string|max:50',
+            'nro_oc'        => [
+                'nullable',
+                'string',
+                'max:50',
+                Rule::exists('Orden_Compra', 'nro_oc')->where(fn ($query) => $query->where('nro_obra', $obra->nro_obra)),
+            ],
             'proveedor_id'  => 'nullable|exists:Proveedor,proveedor_id',
             'grupo_id'      => 'nullable|exists:Grupo,grupo_id',
             'fecha'         => 'sometimes|required|date',
             'tipo_factura'  => 'sometimes|required|in:A,C',
             'empresa'       => 'sometimes|required|in:GOYOAGA,PROTECDUR,SINERGIA',
             'forma_pago'    => 'sometimes|required|in:TRANSFERENCIA,ECHEQ',
-            'cantidad_dias' => 'nullable|integer|min:1',
-            'email'         => 'nullable|email|max:150',
+            'cantidad_dias' => 'nullable|required_if:forma_pago,ECHEQ|integer|min:1',
+            'email'         => 'nullable|required_if:forma_pago,ECHEQ|email|max:150',
             'importe_total' => 'sometimes|required|numeric|min:0',
         ]);
 

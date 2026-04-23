@@ -31,6 +31,7 @@ class DocumentacionController extends Controller
         $path = Storage::disk('public')->putFileAs('documentos', $file, $file->getClientOriginalName());
 
         $data['path'] = $path;
+        unset($data['archivo']);
 
         $documentacion = $empleado->documentaciones()->create($data);
 
@@ -95,6 +96,8 @@ class DocumentacionController extends Controller
             $file = $request->file('archivo');
             $data['path'] = Storage::disk('public')->putFileAs('documentos', $file, $file->getClientOriginalName());
         }
+
+        unset($data['archivo']);
 
         $documentacion->update($data);
 

@@ -11,6 +11,21 @@ class Factura extends SinergiaModel
     public $incrementing = false;
     protected $keyType = 'string';
 
+    protected $fillable = [
+        'nro_factura',
+        'nro_oc',
+        'nro_obra',
+        'proveedor_id',
+        'grupo_id',
+        'fecha',
+        'tipo_factura',
+        'empresa',
+        'forma_pago',
+        'cantidad_dias',
+        'email',
+        'importe_total',
+    ];
+
     protected $casts = [
         'fecha'         => 'date',
         'importe_total' => 'decimal:2',

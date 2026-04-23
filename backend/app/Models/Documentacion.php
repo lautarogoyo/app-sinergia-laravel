@@ -14,6 +14,14 @@ class Documentacion extends SinergiaModel
     public $incrementing = false;
     protected $keyType = 'array';
 
+    protected $fillable = [
+        'empleado_id',
+        'tipo_documentacion_id',
+        'estado_documentacion_id',
+        'path',
+        'fecha_vencimiento',
+    ];
+
     protected $casts = [
         'fecha_vencimiento' => 'date',
     ];

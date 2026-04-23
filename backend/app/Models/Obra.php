@@ -14,6 +14,20 @@ class Obra extends SinergiaModel
     public $incrementing = false;
     protected $keyType = 'string';
 
+    protected $fillable = [
+        'nro_obra',
+        'detalle',
+        'estado_obra_id',
+        'fecha_visto',
+        'fecha_ingreso',
+        'fecha_programacion_inicio',
+        'fecha_recepcion_provisoria',
+        'fecha_recepcion_definitiva',
+        'fecha_inicio_orden_compra',
+        'fecha_finalizacion_orden_compra',
+        'detalle_caratula',
+    ];
+
     protected $casts = [
         'fecha_ingreso'                   => 'date',
         'fecha_visto'                     => 'date',

@@ -10,6 +10,18 @@ class Empleado extends SinergiaModel
     protected $table = 'Empleado';
     protected $primaryKey = 'empleado_id';
 
+    protected $fillable = [
+        'nombre',
+        'apellido',
+        'telefono',
+        'cbu',
+        'alias',
+        'grupo_id',
+        'estado_empleado_id',
+        'archivado_at',
+        'cancelado_at',
+    ];
+
     protected $casts = [
         'archivado_at' => 'date',
         'cancelado_at' => 'date',

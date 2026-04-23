@@ -9,6 +9,15 @@ class PedidoCotizacion extends SinergiaModel
     protected $table = 'Pedido_Cotizacion';
     protected $primaryKey = 'pedido_cotizacion_id';
 
+    protected $fillable = [
+        'nro_obra',
+        'path_archivo',
+        'path_archivo_mano_obra',
+        'fecha_cierre_cotizacion',
+        'estado_cotizacion_id',
+        'estado_comparativa_id',
+    ];
+
     protected $casts = [
         'fecha_cierre_cotizacion' => 'date',
     ];
