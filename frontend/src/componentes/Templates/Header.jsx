@@ -80,15 +80,6 @@ export default function Header({ onLogout }) {
               <Icon name="employee" className="w-6 h-6 flex-shrink-0" />
               {visible ? <span className="whitespace-nowrap">Empleados</span> : <span className="sr-only">Empleados</span>}
             </NavLink>
-
-            <NavLink 
-              to="/grupos" 
-              className={({ isActive }) => 
-                `${navLinkBase} ${isActive ? navLinkActive : ''}`}
-            >
-              <Icon name="group" className="w-6 h-6 flex-shrink-0" />
-              {visible ? <span className="whitespace-nowrap">Grupos</span> : <span className="sr-only">Grupos</span>}
-            </NavLink>
             
             <NavLink 
               to="/obras" 
