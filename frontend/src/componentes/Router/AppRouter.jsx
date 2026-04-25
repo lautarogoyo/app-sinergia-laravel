@@ -15,7 +15,6 @@ import RemoveGrupo from "../Personas/Grupos/RemoveGrupo.jsx";
 import Gestionar from "../Obras/Gestionar.jsx";
 import DiagramaObras from "../Obras/DiagramaObras.jsx";
 import Personas from "../Personas/Personas.jsx";
-import Rubros from "../Personas/Rubros/Rubros.jsx";
 import CreatePersona from "../Personas/Proveedores/CreatePersona.jsx";
 import EditPersona from "../Personas/Proveedores/EditPersona.jsx";
 import RemovePersona from "../Personas/Proveedores/RemovePersona.jsx";
@@ -30,7 +29,6 @@ function AppRouter() {
             <Route path="/obras" element={<Obras />} />
             <Route path="/obras/diagrama" element={<DiagramaObras />} />
             <Route path="/personas" element={<Personas />} />
-            <Route path="/rubros" element={<Rubros />} />
             <Route path="/crear-persona" element={<CreatePersona />} />
             <Route path="/editarpersona/:id" element={<EditPersona />} />
             <Route path="/eliminarpersona/:id" element={<RemovePersona />} />

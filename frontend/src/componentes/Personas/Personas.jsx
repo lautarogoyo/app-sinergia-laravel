@@ -1,8 +1,10 @@
 import { useMemo, useState } from "react";
+import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
 import { useGrupos, useEstadosGrupo } from "../hooks/useGrupos";
 import { useProveedores } from "../hooks/useProveedores";
-import { useRubros } from "../hooks/useRubros";
+import { useRubros, useCreateRubro } from "../hooks/useRubros";
+import RubroFormModal from "./Rubros/RubroFormModal.jsx";
 
 const thClass = "px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500";
 const tdClass = "text-lg text-gray-800 px-4 py-3 text-center";
@@ -27,12 +29,21 @@ export default function Personas() {
   const navigate = useNavigate();
   const [seccion, setSeccion] = useState("proveedores");
   const [busqueda, setBusqueda] = useState("");
+  const [showRubroModal, setShowRubroModal] = useState(false);
 
   const { data: grupos = [], isLoading: loadingGrupos, isError: errorGrupos } = useGrupos();
   const { data: proveedores = [], isLoading: loadingProveedores } = useProveedores();
   const { data: estadosData, isLoading: isLoadingEstados } = useEstadosGrupo();
   const { data: rubros = [], isLoading: loadingRubros } = useRubros();
+  const { mutate: crearRubro, isPending: creandoRubro } = useCreateRubro();
   const estados = estadosData?.estados ?? [];
+
+  const handleCreateRubro = (data) => {
+    crearRubro(data, {
+      onSuccess: () => setShowRubroModal(false),
+      onError: () => Swal.fire("Error", "No se pudo crear el rubro", "error"),
+    });
+  };
 
   const getEstadoNombre = (id_estado) => {
     const estado = estados.find((e) => e.estado_grupo_id === id_estado);
@@ -104,10 +115,11 @@ export default function Personas() {
           {seccion === "rubros" && (
             <button
               type="button"
-              onClick={() => navigate("/rubros", { state: { openCreate: true } })}
+              onClick={() => setShowRubroModal(true)}
               className={btnBlue}
+              disabled={creandoRubro}
             >
-              Agregar Rubro
+              {creandoRubro ? "Guardando..." : "Agregar Rubro"}
             </button>
           )}
         </div>
@@ -232,6 +244,15 @@ export default function Personas() {
             </tbody>
           </table>
         </div>
+      )}
+
+      {showRubroModal && (
+        <RubroFormModal
+          rubro={null}
+          onClose={() => setShowRubroModal(false)}
+          onCreate={handleCreateRubro}
+          onUpdate={() => {}}
+        />
       )}
     </div>
   );

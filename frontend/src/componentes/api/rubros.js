@@ -6,22 +6,7 @@ export const fetchRubros = async () => {
   return data.rubros;
 };
 
-export const fetchRubroById = async (id) => {
-  const { data } = await axios.get(`${backendUrl}/api/rubros/${id}`);
-  return data.rubro;
-};
-
 export const PostRubro = async (rubro) => {
   const { data } = await axios.post(`${backendUrl}/api/rubros`, rubro);
-  return data;
-};
-
-export const UpdateRubro = async (id, rubro) => {
-  const { data } = await axios.put(`${backendUrl}/api/rubros/${id}`, rubro);
-  return data;
-};
-
-export const DeleteRubro = async (id) => {
-  const { data } = await axios.delete(`${backendUrl}/api/rubros/${id}`);
   return data;
 };
