@@ -16,9 +16,9 @@ import Gestionar from "../Obras/Gestionar.jsx";
 import DiagramaObras from "../Obras/DiagramaObras.jsx";
 import Personas from "../Personas/Personas.jsx";
 import Rubros from "../Personas/Rubros/Rubros.jsx";
-import CreatePersona from "../Personas/CreatePersona.jsx";
-import EditPersona from "../Personas/EditPersona.jsx";
-import RemovePersona from "../Personas/RemovePersona.jsx";
+import CreatePersona from "../Personas/Proveedores/CreatePersona.jsx";
+import EditPersona from "../Personas/Proveedores/EditPersona.jsx";
+import RemovePersona from "../Personas/Proveedores/RemovePersona.jsx";
 
 function AppRouter() {
     return (

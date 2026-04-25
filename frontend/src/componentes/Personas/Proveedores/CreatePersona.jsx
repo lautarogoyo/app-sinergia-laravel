@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useCreateProveedor } from "../hooks/useProveedores";
-import FormField from "../shared/FormField";
+import { useCreateProveedor } from "../../hooks/useProveedores";
+import FormField from "../../shared/FormField";
 
 export default function CreatePersona() {
   const navigate = useNavigate();

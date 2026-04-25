@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useProveedorById, useUpdateProveedor } from "../hooks/useProveedores";
-import FormField from "../shared/FormField";
+import { useProveedorById, useUpdateProveedor } from "../../hooks/useProveedores";
+import FormField from "../../shared/FormField";
 
 export default function EditPersona() {
   const { id } = useParams();

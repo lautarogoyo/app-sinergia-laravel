@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useProveedorById, useDeleteProveedor } from "../hooks/useProveedores";
+import { useProveedorById, useDeleteProveedor } from "../../hooks/useProveedores";
 
 export default function RemovePersona() {
   const { id } = useParams();
