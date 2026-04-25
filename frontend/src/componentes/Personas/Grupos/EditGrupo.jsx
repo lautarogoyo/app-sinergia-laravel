@@ -1,19 +1,26 @@
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useCreateGrupo, useEstadosGrupo } from "../hooks/useGrupos";
+import { useGrupoById, useUpdateGrupo, useEstadosGrupo } from "../../hooks/useGrupos";
 
-export default function CreateGrupo() {
+export default function EditGrupo() {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    defaultValues: { denominacion: "", id_estado: "" },
-  });
-  const { mutate, isPending } = useCreateGrupo(() => navigate("/personas"));
+  const { data: grupo, isLoading } = useGrupoById(id);
+  const { register, handleSubmit, reset, formState: { errors } } = useForm();
+  const { mutate, isPending } = useUpdateGrupo(id, () => navigate("/personas"));
   const { data: estadosData } = useEstadosGrupo();
   const estados = estadosData?.estados ?? [];
 
+  useEffect(() => {
+    if (grupo) reset({ denominacion: grupo.denominacion, id_estado: grupo.id_estado });
+  }, [grupo, reset]);
+
+  if (isLoading) return <p className="p-8 text-gray-500">Cargando...</p>;
+
   return (
     <div className="p-8 bg-gray-100 lg:w-full flex flex-col items-center">
-      <h2 className="text-3xl font-extrabold mb-6 text-gray-800">Nuevo Grupo</h2>
+      <h2 className="text-3xl font-extrabold mb-6 text-gray-800">Editar Grupo</h2>
       <form onSubmit={handleSubmit((data) => mutate(data))}
         className="w-full max-w-xl bg-white shadow-2xl rounded-xl border border-gray-200 p-6 space-y-4">
 
@@ -47,7 +54,7 @@ export default function CreateGrupo() {
             className="bg-gray-200 hover:bg-gray-300 text-gray-800 text-lg font-semibold py-2 px-4 rounded shadow">Cancelar</button>
           <button type="submit" disabled={isPending}
             className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow disabled:opacity-50">
-            {isPending ? "Guardando..." : "Crear"}
+            {isPending ? "Guardando..." : "Guardar"}
           </button>
         </div>
       </form>

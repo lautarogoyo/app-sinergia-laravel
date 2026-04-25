@@ -102,7 +102,13 @@ export default function Personas() {
             <button type="button" onClick={() => navigate("/crear-grupo")} className={btnBlue}>Nuevo Grupo</button>
           )}
           {seccion === "rubros" && (
-            <button type="button" onClick={() => navigate("/rubros")} className={btnBlue}>Gestionar Rubros</button>
+            <button
+              type="button"
+              onClick={() => navigate("/rubros", { state: { openCreate: true } })}
+              className={btnBlue}
+            >
+              Agregar Rubro
+            </button>
           )}
         </div>
       </div>

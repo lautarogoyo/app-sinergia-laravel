@@ -1,70 +1,16 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { useRubros, useCreateRubro, useUpdateRubro, useDeleteRubro } from "../../hooks/useRubros.jsx";
-import {useNavigate } from "react-router-dom";
-
-function RubroModal({ rubro, onClose, onCreate, onUpdate }) {
-  const isEdit = !!rubro;
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    defaultValues: { descripcion: rubro?.descripcion ?? "" },
-  });
-
-  const onSubmit = handleSubmit((data) => {
-    if (isEdit) {
-      onUpdate({ id: rubro.rubro_id, descripcion: data.descripcion });
-    } else {
-      onCreate(data);
-    }
-  });
-
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl shadow-2xl border border-gray-200 p-6 w-full max-w-md">
-        <h3 className="text-2xl font-extrabold mb-4 text-gray-800">
-          {isEdit ? "Editar Rubro" : "Crear Rubro"}
-        </h3>
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="flex flex-col">
-            <label htmlFor="descripcion" className="mb-2 text-lg font-medium text-gray-700">
-              Descripción
-            </label>
-            <input
-              id="descripcion"
-              type="text"
-              {...register("descripcion", { required: "La descripción es obligatoria" })}
-              className="w-full px-4 py-2 rounded border border-gray-300 text-lg focus:outline-none focus:ring focus:border-blue-400"
-              placeholder="Ej: Construcción"
-            />
-            {errors.descripcion && (
-              <p className="text-red-600 text-sm font-semibold mt-1">{errors.descripcion.message}</p>
-            )}
-          </div>
-          <div className="flex gap-3 justify-end pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-800 text-lg font-semibold py-2 px-4 rounded shadow transition duration-150"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150"
-            >
-              {isEdit ? "Guardar" : "Crear"}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
+import { useLocation, useNavigate } from "react-router-dom";
+import RubroFormModal from "./RubroFormModal.jsx";
+import RubrosGrid from "./RubrosGrid.jsx";
 
 export default function Rubros() {
   const [filtro, setFiltro] = useState("");
   const [modalRubro, setModalRubro] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const { isLoading, isError, data: rubros = [] } = useRubros();
   const { mutate: crear, isPending: creando } = useCreateRubro();
@@ -114,6 +60,13 @@ export default function Rubros() {
     setShowModal(true);
   };
 
+  useEffect(() => {
+    if (location.state?.openCreate) {
+      openCreate();
+      navigate(location.pathname, { replace: true, state: null });
+    }
+  }, [location.pathname, location.state, navigate]);
+
   if (isLoading) return (
     <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
       <div className="mt-8 text-center">
@@ -136,7 +89,7 @@ export default function Rubros() {
     (r.descripcion ?? "").toLowerCase().includes(filtro.toLowerCase()) ||
     (r.rubro_id ?? "").toString().includes(filtro)
   );
-const navigate = useNavigate();
+
   return (
     <div className="p-8 bg-gray-100 lg:w-full flex flex-col">
       {(creando || editando) && (
@@ -151,74 +104,28 @@ const navigate = useNavigate();
 
       <div className="mb-6 w-full max-w-2xl flex flex-col">
         <label htmlFor="filtro" className="mb-2 text-lg font-medium text-gray-700">Filtrar:</label>
-        <input
-          id="filtro"
-          type="text"
-          className="w-full px-4 py-2 rounded border border-gray-300 text-lg focus:outline-none focus:ring focus:border-blue-400 mb-2"
-          placeholder="Filtrar por descripción o ID..."
-          value={filtro}
-          onChange={(e) => setFiltro(e.target.value)}
-        />
-        <div className="flex flex-col sm:flex-row gap-2 justify-between">
+        <div className="flex flex-row items-end gap-2">
+          <input
+            id="filtro"
+            type="text"
+            className="min-w-0 flex-1 px-4 py-2 rounded border border-gray-300 text-lg focus:outline-none focus:ring focus:border-blue-400"
+            placeholder="Filtrar por descripción o ID..."
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+          />
           <button
-            className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
+            className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer whitespace-nowrap shrink-0"
             onClick={openCreate}
           >
             Agregar Rubro
           </button>
-          <button
-            className="bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-            onClick={() => navigate("/personas")}
-          >
-            Volver
-          </button>
         </div>
       </div>
 
-      <div className="shadow-2xl rounded-xl border border-gray-300 bg-white flex flex-col overflow-x-auto">
-        <table className="min-w-full">
-          <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
-            <tr>
-              <th className="px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500">ID</th>
-              <th className="px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500">Descripción</th>
-              <th className="px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="bg-gray-50 divide-y divide-gray-200 text-center">
-            {rubrosFiltrados.length > 0 ? (
-              rubrosFiltrados.map((rubro) => (
-                <tr key={rubro.rubro_id} className="hover:bg-gray-200 transition-colors duration-150">
-                  <td className="text-lg text-gray-500 px-4 py-3">{rubro.rubro_id}</td>
-                  <td className="text-lg text-gray-800 px-4 py-3">{rubro.descripcion ?? "Sin descripción"}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex gap-2 justify-center flex-wrap">
-                      <button
-                        className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-                        onClick={() => openEdit(rubro)}
-                      >
-                        Editar
-                      </button>
-                      <button
-                        className="bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-                        onClick={() => handleDelete(rubro)}
-                      >
-                        Eliminar
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="3" className="px-6 py-4 text-center text-gray-500">No hay rubros</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      <RubrosGrid rubros={rubrosFiltrados} onEdit={openEdit} onDelete={handleDelete} />
 
       {showModal && (
-        <RubroModal
+        <RubroFormModal
           rubro={modalRubro}
           onClose={() => setShowModal(false)}
           onCreate={handleCreate}

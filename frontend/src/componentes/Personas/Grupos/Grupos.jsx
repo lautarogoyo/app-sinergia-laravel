@@ -1,6 +1,6 @@
 import {useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGrupos } from "../hooks/useGrupos.jsx";
+import { useGrupos } from "../../hooks/useGrupos.jsx";
 
 
 export default function Grupos() {

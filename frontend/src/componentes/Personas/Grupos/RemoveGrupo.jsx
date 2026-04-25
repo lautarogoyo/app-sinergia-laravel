@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useGrupoById, useDeleteGrupo } from "../hooks/useGrupos";
+import { useGrupoById, useDeleteGrupo } from "../../hooks/useGrupos";
 
 export default function RemoveGrupo() {
   const { id } = useParams();
