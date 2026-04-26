@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EstadoCotizacion;
 use Illuminate\Http\Request;
 
 class EstadoCotizacionController extends Controller
@@ -11,7 +12,10 @@ class EstadoCotizacionController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json([
+            'estados' => EstadoCotizacion::query()->orderBy('descripcion')->get(),
+            'status' => 200,
+        ]);
     }
 
     /**

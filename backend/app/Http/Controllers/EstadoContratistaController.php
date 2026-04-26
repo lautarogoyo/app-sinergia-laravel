@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EstadoContratista;
 use Illuminate\Http\Request;
 
 class EstadoContratistaController extends Controller
@@ -11,7 +12,10 @@ class EstadoContratistaController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json([
+            'estados' => EstadoContratista::query()->orderBy('descripcion')->get(),
+            'status' => 200,
+        ]);
     }
 
     /**

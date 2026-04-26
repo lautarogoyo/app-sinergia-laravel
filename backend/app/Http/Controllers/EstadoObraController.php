@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EstadoObra;
 use Illuminate\Http\Request;
 
 class EstadoObraController extends Controller
@@ -11,7 +12,10 @@ class EstadoObraController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json([
+            'estados' => EstadoObra::query()->orderBy('descripcion')->get(),
+            'status' => 200,
+        ]);
     }
 
     /**

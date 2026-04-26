@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EstadoRegistro;
 use Illuminate\Http\Request;
 
 class EstadoRegistroController extends Controller
@@ -11,7 +12,10 @@ class EstadoRegistroController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json([
+            'estados' => EstadoRegistro::query()->orderBy('descripcion')->get(),
+            'status' => 200,
+        ]);
     }
 
     /**

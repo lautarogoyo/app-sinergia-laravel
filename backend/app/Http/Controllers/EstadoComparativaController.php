@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EstadoComparativa;
 use Illuminate\Http\Request;
 
 class EstadoComparativaController extends Controller
@@ -11,7 +12,10 @@ class EstadoComparativaController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json([
+            'estados' => EstadoComparativa::query()->orderBy('descripcion')->get(),
+            'status' => 200,
+        ]);
     }
 
     /**

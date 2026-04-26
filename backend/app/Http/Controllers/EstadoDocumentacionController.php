@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EstadoDocumentacion;
 use Illuminate\Http\Request;
 
 class EstadoDocumentacionController extends Controller
@@ -11,7 +12,10 @@ class EstadoDocumentacionController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json([
+            'estados' => EstadoDocumentacion::query()->orderBy('descripcion')->get(),
+            'status' => 200,
+        ]);
     }
 
     /**

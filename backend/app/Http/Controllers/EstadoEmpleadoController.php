@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\EstadoEmpleado;
 use Illuminate\Http\Request;
 
 class EstadoEmpleadoController extends Controller
@@ -11,7 +12,10 @@ class EstadoEmpleadoController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json([
+            'estados' => EstadoEmpleado::query()->orderBy('descripcion')->get(),
+            'status' => 200,
+        ]);
     }
 
     /**
