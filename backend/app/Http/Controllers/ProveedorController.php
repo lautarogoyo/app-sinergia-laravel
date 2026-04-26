@@ -21,7 +21,7 @@ class ProveedorController extends Controller
     {
         $validated = $request->validate([
             'nombre_apellido'     => 'required|string|max:200',
-            'usuario_id'          => 'required|exists:Usuario,usuario_id',
+            'usuario_id'          => 'nullable|exists:Usuario,usuario_id',
             'tipo_facturacion_id' => 'required|exists:Tipo_Facturacion,tipo_facturacion_id',
             'telefono'            => 'nullable|string|max:50',
             'email'               => 'nullable|email|max:150',
@@ -30,7 +30,7 @@ class ProveedorController extends Controller
             'calificacion'        => 'nullable|string|max:50',
             'contacto'            => 'nullable|string|max:150',
             'observacion'         => 'nullable|string|max:255',
-            'fecha_ingreso'       => 'sometimes|date',
+            'fecha_ingreso'       => 'sometimes|nullable|date',
         ]);
 
         $proveedor = Proveedor::create($validated);
@@ -53,7 +53,7 @@ class ProveedorController extends Controller
     {
         $validated = $request->validate([
             'nombre_apellido'     => 'sometimes|required|string|max:200',
-            'usuario_id'          => 'sometimes|required|exists:Usuario,usuario_id',
+            'usuario_id'          => 'sometimes|nullable|exists:Usuario,usuario_id',
             'tipo_facturacion_id' => 'sometimes|required|exists:Tipo_Facturacion,tipo_facturacion_id',
             'telefono'            => 'sometimes|nullable|string|max:50',
             'email'               => 'sometimes|nullable|email|max:150',
@@ -62,7 +62,7 @@ class ProveedorController extends Controller
             'calificacion'        => 'sometimes|nullable|string|max:50',
             'contacto'            => 'sometimes|nullable|string|max:150',
             'observacion'         => 'sometimes|nullable|string|max:255',
-            'fecha_ingreso'       => 'sometimes|date',
+            'fecha_ingreso'       => 'sometimes|nullable|date',
         ]);
 
         $proveedor->update($validated);

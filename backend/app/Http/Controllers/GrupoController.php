@@ -21,7 +21,7 @@ class GrupoController extends Controller
     {
         $validated = $request->validate([
             'nombre_apellido'     => 'required|string|max:200',
-            'usuario_id'          => 'required|exists:Usuario,usuario_id',
+            'usuario_id'          => 'nullable|exists:Usuario,usuario_id',
             'tipo_facturacion_id' => 'required|exists:Tipo_Facturacion,tipo_facturacion_id',
             'estado_grupo_id'     => 'required|exists:Estado_Grupo,estado_grupo_id',
             'telefono'            => 'nullable|string|max:50',
@@ -54,7 +54,7 @@ class GrupoController extends Controller
     {
         $validated = $request->validate([
             'nombre_apellido'     => 'sometimes|required|string|max:200',
-            'usuario_id'          => 'sometimes|required|exists:Usuario,usuario_id',
+            'usuario_id'          => 'sometimes|nullable|exists:Usuario,usuario_id',
             'tipo_facturacion_id' => 'sometimes|required|exists:Tipo_Facturacion,tipo_facturacion_id',
             'estado_grupo_id'     => 'sometimes|required|exists:Estado_Grupo,estado_grupo_id',
             'telefono'            => 'sometimes|nullable|string|max:50',
