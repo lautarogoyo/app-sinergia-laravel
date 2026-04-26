@@ -10,3 +10,13 @@ export const PostRubro = async (rubro) => {
   const { data } = await axios.post(`${backendUrl}/api/rubros`, rubro);
   return data;
 };
+
+export const UpdateRubro = async (id, rubro) => {
+  const { data } = await axios.put(`${backendUrl}/api/rubros/${id}`, rubro);
+  return data;
+};
+
+export const DeleteRubro = async (id) => {
+  const { data } = await axios.delete(`${backendUrl}/api/rubros/${id}`);
+  return data;
+};
