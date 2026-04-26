@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TipoFacturacion;
 use Illuminate\Http\Request;
 
 class TipoFacturacionController extends Controller
@@ -11,7 +12,10 @@ class TipoFacturacionController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json([
+            'tipos_facturacion' => TipoFacturacion::query()->orderBy('descripcion')->get(),
+            'status' => 200,
+        ]);
     }
 
     /**

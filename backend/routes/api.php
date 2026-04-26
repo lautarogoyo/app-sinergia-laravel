@@ -14,6 +14,7 @@ use App\Http\Controllers\OrdenCompraController;
 use App\Http\Controllers\PedidoCompraController;
 use App\Http\Controllers\PedidoCotizacionController;
 use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\TipoFacturacionController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\RubroController;
 use App\Http\Controllers\TipoDocumentoController;
@@ -59,6 +60,9 @@ Route::apiResource('proveedores', ProveedorController::class);
 
 // Rubros
 Route::apiResource('rubros', RubroController::class);
+
+// Tipos de facturación
+Route::get('tipos_facturacion', [TipoFacturacionController::class, 'index']);
 
 // Empleados
 Route::apiResource('empleados', EmpleadoController::class);
