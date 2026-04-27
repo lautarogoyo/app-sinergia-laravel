@@ -5,8 +5,6 @@ import { useProveedores } from "../hooks/useProveedores";
 import { useRubros, useCreateRubro, useUpdateRubro } from "../hooks/useRubros";
 import RubroFormModal from "./Rubros/RubroFormModal.jsx";
 import RubroDeleteModal from "./Rubros/RubroDeleteModal.jsx";
-import ProveedorEditModal from "./Proveedores/ProveedorEditModal.jsx";
-import ProveedorDeleteModal from "./Proveedores/ProveedorDeleteModal.jsx";
 import ProveedorDetailModal from "./Proveedores/ProveedorDetailModal.jsx";
 import GrupoDetailModal from "./Grupos/GrupoDetailModal.jsx";
 
@@ -26,8 +24,8 @@ function LupaIcon() {
 
 const estadoBadge = {
   pendiente: "bg-amber-100 text-amber-700 border-amber-300",
-  apto: "bg-emerald-100 text-emerald-700 border-emerald-300",
-  activo: "bg-blue-100 text-blue-700 border-blue-300",
+  apto:      "bg-emerald-100 text-emerald-700 border-emerald-300",
+  activo:    "bg-blue-100 text-blue-700 border-blue-300",
 };
 
 function TableEmpty({ cols, mensaje }) {
@@ -42,11 +40,8 @@ export default function Personas() {
   const [seccion, setSeccion] = useState("proveedores");
   const [busqueda, setBusqueda] = useState("");
 
-  // Proveedor modals
-  const [showProveedorCreate, setShowProveedorCreate] = useState(false);
-  const [proveedorEditando, setProveedorEditando] = useState(null);
-  const [proveedorEliminando, setProveedorEliminando] = useState(null);
-  const [proveedorDetalle, setProveedorDetalle] = useState(null);
+  // Proveedor modal unificado
+  const [proveedorModal, setProveedorModal] = useState(null); // { proveedor, mode }
 
   // Grupo modal
   const [grupoModal, setGrupoModal] = useState(null); // { grupo, mode }
@@ -56,9 +51,10 @@ export default function Personas() {
   const [rubroEditando, setRubroEditando] = useState(null);
   const [rubroEliminando, setRubroEliminando] = useState(null);
 
-  const { data: grupos = [], isLoading: loadingGrupos, isError: errorGrupos } = useGrupos();
-  const { data: proveedores = [], isLoading: loadingProveedores } = useProveedores();
-  const { data: rubros = [], isLoading: loadingRubros } = useRubros();
+  const { data: grupos = [],      isLoading: loadingGrupos,     isError: errorGrupos    } = useGrupos();
+  const { data: proveedores = [], isLoading: loadingProveedores                          } = useProveedores();
+  const { data: rubros = [],      isLoading: loadingRubros                               } = useRubros();
+
   const { mutate: crearRubro, isPending: creandoRubro } = useCreateRubro();
   const { mutate: actualizarRubro } = useUpdateRubro(
     rubroEditando?.rubro_id,
@@ -68,7 +64,7 @@ export default function Personas() {
   const handleCreateRubro = (data) => {
     crearRubro(data, {
       onSuccess: () => setShowRubroCreate(false),
-      onError: () => Swal.fire("Error", "No se pudo crear el rubro", "error"),
+      onError:   () => Swal.fire("Error", "No se pudo crear el rubro", "error"),
     });
   };
 
@@ -136,12 +132,20 @@ export default function Personas() {
 
         <div className="flex gap-2 pb-0.5">
           {seccion === "proveedores" && (
-            <button type="button" onClick={() => setShowProveedorCreate(true)} className={btnBlue}>
+            <button
+              type="button"
+              onClick={() => setProveedorModal({ proveedor: null, mode: "create" })}
+              className={btnBlue}
+            >
               Nuevo Proveedor
             </button>
           )}
           {seccion === "grupos" && (
-            <button type="button" onClick={() => setGrupoModal({ grupo: null, mode: "create" })} className={btnBlue}>
+            <button
+              type="button"
+              onClick={() => setGrupoModal({ grupo: null, mode: "create" })}
+              className={btnBlue}
+            >
               Nuevo Grupo
             </button>
           )}
@@ -158,6 +162,7 @@ export default function Personas() {
         </div>
       </div>
 
+      {/* ── PROVEEDORES ── */}
       {seccion === "proveedores" && (
         <div className="bg-white rounded-xl border border-gray-300 shadow-2xl overflow-x-auto">
           <h3 className="text-2xl font-bold p-4 text-gray-800">Proveedores</h3>
@@ -182,9 +187,8 @@ export default function Personas() {
                     <td className={tdClass}>{p.email || "-"}</td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2 justify-center flex-wrap">
-                        <button type="button" onClick={() => setProveedorDetalle(p)} className={btnGray} title="Ver detalle"><LupaIcon /></button>
-                        <button type="button" onClick={() => setProveedorEditando(p)} className={btnBlue}>Editar</button>
-                        <button type="button" onClick={() => setProveedorEliminando(p)} className={btnRed}>Eliminar</button>
+                        <button type="button" onClick={() => setProveedorModal({ proveedor: p, mode: "read" })} className={btnGray} title="Ver detalle"><LupaIcon /></button>
+                        <button type="button" onClick={() => setProveedorModal({ proveedor: p, mode: "delete" })} className={btnRed}>Eliminar</button>
                       </div>
                     </td>
                   </tr>
@@ -195,6 +199,7 @@ export default function Personas() {
         </div>
       )}
 
+      {/* ── GRUPOS ── */}
       {seccion === "grupos" && (
         loadingGrupos ? (
           <div className="flex items-center justify-center py-16">
@@ -233,7 +238,6 @@ export default function Personas() {
                         <td className="px-6 py-4">
                           <div className="flex gap-2 justify-center flex-wrap">
                             <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "read" })} className={btnGray} title="Ver detalle"><LupaIcon /></button>
-                            <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "edit" })} className={btnBlue}>Editar</button>
                             <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "delete" })} className={btnRed}>Eliminar</button>
                           </div>
                         </td>
@@ -247,6 +251,7 @@ export default function Personas() {
         )
       )}
 
+      {/* ── RUBROS ── */}
       {seccion === "rubros" && (
         <div className="bg-white rounded-xl border border-gray-300 shadow-2xl overflow-x-auto">
           <h3 className="text-2xl font-bold p-4 text-gray-800">Rubros</h3>
@@ -282,36 +287,16 @@ export default function Personas() {
         </div>
       )}
 
-      {/* Proveedor modals */}
-      {showProveedorCreate && (
-        <ProveedorEditModal
-          proveedor={null}
-          onClose={() => setShowProveedorCreate(false)}
-        />
-      )}
-
-      {proveedorEditando && (
-        <ProveedorEditModal
-          proveedor={proveedorEditando}
-          onClose={() => setProveedorEditando(null)}
-        />
-      )}
-
-      {proveedorEliminando && (
-        <ProveedorDeleteModal
-          proveedor={proveedorEliminando}
-          onClose={() => setProveedorEliminando(null)}
-        />
-      )}
-
-      {proveedorDetalle && (
+      {/* ── MODALES PROVEEDOR ── */}
+      {proveedorModal && (
         <ProveedorDetailModal
-          proveedor={proveedorDetalle}
-          onClose={() => setProveedorDetalle(null)}
+          proveedor={proveedorModal.proveedor}
+          initialMode={proveedorModal.mode}
+          onClose={() => setProveedorModal(null)}
         />
       )}
 
-      {/* Grupo modal */}
+      {/* ── MODALES GRUPO ── */}
       {grupoModal && (
         <GrupoDetailModal
           grupo={grupoModal.grupo}
@@ -320,7 +305,7 @@ export default function Personas() {
         />
       )}
 
-      {/* Rubro modals */}
+      {/* ── MODALES RUBRO ── */}
       {showRubroCreate && (
         <RubroFormModal
           rubro={null}
@@ -329,7 +314,6 @@ export default function Personas() {
           onUpdate={() => {}}
         />
       )}
-
       {rubroEditando && (
         <RubroFormModal
           rubro={rubroEditando}
@@ -338,7 +322,6 @@ export default function Personas() {
           onUpdate={handleUpdateRubro}
         />
       )}
-
       {rubroEliminando && (
         <RubroDeleteModal
           rubro={rubroEliminando}
