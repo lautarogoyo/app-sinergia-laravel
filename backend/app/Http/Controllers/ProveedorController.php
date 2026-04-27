@@ -9,7 +9,7 @@ class ProveedorController extends Controller
 {
     public function index()
     {
-        $proveedores = Proveedor::with(['usuario', 'tipoFacturacion'])->get();
+        $proveedores = Proveedor::with(['tipoFacturacion'])->get();
 
         return response()->json([
             'proveedores' => $proveedores,
@@ -20,23 +20,26 @@ class ProveedorController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nombre_apellido'     => 'required|string|max:200',
-            'usuario_id'          => 'nullable|exists:Usuario,usuario_id',
+            'nombre_apellido'     => 'required|string|max:255',
             'tipo_facturacion_id' => 'required|exists:Tipo_Facturacion,tipo_facturacion_id',
-            'telefono'            => 'nullable|string|max:50',
-            'email'               => 'nullable|email|max:150',
-            'direccion'           => 'nullable|string|max:255',
-            'ciudad'              => 'nullable|string|max:100',
-            'calificacion'        => 'nullable|string|max:50',
-            'contacto'            => 'nullable|string|max:150',
-            'observacion'         => 'nullable|string|max:255',
+            'telefono'            => 'sometimes|nullable|string|max:20',
+            'email'               => 'sometimes|nullable|email|max:255',
+            'direccion'           => 'sometimes|nullable|string|max:255',
+            'ciudad'              => 'sometimes|nullable|string|max:255',
+            'calificacion'        => 'sometimes|nullable|string|max:50',
+            'contacto'            => 'sometimes|nullable|string|max:255',
+            'observacion'         => 'sometimes|nullable|string|max:1000',
             'fecha_ingreso'       => 'sometimes|nullable|date',
+            'usuario_id'          => 'sometimes|nullable|exists:Usuario,usuario_id',
         ]);
+
+        $validated['fecha_ingreso'] = $validated['fecha_ingreso'] ?? now()->toDateString();
 
         $proveedor = Proveedor::create($validated);
 
         return response()->json([
-            'proveedor' => $proveedor->load(['usuario', 'tipoFacturacion']),
+            'message'   => 'Proveedor creado exitosamente',
+            'proveedor' => $proveedor->load(['tipoFacturacion']),
             'status'    => 201,
         ], 201);
     }
@@ -44,7 +47,7 @@ class ProveedorController extends Controller
     public function show(Proveedor $proveedor)
     {
         return response()->json([
-            'proveedor' => $proveedor->load(['usuario', 'tipoFacturacion']),
+            'proveedor' => $proveedor->load(['tipoFacturacion']),
             'status'    => 200,
         ]);
     }
@@ -52,24 +55,24 @@ class ProveedorController extends Controller
     public function update(Request $request, Proveedor $proveedor)
     {
         $validated = $request->validate([
-            'nombre_apellido'     => 'sometimes|required|string|max:200',
-            'usuario_id'          => 'sometimes|nullable|exists:Usuario,usuario_id',
+            'nombre_apellido'     => 'sometimes|required|string|max:255',
             'tipo_facturacion_id' => 'sometimes|required|exists:Tipo_Facturacion,tipo_facturacion_id',
-            'telefono'            => 'sometimes|nullable|string|max:50',
-            'email'               => 'sometimes|nullable|email|max:150',
+            'telefono'            => 'sometimes|nullable|string|max:20',
+            'email'               => 'sometimes|nullable|email|max:255',
             'direccion'           => 'sometimes|nullable|string|max:255',
-            'ciudad'              => 'sometimes|nullable|string|max:100',
+            'ciudad'              => 'sometimes|nullable|string|max:255',
             'calificacion'        => 'sometimes|nullable|string|max:50',
-            'contacto'            => 'sometimes|nullable|string|max:150',
-            'observacion'         => 'sometimes|nullable|string|max:255',
+            'contacto'            => 'sometimes|nullable|string|max:255',
+            'observacion'         => 'sometimes|nullable|string|max:1000',
             'fecha_ingreso'       => 'sometimes|nullable|date',
+            'usuario_id'          => 'sometimes|nullable|exists:Usuario,usuario_id',
         ]);
 
         $proveedor->update($validated);
 
         return response()->json([
-            'message'   => 'Proveedor actualizado',
-            'proveedor' => $proveedor->load(['usuario', 'tipoFacturacion']),
+            'message'   => 'Proveedor actualizado exitosamente',
+            'proveedor' => $proveedor->load(['tipoFacturacion']),
             'status'    => 200,
         ]);
     }

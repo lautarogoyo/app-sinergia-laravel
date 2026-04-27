@@ -56,8 +56,8 @@ Route::apiResource('pedidos_compra', PedidoCompraController::class)->parameters(
 Route::apiResource('grupos', GrupoController::class);
 
 // Proveedores
-Route::apiResource('proveedores', ProveedorController::class);
-
+Route::apiResource('proveedores', ProveedorController::class)
+    ->parameters(['proveedores' => 'proveedor']);
 // Rubros
 Route::apiResource('rubros', RubroController::class);
 
