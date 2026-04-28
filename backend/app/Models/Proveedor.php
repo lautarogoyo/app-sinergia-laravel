@@ -37,4 +37,9 @@ class Proveedor extends SinergiaModel
     {
         return $this->belongsTo(Usuario::class, 'usuario_id', 'usuario_id');
     }
+
+    public function rubros()
+    {
+        return $this->belongsToMany(Rubro::class, 'Proveedor_Rubro', 'proveedor_id', 'rubro_id');
+    }
 }
