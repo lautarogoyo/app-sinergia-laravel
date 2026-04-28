@@ -23,6 +23,8 @@ class Grupo extends SinergiaModel
         'contacto',
         'observacion',
         'fecha_ingreso',
+        'rol_profesional',
+        'especialidad',
     ];
 
     protected $casts = [

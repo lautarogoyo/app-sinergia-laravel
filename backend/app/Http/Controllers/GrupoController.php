@@ -31,6 +31,8 @@ class GrupoController extends Controller
             'contacto'            => 'nullable|string|max:150',
             'observacion'         => 'nullable|string|max:255',
             'fecha_ingreso'       => 'sometimes|date',
+            'rol_profesional'     => 'nullable|boolean',
+            'especialidad'        => 'nullable|string|max:100',
         ]);
 
         $grupo = Grupo::create($validated);
@@ -64,6 +66,8 @@ class GrupoController extends Controller
             'contacto'            => 'sometimes|nullable|string|max:150',
             'observacion'         => 'sometimes|nullable|string|max:255',
             'fecha_ingreso'       => 'sometimes|date',
+            'rol_profesional'     => 'sometimes|nullable|boolean',
+            'especialidad'        => 'sometimes|nullable|string|max:100',
         ]);
 
         $grupo->update($validated);
