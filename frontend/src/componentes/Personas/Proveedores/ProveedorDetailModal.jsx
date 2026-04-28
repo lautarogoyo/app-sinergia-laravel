@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useState,useRef  } from "react";
+import { useForm, useController } from "react-hook-form";
 import Swal from "sweetalert2";
 import {
   useCreateProveedor,
@@ -7,6 +7,7 @@ import {
   useDeleteProveedor,
 } from "../../hooks/useProveedores";
 import { useTiposFacturacion } from "../../hooks/useTiposFacturacion";
+import RubrosSelect from "../../shared/RubrosSelect.jsx";
 
 const inputCls =
   "w-full px-4 py-2 rounded border border-gray-300 text-base focus:outline-none focus:ring focus:border-blue-400";
@@ -28,16 +29,15 @@ function Row({ label, value }) {
 export default function ProveedorDetailModal({ proveedor, initialMode, onClose }) {
   const [mode, setMode] = useState(initialMode);
   const proveedorId = proveedor?.proveedor_id ?? proveedor?.id;
+  const submitLock = useRef(false);
 
   const { data: tiposFacturacion = [] } = useTiposFacturacion();
-
-  
 
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
-    
   } = useForm({
     defaultValues: {
       nombre_apellido:     proveedor?.nombre_apellido     ?? "",
@@ -51,16 +51,21 @@ export default function ProveedorDetailModal({ proveedor, initialMode, onClose }
       observacion:         proveedor?.observacion         ?? "",
       fecha_ingreso:       proveedor?.fecha_ingreso
         ? String(proveedor.fecha_ingreso).slice(0, 10)
-        : new Date().toISOString().slice(0, 10)
-
+        : new Date().toISOString().slice(0, 10),
+      rubros_ids: proveedor?.rubros?.map(r => r.rubro_id) ?? [],
     },
   });
+
+  const { field: rubrosField } = useController({ name: "rubros_ids", control });
 
   const { mutate: crear,      isPending: creando      } = useCreateProveedor(onClose);
   const { mutate: actualizar, isPending: actualizando } = useUpdateProveedor(proveedorId, onClose);
   const { mutate: eliminar,   isPending: eliminando   } = useDeleteProveedor(onClose);
 
   const onSubmit = (data) => {
+    if (submitLock.current) return;
+    submitLock.current = true;
+
     const payload = {
       ...data,
       tipo_facturacion_id: Number(data.tipo_facturacion_id),
@@ -109,12 +114,12 @@ export default function ProveedorDetailModal({ proveedor, initialMode, onClose }
                   label="Tipo de Facturación"
                   value={proveedor?.tipo_facturacion?.tipo_facturacion_id == 1 ? "Monotributista" : "Responsable Inscripto"}
                 />
-                <Row label="Teléfono"         value={proveedor?.telefono} />
-                <Row label="Email"            value={proveedor?.email} />
-                <Row label="Dirección"        value={proveedor?.direccion} />
-                <Row label="Ciudad"           value={proveedor?.ciudad} />
-                <Row label="Calificación"     value={proveedor?.calificacion} />
-                <Row label="Contacto"         value={proveedor?.contacto} />
+                <Row label="Teléfono"     value={proveedor?.telefono} />
+                <Row label="Email"        value={proveedor?.email} />
+                <Row label="Dirección"    value={proveedor?.direccion} />
+                <Row label="Ciudad"       value={proveedor?.ciudad} />
+                <Row label="Calificación" value={proveedor?.calificacion} />
+                <Row label="Contacto"     value={proveedor?.contacto} />
                 <Row
                   label="Fecha de Ingreso"
                   value={
@@ -122,6 +127,10 @@ export default function ProveedorDetailModal({ proveedor, initialMode, onClose }
                       ? new Date(proveedor.fecha_ingreso).toLocaleDateString("es-AR")
                       : null
                   }
+                />
+                <Row
+                  label="Rubros"
+                  value={proveedor?.rubros?.map(r => r.descripcion).join(", ")}
                 />
                 <div className="sm:col-span-2">
                   <Row label="Observación" value={proveedor?.observacion} />
@@ -273,6 +282,11 @@ export default function ProveedorDetailModal({ proveedor, initialMode, onClose }
                     className={inputCls}
                     placeholder="Nombre del contacto"
                   />
+                </div>
+
+                <div className="sm:col-span-2 flex flex-col">
+                  <label className={labelCls}>Rubros</label>
+                  <RubrosSelect value={rubrosField.value} onChange={rubrosField.onChange} />
                 </div>
 
                 <div className="flex flex-col">
