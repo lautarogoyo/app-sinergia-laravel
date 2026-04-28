@@ -2,13 +2,8 @@ import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import Icon from '../Icons/Icons';
 
-const Logo = ({ className }) => (
-  <img 
-    className={className}
-    src="https://static.wixstatic.com/media/739f6f_72ea3433f31a45448cf67888b8f5f6e3~mv2.png/v1/fill/w_89,h_84,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/iczzlYy_edited.png"
-    alt="Sinergia Logo"
-  />
-);
+
+
 
 export default function Header({ onLogout }) {
   const navigate = useNavigate();
@@ -33,7 +28,7 @@ export default function Header({ onLogout }) {
         <nav className="min-h-screen py-4 flex flex-col relative items-center">
           <div className="mb-6 flex justify-between items-center">
             <div className={`flex items-center ${visible ? 'gap-3 px-4' : 'px-2'} py-6 w-full justify-center`}>
-              <Logo className="w-10 h-10" />
+              <Icon name="logo" className="w-10 h-10" />
               {visible && (
                 <h1 className="text-lg font-bold bg-gray-600 bg-clip-text text-transparent ">
                   SINERGIA CCI

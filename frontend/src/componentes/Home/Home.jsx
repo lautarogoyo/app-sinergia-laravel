@@ -4,7 +4,7 @@ import Icon from '../Icons/Icons';
 const modules = [
   {
     name: 'Personas',
-    description: 'Gestión de personas y rubros',
+    description: 'Gestión de proveedores, grupos y rubros',
     icon: 'supplier',
     to: '/personas',
     color: 'indigo',
@@ -62,7 +62,7 @@ export default function Home() {
       <div className="mb-10 flex items-center gap-5">
         <Icon name="logo" className="w-16 h-16" />
         <div>
-          <h1 className="text-3xl font-bold text-gray-800">Bienvenido al Sistema</h1>
+          <h1 className="text-3xl font-bold text-gray-800 ">BIENVENIDO AL PANEL DE CONTROL</h1>
           <p className="text-gray-500 mt-1 text-base">Sinergia CCI — Panel de control</p>
         </div>
       </div>
@@ -70,9 +70,7 @@ export default function Home() {
       <div className="h-px bg-gradient-to-r from-indigo-200 via-gray-200 to-transparent mb-10" />
 
       <div className='flex justify-items-center'>
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-5">
-          Módulos del sistema
-        </h2>
+        
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {modules.map(({ name, description, icon, to, color }) => {
             const c = colorMap[color];
@@ -80,16 +78,16 @@ export default function Home() {
               <NavLink
                 key={name}
                 to={to}
-                className={`group flex flex-col gap-4 p-6 rounded-2xl border ${c.border} ${c.bg} ${c.hover} transition-all duration-200 shadow-sm hover:shadow-md`}
+                className="group flex flex-col gap-4 p-6 rounded-2xl border-2 border-gray-200 bg-white transition-all duration-200 shadow-sm hover:border-[#2c4d81] hover:shadow-md "
               >
-                <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-white shadow-sm border ${c.border}`}>
-                  <Icon name={icon} className={`w-6 h-6 ${c.icon}`} />
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-gray-50 shadow-sm border-2 border-gray-200 transition-all duration-200 group-hover:border-[#2c4d81] ">
+                  <Icon name={icon} className={`w-6 h-6 ${c.icon} `} />
                 </div>
-                <div>
-                  <p className={`font-semibold text-base ${c.text}`}>{name}</p>
+                <div >
+                  <p className="font-semibold text-base text-gray-800 ">{name}</p>
                   <p className="text-gray-500 text-sm mt-0.5">{description}</p>
                 </div>
-                <div className={`text-xs font-medium ${c.text} flex items-center gap-1 mt-auto`}>
+                <div className="text-xs font-medium text-gray-600 group-hover:text-[#2c4d81] flex items-center gap-1 mt-auto transition-colors duration-200">
                   Ir al módulo
                   <svg className="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
