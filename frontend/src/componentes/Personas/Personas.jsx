@@ -207,7 +207,7 @@ export default function Personas() {
                     <td className={tdClass}>
                       {(p.rubros ?? []).length > 0
                         ? (p.rubros ?? []).map((r) => (
-                            <span key={r.rubro_id} className="inline-flex text-black border border-[#233d68] rounded px-3 py-1 text-sm font-semibold mr-1 mb-1">
+                            <span key={r.rubro_id} className="inline-flex text-black border border-[#233d68] rounded px-2 py-1 text-sm font-semibold mr-1 mb-1">
                               {r.descripcion?.toUpperCase() || "-"}
                             </span>
                           ))
@@ -267,7 +267,7 @@ export default function Personas() {
                         <td className={tdClass}>
                           {g.rubros && g.rubros.length > 0 ? (
                             g.rubros.map((r) => (
-                              <span key={r.rubro_id} className="inline-flex items-center justify-center text-black border border-[#233d68] rounded px-3 py-1 text-sm font-semibold mr-1 mb-1">
+                              <span key={r.rubro_id} className="inline-flex items-center justify-center text-black border border-[#233d68] rounded px-1 py-1 text-sm font-semibold mr-1 mb-1">
                                 {r.descripcion?.toUpperCase() || "-"}
                               </span>
                             ))
@@ -329,7 +329,7 @@ export default function Personas() {
                         <td className={tdClass}>
                           {(g.rubros ?? []).length > 0
                             ? (g.rubros ?? []).map((r) => (
-                                <span key={r.rubro_id} className="inline-flex text-black border border-[#233d68] rounded px-3 py-1 text-sm font-semibold mr-1 mb-1">
+                                <span key={r.rubro_id} className="inline-flex text-black border border-[#233d68] rounded px-1 py-1 text-sm font-semibold mr-1 mb-1">
                                   {r.descripcion?.toUpperCase() || "-"}
                                 </span>
                               ))
