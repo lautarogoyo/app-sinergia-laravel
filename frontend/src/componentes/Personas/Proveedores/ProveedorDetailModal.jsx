@@ -31,10 +31,13 @@ export default function ProveedorDetailModal({ proveedor, initialMode, onClose }
 
   const { data: tiposFacturacion = [] } = useTiposFacturacion();
 
+  
+
   const {
     register,
     handleSubmit,
     formState: { errors },
+    
   } = useForm({
     defaultValues: {
       nombre_apellido:     proveedor?.nombre_apellido     ?? "",
@@ -48,7 +51,8 @@ export default function ProveedorDetailModal({ proveedor, initialMode, onClose }
       observacion:         proveedor?.observacion         ?? "",
       fecha_ingreso:       proveedor?.fecha_ingreso
         ? String(proveedor.fecha_ingreso).slice(0, 10)
-        : "",
+        : new Date().toISOString().slice(0, 10)
+
     },
   });
 
@@ -103,7 +107,7 @@ export default function ProveedorDetailModal({ proveedor, initialMode, onClose }
                 </div>
                 <Row
                   label="Tipo de Facturación"
-                  value={proveedor?.tipoFacturacion?.descripcion}
+                  value={proveedor?.tipo_facturacion?.tipo_facturacion_id == 1 ? "Monotributista" : "Responsable Inscripto"}
                 />
                 <Row label="Teléfono"         value={proveedor?.telefono} />
                 <Row label="Email"            value={proveedor?.email} />
@@ -115,7 +119,7 @@ export default function ProveedorDetailModal({ proveedor, initialMode, onClose }
                   label="Fecha de Ingreso"
                   value={
                     proveedor?.fecha_ingreso
-                      ? String(proveedor.fecha_ingreso).slice(0, 10)
+                      ? new Date(proveedor.fecha_ingreso).toLocaleDateString("es-AR")
                       : null
                   }
                 />
@@ -200,7 +204,7 @@ export default function ProveedorDetailModal({ proveedor, initialMode, onClose }
                     <option value="">-- Seleccionar --</option>
                     {tiposFacturacion.map((t) => (
                       <option key={t.tipo_facturacion_id} value={t.tipo_facturacion_id}>
-                        {t.descripcion}
+                        {t.tipo_facturacion_id == 1 ? "Monotributista" : "Responsable Inscripto"}
                       </option>
                     ))}
                   </select>
@@ -277,6 +281,7 @@ export default function ProveedorDetailModal({ proveedor, initialMode, onClose }
                     type="date"
                     {...register("fecha_ingreso")}
                     className={inputCls}
+                    readOnly
                   />
                 </div>
 

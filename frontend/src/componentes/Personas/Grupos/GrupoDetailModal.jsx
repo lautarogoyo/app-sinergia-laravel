@@ -43,8 +43,10 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
       calificacion: grupo?.calificacion ?? "",
       contacto: grupo?.contacto ?? "",
       observacion: grupo?.observacion ?? "",
-      fecha_ingreso: grupo?.fecha_ingreso ? String(grupo.fecha_ingreso).slice(0, 10) : "",
-    },
+      fecha_ingreso: grupo?.fecha_ingreso
+              ? String(grupo.fecha_ingreso).slice(0, 10)
+              : new Date().toISOString().slice(0, 10)
+          },
   });
 
   const { mutate: crear, isPending: creando } = useCreateGrupo(onClose);
@@ -98,13 +100,20 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
                     {estadoNombre || "SIN ESTADO"}
                   </span>
                 </div>
-                <Row label="Tipo de Facturación" value={grupo?.tipoFacturacion?.descripcion} />
+                <Row label="Tipo de Facturación" value={grupo?.tipo_facturacion?.descripcion} />
                 <Row label="Teléfono" value={grupo?.telefono} />
                 <Row label="Email" value={grupo?.email} />
                 <Row label="Ciudad" value={grupo?.ciudad} />
                 <Row label="Calificación" value={grupo?.calificacion} />
                 <Row label="Contacto" value={grupo?.contacto} />
-                <Row label="Fecha de Ingreso" value={grupo?.fecha_ingreso} />
+                <Row
+                  label="Fecha de Ingreso"
+                  value={
+                    grupo?.fecha_ingreso
+                      ? new Date(grupo.fecha_ingreso).toLocaleDateString("es-AR")
+                      : null
+                  }
+                />
                 <div className="sm:col-span-2">
                   <Row label="Observación" value={grupo?.observacion} />
                 </div>

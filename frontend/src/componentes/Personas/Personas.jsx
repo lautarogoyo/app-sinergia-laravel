@@ -1,17 +1,15 @@
 import { useMemo, useState } from "react";
-import Swal from "sweetalert2";
 import { useGrupos } from "../hooks/useGrupos";
 import { useProveedores } from "../hooks/useProveedores";
-import { useRubros, useCreateRubro, useUpdateRubro } from "../hooks/useRubros";
-import RubroFormModal from "./Rubros/RubroFormModal.jsx";
-import RubroDeleteModal from "./Rubros/RubroDeleteModal.jsx";
+import { useRubros } from "../hooks/useRubros";
 import ProveedorDetailModal from "./Proveedores/ProveedorDetailModal.jsx";
 import GrupoDetailModal from "./Grupos/GrupoDetailModal.jsx";
+import RubroDetailModal from "./Rubros/RubroDetailModal.jsx";
 
 const thClass = "px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500";
 const tdClass = "text-lg text-gray-800 px-4 py-3 text-center";
 const btnBlue = "bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer";
-const btnRed = "bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer";
+const btnRed  = "bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer";
 const btnGray = "bg-gray-200 hover:bg-gray-300 text-gray-700 text-lg font-bold py-2 px-3 rounded shadow transition duration-150 cursor-pointer flex items-center gap-1";
 
 function LupaIcon() {
@@ -40,39 +38,13 @@ export default function Personas() {
   const [seccion, setSeccion] = useState("proveedores");
   const [busqueda, setBusqueda] = useState("");
 
-  // Proveedor modal unificado
   const [proveedorModal, setProveedorModal] = useState(null); // { proveedor, mode }
+  const [grupoModal,     setGrupoModal]     = useState(null); // { grupo, mode }
+  const [rubroModal,     setRubroModal]     = useState(null); // { rubro, mode }
 
-  // Grupo modal
-  const [grupoModal, setGrupoModal] = useState(null); // { grupo, mode }
-
-  // Rubro modals
-  const [showRubroCreate, setShowRubroCreate] = useState(false);
-  const [rubroEditando, setRubroEditando] = useState(null);
-  const [rubroEliminando, setRubroEliminando] = useState(null);
-
-  const { data: grupos = [],      isLoading: loadingGrupos,     isError: errorGrupos    } = useGrupos();
+  const { data: grupos      = [], isLoading: loadingGrupos,     isError: errorGrupos    } = useGrupos();
   const { data: proveedores = [], isLoading: loadingProveedores                          } = useProveedores();
-  const { data: rubros = [],      isLoading: loadingRubros                               } = useRubros();
-
-  const { mutate: crearRubro, isPending: creandoRubro } = useCreateRubro();
-  const { mutate: actualizarRubro } = useUpdateRubro(
-    rubroEditando?.rubro_id,
-    () => setRubroEditando(null)
-  );
-
-  const handleCreateRubro = (data) => {
-    crearRubro(data, {
-      onSuccess: () => setShowRubroCreate(false),
-      onError:   () => Swal.fire("Error", "No se pudo crear el rubro", "error"),
-    });
-  };
-
-  const handleUpdateRubro = ({ descripcion }) => {
-    actualizarRubro({ descripcion }, {
-      onError: () => Swal.fire("Error", "No se pudo actualizar el rubro", "error"),
-    });
-  };
+  const { data: rubros      = [], isLoading: loadingRubros                               } = useRubros();
 
   const filtro = busqueda.trim().toLowerCase();
 
@@ -104,6 +76,7 @@ export default function Personas() {
     <div className="p-8 bg-gray-100 lg:w-full flex flex-col">
       <h2 className="text-3xl font-extrabold mb-6 text-gray-800 tracking-wide">Panel de Personas</h2>
 
+      {/* ── CONTROLES SUPERIORES ── */}
       <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-end">
         <div className="flex flex-col gap-1">
           <label htmlFor="seccion" className="text-lg font-medium text-gray-700">Ver sección:</label>
@@ -132,31 +105,18 @@ export default function Personas() {
 
         <div className="flex gap-2 pb-0.5">
           {seccion === "proveedores" && (
-            <button
-              type="button"
-              onClick={() => setProveedorModal({ proveedor: null, mode: "create" })}
-              className={btnBlue}
-            >
+            <button type="button" onClick={() => setProveedorModal({ proveedor: null, mode: "create" })} className={btnBlue}>
               Nuevo Proveedor
             </button>
           )}
           {seccion === "grupos" && (
-            <button
-              type="button"
-              onClick={() => setGrupoModal({ grupo: null, mode: "create" })}
-              className={btnBlue}
-            >
+            <button type="button" onClick={() => setGrupoModal({ grupo: null, mode: "create" })} className={btnBlue}>
               Nuevo Grupo
             </button>
           )}
           {seccion === "rubros" && (
-            <button
-              type="button"
-              onClick={() => setShowRubroCreate(true)}
-              className={btnBlue}
-              disabled={creandoRubro}
-            >
-              {creandoRubro ? "Guardando..." : "Agregar Rubro"}
+            <button type="button" onClick={() => setRubroModal({ rubro: null, mode: "create" })} className={btnBlue}>
+              Agregar Rubro
             </button>
           )}
         </div>
@@ -187,7 +147,7 @@ export default function Personas() {
                     <td className={tdClass}>{p.email || "-"}</td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2 justify-center flex-wrap">
-                        <button type="button" onClick={() => setProveedorModal({ proveedor: p, mode: "read" })} className={btnGray} title="Ver detalle"><LupaIcon /></button>
+                        <button type="button" onClick={() => setProveedorModal({ proveedor: p, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
                         <button type="button" onClick={() => setProveedorModal({ proveedor: p, mode: "delete" })} className={btnRed}>Eliminar</button>
                       </div>
                     </td>
@@ -237,7 +197,7 @@ export default function Personas() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex gap-2 justify-center flex-wrap">
-                            <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "read" })} className={btnGray} title="Ver detalle"><LupaIcon /></button>
+                            <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
                             <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "delete" })} className={btnRed}>Eliminar</button>
                           </div>
                         </td>
@@ -275,8 +235,8 @@ export default function Personas() {
                     <td className={tdClass}>{r.descripcion ?? "Sin descripción"}</td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2 justify-center flex-wrap">
-                        <button type="button" onClick={() => setRubroEditando(r)} className={btnBlue}>Editar</button>
-                        <button type="button" onClick={() => setRubroEliminando(r)} className={btnRed}>Eliminar</button>
+                        <button type="button" onClick={() => setRubroModal({ rubro: r, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
+                        <button type="button" onClick={() => setRubroModal({ rubro: r, mode: "delete" })} className={btnRed}>Eliminar</button>
                       </div>
                     </td>
                   </tr>
@@ -287,7 +247,7 @@ export default function Personas() {
         </div>
       )}
 
-      {/* ── MODALES PROVEEDOR ── */}
+      {/* ── MODAL PROVEEDOR ── */}
       {proveedorModal && (
         <ProveedorDetailModal
           proveedor={proveedorModal.proveedor}
@@ -296,7 +256,7 @@ export default function Personas() {
         />
       )}
 
-      {/* ── MODALES GRUPO ── */}
+      {/* ── MODAL GRUPO ── */}
       {grupoModal && (
         <GrupoDetailModal
           grupo={grupoModal.grupo}
@@ -305,27 +265,12 @@ export default function Personas() {
         />
       )}
 
-      {/* ── MODALES RUBRO ── */}
-      {showRubroCreate && (
-        <RubroFormModal
-          rubro={null}
-          onClose={() => setShowRubroCreate(false)}
-          onCreate={handleCreateRubro}
-          onUpdate={() => {}}
-        />
-      )}
-      {rubroEditando && (
-        <RubroFormModal
-          rubro={rubroEditando}
-          onClose={() => setRubroEditando(null)}
-          onCreate={() => {}}
-          onUpdate={handleUpdateRubro}
-        />
-      )}
-      {rubroEliminando && (
-        <RubroDeleteModal
-          rubro={rubroEliminando}
-          onClose={() => setRubroEliminando(null)}
+      {/* ── MODAL RUBRO ── */}
+      {rubroModal && (
+        <RubroDetailModal
+          rubro={rubroModal.rubro}
+          initialMode={rubroModal.mode}
+          onClose={() => setRubroModal(null)}
         />
       )}
     </div>
