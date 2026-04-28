@@ -32,7 +32,7 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
   const estadosGrupo = estadosGrupoData?.estados ?? [];
   const { data: tiposFacturacion = [] } = useTiposFacturacion();
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit, watch, formState: { errors } } = useForm({
     defaultValues: {
       nombre_apellido: grupo?.nombre_apellido ?? "",
       tipo_facturacion_id: grupo?.tipo_facturacion_id ?? "",
@@ -42,6 +42,8 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
       ciudad: grupo?.ciudad ?? "",
       calificacion: grupo?.calificacion ?? "",
       contacto: grupo?.contacto ?? "",
+      rol_profesional: grupo?.rol_profesional ?? "",
+      especialidad: grupo?.especialidad ?? "",
       observacion: grupo?.observacion ?? "",
       fecha_ingreso: grupo?.fecha_ingreso
               ? String(grupo.fecha_ingreso).slice(0, 10)
@@ -58,7 +60,9 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
       ...data,
       tipo_facturacion_id: Number(data.tipo_facturacion_id),
       estado_grupo_id: Number(data.estado_grupo_id),
+      rol_profesional: data.rol_profesional ?? false,
       fecha_ingreso: data.fecha_ingreso || null,
+      especialidad: data.especialidad || null,
     };
     const opts = { onError: () => Swal.fire("Error", "No se pudo guardar el grupo", "error") };
     mode === "create" ? crear(payload, opts) : actualizar(payload, opts);
@@ -106,6 +110,8 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
                 <Row label="Ciudad" value={grupo?.ciudad} />
                 <Row label="Calificación" value={grupo?.calificacion} />
                 <Row label="Contacto" value={grupo?.contacto} />
+                <Row label="Rol Profesional" value={grupo?.rol_profesional ? "Sí" : "No"} />
+                <Row label="Especialidad" value={grupo?.especialidad} />
                 <Row
                   label="Fecha de Ingreso"
                   value={
@@ -220,6 +226,29 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
                 <div className="flex flex-col">
                   <label className={labelCls}>Contacto</label>
                   <input type="text" {...register("contacto")} className={inputCls} placeholder="Nombre del contacto" />
+                </div>
+
+                <div className="flex flex-col justify-center">
+                  <label className={labelCls}>¿Es Profesional?</label>
+                  <div className="flex items-center gap-2 mt-2">
+                    <input
+                      type="checkbox"
+                      id="rol_profesional"
+                      {...register("rol_profesional")}
+                      className="w-5 h-5 rounded accent-blue-600 cursor-pointer"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex flex-col">
+                  <label className={labelCls}>Especialidad</label>
+                  <input
+                    type="text"
+                    {...register("especialidad")}
+                    disabled={!watch("rol_profesional")}
+                    className={inputCls + (!watch("rol_profesional") ? " bg-gray-100 text-gray-400 cursor-not-allowed" : "")}
+                    placeholder="Ej: Ingeniero"
+                  />
                 </div>
 
                 <div className="flex flex-col">

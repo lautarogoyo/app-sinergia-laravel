@@ -57,13 +57,26 @@ export default function Personas() {
   );
 
   const gruposFiltrados = useMemo(
-    () => !filtro ? grupos : grupos.filter((g) =>
-      ["nombre_apellido", "telefono", "email", "ciudad", "contacto"]
-        .some((c) => String(g[c] || "").toLowerCase().includes(filtro))
-    ),
+    () => {
+      const base = grupos.filter((g) => !g.rol_profesional);
+      return !filtro ? base : base.filter((g) =>
+        ["nombre_apellido", "telefono", "email", "ciudad", "contacto"]
+          .some((c) => String(g[c] || "").toLowerCase().includes(filtro))
+      );
+    },
     [grupos, filtro]
   );
 
+  const profesionalesFiltrados = useMemo(
+    () => {
+      const base = grupos.filter((g) => g.rol_profesional);
+      return !filtro ? base : base.filter((g) =>
+        ["nombre_apellido", "telefono", "email", "ciudad", "contacto", "especialidad"]
+          .some((c) => String(g[c] || "").toLowerCase().includes(filtro))
+      );
+    },
+    [grupos, filtro]
+  );
   const rubrosFiltrados = useMemo(
     () => !filtro ? rubros : rubros.filter((r) =>
       (r.descripcion ?? "").toLowerCase().includes(filtro) ||
@@ -89,6 +102,8 @@ export default function Personas() {
             <option value="proveedores">Proveedores</option>
             <option value="grupos">Grupos</option>
             <option value="rubros">Rubros</option>
+            <option value="profesionales">Profesionales</option>
+
           </select>
         </div>
 
@@ -190,6 +205,57 @@ export default function Personas() {
                         <td className={tdClass}>{g.nombre_apellido || "-"}</td>
                         <td className={tdClass}>{g.telefono || "-"}</td>
                         <td className={tdClass}>{g.email || "-"}</td>
+                        <td className="px-6 py-4 text-center">
+                          <span className={`rounded px-3 py-1 text-sm font-bold uppercase border ${estadoBadge[estadoNombre.toLowerCase()] ?? estadoBadge.pendiente}`}>
+                            {estadoNombre.toUpperCase()}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex gap-2 justify-center flex-wrap">
+                            <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
+                            <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "delete" })} className={btnRed}>Eliminar</button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        )
+      )}
+      {seccion === "profesionales" && (
+        loadingGrupos ? (
+          <div className="flex items-center justify-center py-16">
+            <p className="text-xl text-gray-500 animate-pulse">Cargando profesionales...</p>
+          </div>
+        ) : (
+          <div className="bg-white rounded-xl border border-gray-300 shadow-2xl overflow-x-auto">
+            <h3 className="text-2xl font-bold p-4 text-gray-800">Profesionales</h3>
+            <table className="min-w-full">
+              <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
+                <tr>
+                  {["Nombre", "Teléfono", "Email", "Especialidad", "Estado", "Acciones"].map((h) => (
+                    <th key={h} className={thClass}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="bg-gray-50 divide-y divide-gray-200">
+                {errorGrupos ? (
+                  <tr><td colSpan={6} className="px-6 py-4 text-center text-red-500">No se pudieron cargar los profesionales.</td></tr>
+                ) : profesionalesFiltrados.length === 0 ? (
+                  <TableEmpty cols={6} mensaje="No hay profesionales para mostrar." />
+                ) : (
+                  profesionalesFiltrados.map((g) => {
+                    const grupoId = g.grupo_id ?? g.id;
+                    const estadoNombre = g.estado_grupo?.descripcion ?? "SIN ESTADO";
+                    return (
+                      <tr key={grupoId} className="hover:bg-gray-200 transition-colors duration-150">
+                        <td className={tdClass}>{g.nombre_apellido || "-"}</td>
+                        <td className={tdClass}>{g.telefono || "-"}</td>
+                        <td className={tdClass}>{g.email || "-"}</td>
+                        <td className={tdClass}>{g.especialidad || "-"}</td>
                         <td className="px-6 py-4 text-center">
                           <span className={`rounded px-3 py-1 text-sm font-bold uppercase border ${estadoBadge[estadoNombre.toLowerCase()] ?? estadoBadge.pendiente}`}>
                             {estadoNombre.toUpperCase()}
