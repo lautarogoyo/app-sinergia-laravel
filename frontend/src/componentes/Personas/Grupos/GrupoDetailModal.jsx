@@ -104,7 +104,7 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
                     {estadoNombre || "SIN ESTADO"}
                   </span>
                 </div>
-                <Row label="Tipo de Facturación" value={grupo?.tipo_facturacion?.descripcion} />
+                <Row label="Tipo de Facturación" value={grupo?.tipo_facturacion?.tipo_facturacion_id == 1 ? "Monotributista" : "Responsable Inscripto"} />
                 <Row label="Teléfono" value={grupo?.telefono} />
                 <Row label="Email" value={grupo?.email} />
                 <Row label="Ciudad" value={grupo?.ciudad} />
@@ -180,7 +180,7 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
                     <option value="">-- Seleccionar --</option>
                     {tiposFacturacion.map((t) => (
                       <option key={t.tipo_facturacion_id} value={t.tipo_facturacion_id}>
-                        {t.descripcion}
+                        {t.tipo_facturacion_id == 1 ? "Monotributista" : "Responsable Inscripto"}
                       </option>
                     ))}
                   </select>
@@ -196,7 +196,7 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
                     <option value="">-- Seleccionar --</option>
                     {estadosGrupo.map((e) => (
                       <option key={e.estado_grupo_id} value={e.estado_grupo_id}>
-                        {e.descripcion}
+                        {e.descripcion.toUpperCase()}
                       </option>
                     ))}
                   </select>
