@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreEmpleadoRequest extends FormRequest
 {
@@ -17,26 +16,25 @@ class StoreEmpleadoRequest extends FormRequest
         $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
 
         return [
-            'nombre'   => $isUpdate ? 'sometimes|required|string|max:255' : 'required|string|max:255',
-            'apellido' => $isUpdate ? 'sometimes|required|string|max:255' : 'required|string|max:255',
-            'telefono' => [
+            'nombre'             => $isUpdate ? 'sometimes|required|string|max:100' : 'required|string|max:100',
+            'apellido'           => $isUpdate ? 'sometimes|required|string|max:100' : 'required|string|max:100',
+            'telefono'           => [
                 $isUpdate ? 'sometimes' : 'required',
-                'digits:10',
+                'string',
+                'max:50',
             ],
-            'cbu'   => 'sometimes|nullable|max_digits:22',
-            'alias' => 'sometimes|nullable|string|max:30',
-            'estado' => [
-                $isUpdate ? 'sometimes' : 'nullable',
-                'nullable',
-                Rule::in(['activo', 'inactivo']),
+            'cbu'                => 'sometimes|nullable|string|max:22',
+            'alias'              => 'sometimes|nullable|string|max:100',
+            'grupo_id'           => [
+                $isUpdate ? 'sometimes' : 'required',
+                'exists:Grupo,grupo_id',
             ],
             'estado_empleado_id' => [
-                $isUpdate ? 'sometimes' : 'nullable',
-                'nullable',
+                $isUpdate ? 'sometimes' : 'required',
                 'exists:Estado_Empleado,estado_empleado_id',
             ],
-            // CORRECCIÓN: grupo_id nullable — empleado puede no tener grupo
-            'grupo_id' => 'sometimes|nullable|exists:Grupo,grupo_id',
+            'archivado_at'       => 'sometimes|nullable|date',
+            'cancelado_at'       => 'sometimes|nullable|date',
         ];
     }
 }

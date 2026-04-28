@@ -10,20 +10,22 @@ class Documentacion extends SinergiaModel
     use HasCompositePrimaryKey;
 
     protected $table = 'Documentacion';
-
     protected $primaryKey = ['empleado_id', 'documentacion_id'];
-
     public $incrementing = false;
-
     protected $keyType = 'array';
+
+    protected $fillable = [
+        'empleado_id',
+        'tipo_documentacion_id',
+        'estado_documentacion_id',
+        'path',
+        'fecha_vencimiento',
+    ];
 
     protected $casts = [
         'fecha_vencimiento' => 'date',
     ];
 
-    /**
-     * CORRECCIÓN: genera documentacion_id automáticamente por empleado.
-     */
     protected static function boot(): void
     {
         parent::boot();
@@ -43,13 +45,13 @@ class Documentacion extends SinergiaModel
         return $this->belongsTo(Empleado::class, 'empleado_id', 'empleado_id');
     }
 
-    public function tipoDocumento(): BelongsTo
+    public function tipoDocumentacion(): BelongsTo
     {
-        return $this->belongsTo(TipoDocumento::class, 'id_tipoDocumento', 'tipoDocumento_id');
+        return $this->belongsTo(TipoDocumentacion::class, 'tipo_documentacion_id', 'tipo_documentacion_id');
     }
 
     public function estadoDocumentacion(): BelongsTo
     {
-        return $this->belongsTo(EstadoDocumentacion::class, 'id_estado_documentacion', 'estado_documentacion_id');
+        return $this->belongsTo(EstadoDocumentacion::class, 'estado_documentacion_id', 'estado_documentacion_id');
     }
 }

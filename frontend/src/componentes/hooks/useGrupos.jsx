@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchGrupoById, fetchGrupos, UpdateGrupo } from '../api/grupos';
+import { fetchEstadoGrupo, fetchGrupoById, fetchGrupos, UpdateGrupo, PostGrupo, DeleteGrupo } from '../api/grupos';
 
 export const useGrupos = () => {
   return useQuery({
@@ -17,7 +17,41 @@ export const useGrupoById = (id) => {
   });
 }
 
-// Agregar al archivo existente:
+export const useEstadosGrupo = () => {
+  return useQuery({
+    queryKey: ['estadosGrupo'],
+    queryFn: () => fetchEstadoGrupo(),
+    refetchOnWindowFocus: false
+  });
+}
+
+export const useCreateGrupo = (onSuccess) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: PostGrupo,
+    onSuccess: () => { queryClient.invalidateQueries(['grupos']); onSuccess?.(); },
+    onError: (e) => console.error(e),
+  });
+};
+
+export const useUpdateGrupo = (id, onSuccess) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (grupo) => UpdateGrupo(id, grupo),
+    onSuccess: () => { queryClient.invalidateQueries(['grupos']); onSuccess?.(); },
+    onError: (e) => console.error(e),
+  });
+};
+
+export const useDeleteGrupo = (onSuccess) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: DeleteGrupo,
+    onSuccess: () => { queryClient.invalidateQueries(['grupos']); onSuccess?.(); },
+    onError: (e) => console.error(e),
+  });
+};
+
 export const useUpdateEstadoGrupo = () => {
   const queryClient = useQueryClient();
   return useMutation({

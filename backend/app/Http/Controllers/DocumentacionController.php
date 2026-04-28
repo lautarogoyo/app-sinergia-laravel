@@ -12,7 +12,7 @@ class DocumentacionController extends Controller
     public function index(Empleado $empleado)
     {
         return response()->json([
-            'documentaciones' => $empleado->documentaciones()->with('tipoDocumento', 'estadoDocumentacion')->get(),
+            'documentaciones' => $empleado->documentaciones()->with('tipoDocumentacion', 'estadoDocumentacion')->get(),
             'status' => 200,
         ]);
     }
@@ -21,14 +21,6 @@ class DocumentacionController extends Controller
     {
         $data = $request->validated();
 
-        if (array_key_exists('estado_documentacion_id', $data)) {
-            unset($data['estado']);
-        }
-
-        if (! array_key_exists('estado_documentacion_id', $data) && ! array_key_exists('estado', $data)) {
-            $data['estado'] = 'vigente';
-        }
-
         if (! $request->hasFile('archivo')) {
             return response()->json([
                 'message' => 'El archivo es obligatorio',
@@ -36,24 +28,22 @@ class DocumentacionController extends Controller
         }
 
         $file = $request->file('archivo');
-        $filename = $file->getClientOriginalName();
-        $path = Storage::disk('public')->putFileAs('documentos', $file, $filename);
+        $path = Storage::disk('public')->putFileAs('documentos', $file, $file->getClientOriginalName());
 
         $data['path'] = $path;
-        $data['mime'] = $file->getClientMimeType();
-        $data['size'] = $file->getSize();
+        unset($data['archivo']);
 
         $documentacion = $empleado->documentaciones()->create($data);
 
         return response()->json([
-            'documentacion' => $documentacion->load('tipoDocumento', 'estadoDocumentacion'),
+            'documentacion' => $documentacion->load('tipoDocumentacion', 'estadoDocumentacion'),
             'status' => 201,
         ], 201);
     }
 
     public function show(Empleado $empleado, Documentacion $documentacion)
     {
-        if ($documentacion->empleado_id !== $empleado->id) {
+        if ($documentacion->empleado_id !== $empleado->empleado_id) {
             return response()->json([
                 'message' => 'La documentacion no pertenece a este empleado',
                 'status' => 403,
@@ -61,14 +51,14 @@ class DocumentacionController extends Controller
         }
 
         return response()->json([
-            'documentacion' => $documentacion->load('tipoDocumento', 'estadoDocumentacion'),
+            'documentacion' => $documentacion->load('tipoDocumentacion', 'estadoDocumentacion'),
             'status' => 200,
         ]);
     }
 
     public function destroy(Empleado $empleado, Documentacion $documentacion)
     {
-        if ($documentacion->empleado_id !== $empleado->id) {
+        if ($documentacion->empleado_id !== $empleado->empleado_id) {
             return response()->json([
                 'message' => 'La documentacion no pertenece a este empleado',
                 'status' => 403,
@@ -89,7 +79,7 @@ class DocumentacionController extends Controller
 
     public function update(StoreDocumentacionRequest $request, Empleado $empleado, Documentacion $documentacion)
     {
-        if ($documentacion->empleado_id !== $empleado->id) {
+        if ($documentacion->empleado_id !== $empleado->empleado_id) {
             return response()->json([
                 'message' => 'La documentacion no pertenece a este empleado',
                 'status' => 403,
@@ -98,36 +88,29 @@ class DocumentacionController extends Controller
 
         $data = $request->validated();
 
-        if (array_key_exists('estado_documentacion_id', $data)) {
-            unset($data['estado']);
-        }
-
         if ($request->hasFile('archivo')) {
             if ($documentacion->path) {
                 Storage::disk('public')->delete($documentacion->path);
             }
 
             $file = $request->file('archivo');
-            $filename = $file->getClientOriginalName();
-            $path = Storage::disk('public')->putFileAs('documentos', $file, $filename);
-
-            $data['path'] = $path;
-            $data['mime'] = $file->getClientMimeType();
-            $data['size'] = $file->getSize();
+            $data['path'] = Storage::disk('public')->putFileAs('documentos', $file, $file->getClientOriginalName());
         }
+
+        unset($data['archivo']);
 
         $documentacion->update($data);
 
         return response()->json([
             'message' => 'Documentacion actualizada',
-            'documentacion' => $documentacion->load('tipoDocumento', 'estadoDocumentacion'),
+            'documentacion' => $documentacion->load('tipoDocumentacion', 'estadoDocumentacion'),
             'status' => 200,
         ], 200);
     }
 
     public function download(Empleado $empleado, Documentacion $documentacion)
     {
-        if ($documentacion->empleado_id !== $empleado->id) {
+        if ($documentacion->empleado_id !== $empleado->empleado_id) {
             return response()->json([
                 'message' => 'La documentacion no pertenece a este empleado',
                 'status' => 403,

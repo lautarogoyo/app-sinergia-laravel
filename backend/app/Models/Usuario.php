@@ -2,14 +2,28 @@
 
 namespace App\Models;
 
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
 
-class Usuario extends SinergiaModel
+class Usuario extends Authenticatable
 {
+    use HasApiTokens;
+
     protected $table = 'Usuario';
 
     protected $primaryKey = 'usuario_id';
+
+    public $timestamps = false;
+
+    protected $fillable = [
+        'nombre_usuario',
+        'nombre',
+        'apellido',
+        'email',
+        'contrasenia',
+    ];
 
     protected $hidden = [
         'contrasenia',
@@ -20,6 +34,11 @@ class Usuario extends SinergiaModel
         if ($value !== null && $value !== '') {
             $this->attributes['contrasenia'] = Hash::needsRehash($value) ? Hash::make($value) : $value;
         }
+    }
+
+    public function grupos(): HasMany
+    {
+        return $this->hasMany(Grupo::class, 'usuario_id', 'usuario_id');
     }
 
     public function proveedores(): HasMany

@@ -9,8 +9,7 @@ class GrupoController extends Controller
 {
     public function index()
     {
-        // CORRECCIÓN: cargamos estadoGrupo solo si existe la FK, estado directo siempre disponible
-        $grupos = Grupo::with('estadoGrupo')->get();
+        $grupos = Grupo::with(['estadoGrupo', 'tipoFacturacion', 'usuario', 'rubros'])->get();
 
         return response()->json([
             'grupos' => $grupos,
@@ -21,26 +20,35 @@ class GrupoController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'denominacion'   => 'required|string|max:255',
-            // CORRECCIÓN: estado como string directo
-            'estado'         => 'nullable|in:pendiente,apto,activo',
-            'estado_grupo_id' => 'nullable|exists:Estado_Grupo,estado_grupo_id',
+            'nombre_apellido'     => 'required|string|max:200',
+            'usuario_id'          => 'nullable|exists:Usuario,usuario_id',
+            'tipo_facturacion_id' => 'required|exists:Tipo_Facturacion,tipo_facturacion_id',
+            'estado_grupo_id'     => 'required|exists:Estado_Grupo,estado_grupo_id',
+            'telefono'            => 'nullable|string|max:50',
+            'email'               => 'nullable|email|max:150',
+            'ciudad'              => 'nullable|string|max:100',
+            'calificacion'        => 'nullable|string|max:50',
+            'contacto'            => 'nullable|string|max:150',
+            'observacion'         => 'nullable|string|max:255',
+            'fecha_ingreso'       => 'sometimes|date',
+            'rol_profesional'     => 'nullable|boolean',
+            'especialidad'        => 'nullable|string|max:100',
+            'rubros_ids'          => 'nullable|array',
+            'rubros_ids.*'        => 'exists:Rubro,rubro_id',
         ]);
 
-        $data = ['denominacion' => $validated['denominacion']];
+        $rubrosIds = $validated['rubros_ids'] ?? [];
+        unset($validated['rubros_ids']);
 
-        if (isset($validated['estado_grupo_id'])) {
-            $data['id_estado'] = $validated['estado_grupo_id'];
+        $grupo = Grupo::create($validated);
+
+        if (!empty($rubrosIds)) {
+            $grupo->rubros()->sync($rubrosIds);
         }
-
-        // CORRECCIÓN: estado string directo, default pendiente
-        $data['estado'] = $validated['estado'] ?? 'pendiente';
-
-        $grupo = Grupo::create($data);
 
         return response()->json([
             'message' => 'Grupo creado exitosamente',
-            'grupo'   => $grupo->load('estadoGrupo'),
+            'grupo'   => $grupo->load(['estadoGrupo', 'tipoFacturacion', 'usuario', 'rubros']),
             'status'  => 201,
         ], 201);
     }
@@ -48,7 +56,7 @@ class GrupoController extends Controller
     public function show(Grupo $grupo)
     {
         return response()->json([
-            'grupo'  => $grupo->load('estadoGrupo'),
+            'grupo'  => $grupo->load(['estadoGrupo', 'tipoFacturacion', 'usuario', 'rubros']),
             'status' => 200,
         ]);
     }
@@ -56,29 +64,42 @@ class GrupoController extends Controller
     public function update(Request $request, Grupo $grupo)
     {
         $validated = $request->validate([
-            'denominacion'    => 'sometimes|required|string|max:255',
-            'estado'          => 'sometimes|nullable|in:pendiente,apto,activo',
-            'estado_grupo_id' => 'sometimes|nullable|exists:Estado_Grupo,estado_grupo_id',
+            'nombre_apellido'     => 'sometimes|required|string|max:200',
+            'usuario_id'          => 'sometimes|nullable|exists:Usuario,usuario_id',
+            'tipo_facturacion_id' => 'sometimes|required|exists:Tipo_Facturacion,tipo_facturacion_id',
+            'estado_grupo_id'     => 'sometimes|required|exists:Estado_Grupo,estado_grupo_id',
+            'telefono'            => 'sometimes|nullable|string|max:50',
+            'email'               => 'sometimes|nullable|email|max:150',
+            'ciudad'              => 'sometimes|nullable|string|max:100',
+            'calificacion'        => 'sometimes|nullable|string|max:50',
+            'contacto'            => 'sometimes|nullable|string|max:150',
+            'observacion'         => 'sometimes|nullable|string|max:255',
+            'fecha_ingreso'       => 'sometimes|date',
+            'rol_profesional'     => 'sometimes|nullable|boolean',
+            'especialidad'        => 'sometimes|nullable|string|max:100',
+            'rubros_ids'          => 'nullable|array',
+            'rubros_ids.*'        => 'exists:Rubro,rubro_id',
         ]);
 
-        if (isset($validated['estado_grupo_id'])) {
-            $validated['id_estado'] = $validated['estado_grupo_id'];
-            unset($validated['estado_grupo_id']);
-        }
+        $rubrosIds = $validated['rubros_ids'] ?? null;
+        unset($validated['rubros_ids']);
 
-        if (!empty($validated)) {
-            $grupo->update($validated);
+        $grupo->update($validated);
+
+        if (!is_null($rubrosIds)) {
+            $grupo->rubros()->sync($rubrosIds);
         }
 
         return response()->json([
             'message' => 'Grupo actualizado exitosamente',
-            'grupo'   => $grupo->load('estadoGrupo'),
+            'grupo'   => $grupo->load(['estadoGrupo', 'tipoFacturacion', 'usuario', 'rubros']),
             'status'  => 200,
         ]);
     }
 
     public function destroy(Grupo $grupo)
     {
+        $grupo->rubros()->detach();
         $grupo->delete();
 
         return response()->json([

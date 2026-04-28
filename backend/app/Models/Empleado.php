@@ -4,32 +4,37 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Empleado extends SinergiaModel
 {
-    use SoftDeletes;
-
     protected $table = 'Empleado';
-
     protected $primaryKey = 'empleado_id';
 
-    protected $casts = [
-        'deleted_at' => 'datetime',
+    protected $fillable = [
+        'nombre',
+        'apellido',
+        'telefono',
+        'cbu',
+        'alias',
+        'grupo_id',
+        'estado_empleado_id',
+        'archivado_at',
+        'cancelado_at',
     ];
 
-    /**
-     * CORRECCIÓN: grupo() con nullable — id_grupo es nullable en la migración,
-     * por eso se usa leftJoin implícito a través de BelongsTo (no rompe si es null).
-     */
+    protected $casts = [
+        'archivado_at' => 'date',
+        'cancelado_at' => 'date',
+    ];
+
     public function grupo(): BelongsTo
     {
-        return $this->belongsTo(Grupo::class, 'id_grupo', 'grupo_id');
+        return $this->belongsTo(Grupo::class, 'grupo_id', 'grupo_id');
     }
 
     public function estadoEmpleado(): BelongsTo
     {
-        return $this->belongsTo(EstadoEmpleado::class, 'id_estado', 'estado_empleado_id');
+        return $this->belongsTo(EstadoEmpleado::class, 'estado_empleado_id', 'estado_empleado_id');
     }
 
     public function documentaciones(): HasMany

@@ -27,7 +27,7 @@ const useProveedorMutation = (mutationFn, onSuccessCb) => {
   return useMutation({
     mutationFn,
     onSuccess: () => {
-      queryClient.invalidateQueries(["proveedores"]);
+      queryClient.invalidateQueries({ queryKey: ["proveedores"] });
       onSuccessCb?.();
     },
     onError: (e) => console.error(e),

@@ -69,12 +69,14 @@ export default function Obras() {
 		);
 	}
 
+	const getEstado = (obra) => obra.estado_obra?.descripcion ?? "";
+
 	const obrasFiltradas = obrasData.filter((o) => {
 		const val = filtro.toLowerCase();
 		return (
 			(o.nro_obra ?? "").toString().toLowerCase().includes(val) ||
 			(o.detalle ?? "").toLowerCase().includes(val) ||
-			(o.estado ?? "").toLowerCase().includes(val)
+			getEstado(o).toLowerCase().includes(val)
 		);
 	});
 
@@ -101,7 +103,7 @@ export default function Obras() {
 	};
 
 	const obrasOrdenadas = [...obrasFiltradas].sort((a, b) => {
-		const prioridad = prioridadEstado(a.estado) - prioridadEstado(b.estado);
+		const prioridad = prioridadEstado(getEstado(a)) - prioridadEstado(getEstado(b));
 		if (prioridad !== 0) return prioridad;
 		return ordenarNroObraAsc(a, b);
 	});
@@ -200,8 +202,8 @@ export default function Obras() {
 											{fixMojibake(obra.detalle ?? "Sin detalle")}
 										</td>
 										<td className="whitespace-nowrap px-6 py-4">
-											<span className={`px-3 py-1 rounded text-sm font-bold ${statusClass(obra.estado)}`}>
-												{labelEstado(obra.estado).toUpperCase()}
+											<span className={`px-3 py-1 rounded text-sm font-bold ${statusClass(getEstado(obra))}`}>
+												{labelEstado(getEstado(obra)).toUpperCase()}
 											</span>
 										</td>
 										<td className="px-6 py-4">

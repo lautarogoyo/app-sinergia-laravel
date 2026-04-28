@@ -2,7 +2,7 @@
 const icons = {
 
     logo: (className) => (
-      <img className={className} src="https://static.wixstatic.com/media/739f6f_72ea3433f31a45448cf67888b8f5f6e3~mv2.png/v1/fill/w_89,h_84,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/iczzlYy_edited.png%201x,%20https://static.wixstatic.com/media/739f6f_72ea3433f31a45448cf67888b8f5f6e3~mv2.png/v1/fill/w_178,h_168,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/iczzlYy_edited.png%202x" alt="Sinergia Logo" />
+      <img className={className} src="/logo.png" alt="Sinergia Logo" />
     ),
     house: (className) => (
       <svg

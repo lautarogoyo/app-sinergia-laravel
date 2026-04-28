@@ -11,7 +11,7 @@ class EmpleadoController extends Controller
     {
         $empleados = Empleado::with([
             'estadoEmpleado',
-            'documentaciones.tipoDocumento',
+            'documentaciones.tipoDocumentacion',
             'documentaciones.estadoDocumentacion',
             'grupo.estadoGrupo',
         ])->get();
@@ -24,24 +24,7 @@ class EmpleadoController extends Controller
 
     public function store(StoreEmpleadoRequest $request)
     {
-        $data = $request->validated();
-
-        // CORRECCIÓN: si viene estado_empleado_id usar FK, si no usar string directo
-        if (isset($data['estado_empleado_id'])) {
-            unset($data['estado']);
-        }
-
-        if (!isset($data['estado_empleado_id']) && !isset($data['estado'])) {
-            $data['estado'] = 'activo';
-        }
-
-        // CORRECCIÓN: grupo_id es nullable, mapear al campo de FK correcto
-        if (array_key_exists('grupo_id', $data)) {
-            $data['id_grupo'] = $data['grupo_id'] ?: null;
-            unset($data['grupo_id']);
-        }
-
-        $empleado = Empleado::create($data);
+        $empleado = Empleado::create($request->validated());
 
         return response()->json([
             'empleado' => $empleado->load(['estadoEmpleado', 'grupo.estadoGrupo']),
@@ -54,7 +37,7 @@ class EmpleadoController extends Controller
         return response()->json([
             'empleado' => $empleado->load([
                 'estadoEmpleado',
-                'documentaciones.tipoDocumento',
+                'documentaciones.tipoDocumentacion',
                 'documentaciones.estadoDocumentacion',
                 'grupo.estadoGrupo',
             ]),
@@ -64,25 +47,13 @@ class EmpleadoController extends Controller
 
     public function update(StoreEmpleadoRequest $request, Empleado $empleado)
     {
-        $data = $request->validated();
-
-        if (isset($data['estado_empleado_id'])) {
-            unset($data['estado']);
-        }
-
-        // CORRECCIÓN: mapear grupo_id → id_grupo
-        if (array_key_exists('grupo_id', $data)) {
-            $data['id_grupo'] = $data['grupo_id'] ?: null;
-            unset($data['grupo_id']);
-        }
-
-        $empleado->update($data);
+        $empleado->update($request->validated());
 
         return response()->json([
             'message'  => 'Empleado actualizado',
             'empleado' => $empleado->load([
                 'estadoEmpleado',
-                'documentaciones.tipoDocumento',
+                'documentaciones.tipoDocumentacion',
                 'documentaciones.estadoDocumentacion',
                 'grupo.estadoGrupo',
             ]),

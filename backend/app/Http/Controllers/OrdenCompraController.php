@@ -11,7 +11,7 @@ class OrdenCompraController extends Controller
     public function index(Obra $obra)
     {
         return response()->json([
-            'ordenes' => $obra->ordenesCompra()->with('obra')->get(),
+            'ordenes' => $obra->ordenesCompra()->with(['obra', 'grupo'])->get(),
             'status'  => 200,
         ], 200);
     }
@@ -19,24 +19,23 @@ class OrdenCompraController extends Controller
     public function store(Request $request, Obra $obra)
     {
         $validated = $request->validate([
-            'nro_orden_compra'          => 'nullable|string|max:255',
-            'detalle'                   => 'nullable|string',
-            'fecha_inicio_orden_compra' => 'nullable|date',
-            // CORRECCIÓN: campo alineado con la migración corregida
-            'fecha_fin_orden_compra'    => 'nullable|date',
+            'nro_oc'   => 'required|string|max:50',
+            'grupo_id' => 'required|exists:Grupo,grupo_id',
+            'detalle'  => 'required|string',
+            'importe'  => 'required|numeric|min:0',
         ]);
 
         $orden = $obra->ordenesCompra()->create($validated);
 
         return response()->json([
-            'orden'  => $orden->load('obra'),
+            'orden'  => $orden->load(['obra', 'grupo']),
             'status' => 201,
         ], 201);
     }
 
     public function show(Obra $obra, OrdenCompra $ordenCompra)
     {
-        if ((int) $ordenCompra->obra_id !== (int) $obra->getKey()) {
+        if ($ordenCompra->nro_obra !== $obra->nro_obra) {
             return response()->json([
                 'message' => 'Esta orden no pertenece a la obra',
                 'status'  => 403,
@@ -44,14 +43,14 @@ class OrdenCompraController extends Controller
         }
 
         return response()->json([
-            'orden'  => $ordenCompra->load('obra'),
+            'orden'  => $ordenCompra->load(['obra', 'grupo']),
             'status' => 200,
         ]);
     }
 
     public function update(Request $request, Obra $obra, OrdenCompra $ordenesCompra)
     {
-        if ((int) $ordenesCompra->obra_id !== (int) $obra->getKey()) {
+        if ($ordenesCompra->nro_obra !== $obra->nro_obra) {
             return response()->json([
                 'message' => 'Esta orden de compra no pertenece a esta obra',
                 'status'  => 403,
@@ -59,16 +58,16 @@ class OrdenCompraController extends Controller
         }
 
         $validated = $request->validate([
-            'nro_orden_compra'          => 'nullable|string|max:255',
-            'detalle'                   => 'nullable|string',
-            'fecha_inicio_orden_compra' => 'nullable|date',
-            'fecha_fin_orden_compra'    => 'nullable|date',
+            'nro_oc'   => 'sometimes|required|string|max:50',
+            'grupo_id' => 'sometimes|required|exists:Grupo,grupo_id',
+            'detalle'  => 'sometimes|required|string',
+            'importe'  => 'sometimes|required|numeric|min:0',
         ]);
 
         $ordenesCompra->update($validated);
 
         return response()->json([
-            'orden'   => $ordenesCompra->load('obra'),
+            'orden'   => $ordenesCompra->load(['obra', 'grupo']),
             'message' => 'Orden actualizada',
             'status'  => 200,
         ], 200);
@@ -76,7 +75,7 @@ class OrdenCompraController extends Controller
 
     public function destroy(Obra $obra, OrdenCompra $ordenesCompra)
     {
-        if ((int) $ordenesCompra->obra_id !== (int) $obra->getKey()) {
+        if ($ordenesCompra->nro_obra !== $obra->nro_obra) {
             return response()->json([
                 'message' => 'Orden no encontrada',
                 'status'  => 404,

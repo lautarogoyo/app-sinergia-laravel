@@ -16,3 +16,8 @@
 .animate-loading-bar {
   animation: loading-bar 1.5s ease-in-out infinite;
 }
+
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+}
