@@ -150,7 +150,7 @@ export default function Personas() {
             className="w-full px-4 py-2 rounded border border-gray-300 text-lg focus:outline-none focus:ring focus:border-blue-400"
           />
         </div>
-        {seccion === "proveedores" && (
+        {(seccion === "proveedores" || seccion === "grupos" || seccion === "profesionales") && (
           <div className="flex flex-col gap-1">
             <label className="text-lg font-medium text-gray-700">Rubro:</label>
             <input
@@ -240,16 +240,16 @@ export default function Personas() {
             <table className="min-w-full">
               <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
                 <tr>
-                  {["Nombre", "Teléfono", "Email", "Estado", "Acciones"].map((h) => (
+                  {["Nombre", "Teléfono", "Email", "Estado", "Rubros", "Acciones"].map((h) => (
                     <th key={h} className={thClass}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="bg-gray-50 divide-y divide-gray-200">
                 {errorGrupos ? (
-                  <tr><td colSpan={5} className="px-6 py-4 text-center text-red-500">No se pudieron cargar los grupos.</td></tr>
+                  <tr><td colSpan={6} className="px-6 py-4 text-center text-red-500">No se pudieron cargar los grupos.</td></tr>
                 ) : gruposFiltrados.length === 0 ? (
-                  <TableEmpty cols={5} mensaje="No hay grupos para mostrar." />
+                  <TableEmpty cols={6} mensaje="No hay grupos para mostrar." />
                 ) : (
                   gruposFiltrados.map((g) => {
                     const grupoId = g.grupo_id ?? g.id;
@@ -263,6 +263,17 @@ export default function Personas() {
                           <span className={`rounded px-3 py-1 text-sm font-bold uppercase border ${estadoBadge[estadoNombre.toLowerCase()] ?? estadoBadge.pendiente}`}>
                             {estadoNombre.toUpperCase()}
                           </span>
+                        </td>
+                        <td className={tdClass}>
+                          {g.rubros && g.rubros.length > 0 ? (
+                            g.rubros.map((r) => (
+                              <span key={r.rubro_id} className="inline-flex items-center justify-center text-black border border-[#233d68] rounded px-3 py-1 text-sm font-semibold mr-1 mb-1">
+                                {r.descripcion?.toUpperCase() || "-"}
+                              </span>
+                            ))
+                          ) : (
+                            <span className="text-gray-400 text-sm">-</span>
+                          )}
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex gap-2 justify-center flex-wrap">
@@ -290,16 +301,16 @@ export default function Personas() {
             <table className="min-w-full">
               <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
                 <tr>
-                  {["Nombre", "Teléfono", "Email", "Especialidad", "Estado", "Acciones"].map((h) => (
+                  {["Nombre", "Teléfono", "Email", "Especialidad", "Estado", "Rubros", "Acciones"].map((h) => (
                     <th key={h} className={thClass}>{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="bg-gray-50 divide-y divide-gray-200">
                 {errorGrupos ? (
-                  <tr><td colSpan={6} className="px-6 py-4 text-center text-red-500">No se pudieron cargar los profesionales.</td></tr>
+                  <tr><td colSpan={7} className="px-6 py-4 text-center text-red-500">No se pudieron cargar los profesionales.</td></tr>
                 ) : profesionalesFiltrados.length === 0 ? (
-                  <TableEmpty cols={6} mensaje="No hay profesionales para mostrar." />
+                  <TableEmpty cols={7} mensaje="No hay profesionales para mostrar." />
                 ) : (
                   profesionalesFiltrados.map((g) => {
                     const grupoId = g.grupo_id ?? g.id;
@@ -314,6 +325,16 @@ export default function Personas() {
                           <span className={`rounded px-3 py-1 text-sm font-bold uppercase border ${estadoBadge[estadoNombre.toLowerCase()] ?? estadoBadge.pendiente}`}>
                             {estadoNombre.toUpperCase()}
                           </span>
+                        </td>
+                        <td className={tdClass}>
+                          {(g.rubros ?? []).length > 0
+                            ? (g.rubros ?? []).map((r) => (
+                                <span key={r.rubro_id} className="inline-flex text-black border border-[#233d68] rounded px-3 py-1 text-sm font-semibold mr-1 mb-1">
+                                  {r.descripcion?.toUpperCase() || "-"}
+                                </span>
+                              ))
+                            : <span className="text-gray-400 text-sm">-</span>
+                          }
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex gap-2 justify-center flex-wrap">

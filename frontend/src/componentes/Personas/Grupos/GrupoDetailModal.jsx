@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useController} from "react-hook-form";
 import Swal from "sweetalert2";
 import { useCreateGrupo, useUpdateGrupo, useDeleteGrupo, useEstadosGrupo } from "../../hooks/useGrupos";
 import { useTiposFacturacion } from "../../hooks/useTiposFacturacion";
+import RubrosSelect from "../../shared/RubrosSelect.jsx";
 
 const inputCls = "w-full px-4 py-2 rounded border border-gray-300 text-base focus:outline-none focus:ring focus:border-blue-400";
 const labelCls = "text-sm font-medium text-gray-700 mb-1";
@@ -27,12 +28,14 @@ function Row({ label, value }) {
 export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
   const [mode, setMode] = useState(initialMode);
   const grupoId = grupo?.grupo_id ?? grupo?.id;
+  
 
   const { data: estadosGrupoData } = useEstadosGrupo();
   const estadosGrupo = estadosGrupoData?.estados ?? [];
   const { data: tiposFacturacion = [] } = useTiposFacturacion();
+  
 
-  const { register, handleSubmit, watch, formState: { errors } } = useForm({
+  const { register, handleSubmit, watch, control, formState: { errors } } = useForm({
     defaultValues: {
       nombre_apellido: grupo?.nombre_apellido ?? "",
       tipo_facturacion_id: grupo?.tipo_facturacion_id ?? "",
@@ -49,8 +52,9 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
               ? String(grupo.fecha_ingreso).slice(0, 10)
               : new Date().toISOString().slice(0, 10)
           },
+      rubros_ids: grupo?.rubros?.map(r => r.rubro_id) ?? [],
   });
-
+  const { field: rubrosField } = useController({ name: "rubros_ids", control });
   const { mutate: crear, isPending: creando } = useCreateGrupo(onClose);
   const { mutate: actualizar, isPending: actualizando } = useUpdateGrupo(grupoId, onClose);
   const { mutate: eliminar, isPending: eliminando } = useDeleteGrupo(onClose);
@@ -120,6 +124,7 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
                       : null
                   }
                 />
+                <Row label="Rubros" value={grupo?.rubros?.map(r => r.descripcion).join(", ")} />
                 <div className="sm:col-span-2">
                   <Row label="Observación" value={grupo?.observacion} />
                 </div>
@@ -255,7 +260,11 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
                   <label className={labelCls}>Fecha de Ingreso</label>
                   <input type="date" {...register("fecha_ingreso")} className={inputCls} />
                 </div>
-
+                
+                <div className="sm:col-span-2 flex flex-col">
+                  <label className={labelCls}>Rubros</label>
+                  <RubrosSelect value={rubrosField.value} onChange={rubrosField.onChange} />
+                </div>
                 <div className="sm:col-span-2 flex flex-col">
                   <label className={labelCls}>Observación</label>
                   <textarea
