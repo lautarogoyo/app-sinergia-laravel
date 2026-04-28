@@ -40,6 +40,7 @@ export default function Personas() {
   const [proveedorModal, setProveedorModal] = useState(null); // { proveedor, mode }
   const [grupoModal,     setGrupoModal]     = useState(null); // { grupo, mode }
   const [rubroModal,     setRubroModal]     = useState(null); // { rubro, mode }
+  const [rubroFiltro, setRubroFiltro] = useState("");
 
   const { data: grupos      = [], isLoading: loadingGrupos,     isError: errorGrupos    } = useGrupos();
   const { data: proveedores = [], isLoading: loadingProveedores                          } = useProveedores();
@@ -47,13 +48,27 @@ export default function Personas() {
 
   const filtro = busqueda.trim().toLowerCase();
 
-  const proveedoresFiltrados = useMemo(
-    () => !filtro ? proveedores : proveedores.filter((p) =>
-      ["nombre_apellido", "telefono", "email", "direccion", "observacion", "fecha_ingreso"]
-        .some((c) => String(p[c] || "").toLowerCase().includes(filtro))
-    ),
-    [proveedores, filtro]
-  );
+  const proveedoresFiltrados = useMemo(() => {
+    let lista = proveedores;
+
+    if (rubroFiltro) {
+      const rf = rubroFiltro.trim().toLowerCase();
+      lista = lista.filter((p) =>
+        (p.rubros ?? []).some((r) =>
+          (r.descripcion ?? "").toLowerCase().includes(rf)
+        )
+      );
+    }
+
+    if (filtro) {
+      lista = lista.filter((p) =>
+        ["nombre_apellido", "telefono", "email", "direccion", "observacion", "fecha_ingreso"]
+          .some((c) => String(p[c] || "").toLowerCase().includes(filtro))
+      );
+    }
+
+    return lista;
+  }, [proveedores, filtro, rubroFiltro]);
 
   const gruposFiltrados = useMemo(
     () => {
@@ -135,6 +150,17 @@ export default function Personas() {
             className="w-full px-4 py-2 rounded border border-gray-300 text-lg focus:outline-none focus:ring focus:border-blue-400"
           />
         </div>
+        {seccion === "proveedores" && (
+          <div className="flex flex-col gap-1">
+            <label className="text-lg font-medium text-gray-700">Rubro:</label>
+            <input
+              value={rubroFiltro}
+              onChange={(e) => setRubroFiltro(e.target.value)}
+              placeholder="Buscar por rubro..."
+              className="px-4 py-2 rounded border border-gray-300 text-lg bg-white focus:outline-none focus:ring focus:border-blue-400"
+            />
+          </div>
+        )}
 
         <div className="flex gap-2 pb-0.5">
           {seccion === "proveedores" && (
@@ -162,22 +188,32 @@ export default function Personas() {
           <table className="min-w-full">
             <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
               <tr>
-                {["Proveedor", "Teléfono", "Email", "Acciones"].map((h) => (
+                {["Proveedor", "Teléfono", "Email", "Rubros", "Acciones"].map((h) => (
                   <th key={h} className={thClass}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="bg-gray-50 divide-y divide-gray-200">
               {loadingProveedores ? (
-                <TableEmpty cols={4} mensaje="Cargando proveedores..." />
+                <TableEmpty cols={5} mensaje="Cargando proveedores..." />
               ) : proveedoresFiltrados.length === 0 ? (
-                <TableEmpty cols={4} mensaje="No hay proveedores para mostrar." />
+                <TableEmpty cols={5} mensaje="No hay proveedores para mostrar." />
               ) : (
                 proveedoresFiltrados.map((p) => (
                   <tr key={p.proveedor_id} className="hover:bg-gray-200 transition-colors duration-150">
                     <td className={tdClass}>{p.nombre_apellido || "-"}</td>
                     <td className={tdClass}>{p.telefono || "-"}</td>
                     <td className={tdClass}>{p.email || "-"}</td>
+                    <td className={tdClass}>
+                      {(p.rubros ?? []).length > 0
+                        ? (p.rubros ?? []).map((r) => (
+                            <span key={r.rubro_id} className="inline-flex text-black border border-[#233d68] rounded px-3 py-1 text-sm font-semibold mr-1 mb-1">
+                              {r.descripcion?.toUpperCase() || "-"}
+                            </span>
+                          ))
+                        : <span className="text-gray-400 text-sm">-</span>
+                      }
+                    </td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2 justify-center flex-wrap">
                         <button type="button" onClick={() => setProveedorModal({ proveedor: p, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
