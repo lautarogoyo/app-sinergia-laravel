@@ -10,7 +10,6 @@ const thClass = "px-6 py-3 text-center text-xl font-bold text-gray-100 border-b 
 const tdClass = "text-lg text-gray-800 px-4 py-3 text-center";
 const btnBlue = "bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer";
 const btnRed  = "bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer";
-const btnGray = "bg-gray-200 hover:bg-gray-300 text-gray-700 text-lg font-bold py-2 px-3 rounded shadow transition duration-150 cursor-pointer flex items-center gap-1";
 
 function LupaIcon() {
   return (
@@ -84,6 +83,25 @@ export default function Personas() {
     ),
     [rubros, filtro]
   );
+  const isLoadingAny = loadingProveedores || loadingGrupos || loadingRubros;
+
+  if (isLoadingAny) return (
+  <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
+    <div className="relative">
+      <div className="mt-8 text-center">
+        <h2 className="text-3xl font-bold text-white mb-4 animate-pulse">Cargando Personas</h2>
+        <div className="w-80 h-3 bg-gray-700 rounded-full overflow-hidden shadow-lg">
+          <div className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-full animate-loading-bar"></div>
+        </div>
+        <div className="mt-4 flex justify-center gap-2">
+          <span className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></span>
+          <span className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></span>
+          <span className="w-3 h-3 bg-blue-300 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></span>
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
   return (
     <div className="p-8 bg-gray-100 lg:w-full flex flex-col">
@@ -131,7 +149,7 @@ export default function Personas() {
           )}
           {seccion === "rubros" && (
             <button type="button" onClick={() => setRubroModal({ rubro: null, mode: "create" })} className={btnBlue}>
-              Agregar Rubro
+              Nuevo Rubro
             </button>
           )}
         </div>
