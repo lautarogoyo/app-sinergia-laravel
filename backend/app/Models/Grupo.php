@@ -72,4 +72,16 @@ class Grupo extends SinergiaModel
     {
         return $this->hasMany(CompraRubroGrupo::class, 'grupo_id', 'grupo_id');
     }
+    public function rubros(): BelongsToMany
+    {
+            return $this->belongsToMany(
+                Rubro::class,
+                'Grupo_Rubro',
+                'grupo_id',
+                'rubro_id',
+                'grupo_id',
+                'rubro_id'
+            );
+    }
 }
+

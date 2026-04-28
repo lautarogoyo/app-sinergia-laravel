@@ -9,7 +9,7 @@ class GrupoController extends Controller
 {
     public function index()
     {
-        $grupos = Grupo::with(['estadoGrupo', 'tipoFacturacion', 'usuario'])->get();
+        $grupos = Grupo::with(['estadoGrupo', 'tipoFacturacion', 'usuario', 'rubros'])->get();
 
         return response()->json([
             'grupos' => $grupos,
@@ -33,13 +33,22 @@ class GrupoController extends Controller
             'fecha_ingreso'       => 'sometimes|date',
             'rol_profesional'     => 'nullable|boolean',
             'especialidad'        => 'nullable|string|max:100',
+            'rubros_ids'          => 'nullable|array',
+            'rubros_ids.*'        => 'exists:Rubro,rubro_id',
         ]);
+
+        $rubrosIds = $validated['rubros_ids'] ?? [];
+        unset($validated['rubros_ids']);
 
         $grupo = Grupo::create($validated);
 
+        if (!empty($rubrosIds)) {
+            $grupo->rubros()->sync($rubrosIds);
+        }
+
         return response()->json([
             'message' => 'Grupo creado exitosamente',
-            'grupo'   => $grupo->load(['estadoGrupo', 'tipoFacturacion', 'usuario']),
+            'grupo'   => $grupo->load(['estadoGrupo', 'tipoFacturacion', 'usuario', 'rubros']),
             'status'  => 201,
         ], 201);
     }
@@ -47,7 +56,7 @@ class GrupoController extends Controller
     public function show(Grupo $grupo)
     {
         return response()->json([
-            'grupo'  => $grupo->load(['estadoGrupo', 'tipoFacturacion', 'usuario']),
+            'grupo'  => $grupo->load(['estadoGrupo', 'tipoFacturacion', 'usuario', 'rubros']),
             'status' => 200,
         ]);
     }
@@ -68,19 +77,29 @@ class GrupoController extends Controller
             'fecha_ingreso'       => 'sometimes|date',
             'rol_profesional'     => 'sometimes|nullable|boolean',
             'especialidad'        => 'sometimes|nullable|string|max:100',
+            'rubros_ids'          => 'nullable|array',
+            'rubros_ids.*'        => 'exists:Rubro,rubro_id',
         ]);
+
+        $rubrosIds = $validated['rubros_ids'] ?? null;
+        unset($validated['rubros_ids']);
 
         $grupo->update($validated);
 
+        if (!is_null($rubrosIds)) {
+            $grupo->rubros()->sync($rubrosIds);
+        }
+
         return response()->json([
             'message' => 'Grupo actualizado exitosamente',
-            'grupo'   => $grupo->load(['estadoGrupo', 'tipoFacturacion', 'usuario']),
+            'grupo'   => $grupo->load(['estadoGrupo', 'tipoFacturacion', 'usuario', 'rubros']),
             'status'  => 200,
         ]);
     }
 
     public function destroy(Grupo $grupo)
     {
+        $grupo->rubros()->detach();
         $grupo->delete();
 
         return response()->json([
