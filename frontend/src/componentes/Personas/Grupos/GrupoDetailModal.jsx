@@ -51,9 +51,10 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
       fecha_ingreso: grupo?.fecha_ingreso
               ? String(grupo.fecha_ingreso).slice(0, 10)
               : new Date().toISOString().slice(0, 10)
-          },
+          ,
       rubros_ids: grupo?.rubros?.map(r => r.rubro_id) ?? [],
-  });
+  },
+});
   const { field: rubrosField } = useController({ name: "rubros_ids", control });
   const { mutate: crear, isPending: creando } = useCreateGrupo(onClose);
   const { mutate: actualizar, isPending: actualizando } = useUpdateGrupo(grupoId, onClose);
