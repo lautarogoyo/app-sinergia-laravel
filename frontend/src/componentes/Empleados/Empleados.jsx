@@ -65,7 +65,7 @@ export default function Empleados() {
     return (
       e.nombre.toLowerCase().includes(val) ||
       e.apellido.toLowerCase().includes(val) ||
-      (e.grupo ? e.grupo.toLowerCase().includes(val) : false)
+      (e.grupo ? e.grupo.nombre_apellido?.toLowerCase().includes(val) : false)
     );
   });
 
@@ -106,13 +106,15 @@ export default function Empleados() {
                 <tr key={empleado.id} className="hover:bg-gray-200 transition-colors duration-150">
                   <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.nombre}</td>
                   <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.apellido}</td>
-                  <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.grupo?.denominacion}</td>
+                  <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.grupo?.nombre_apellido}</td>
                   <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.telefono}</td>
                   <td className={`whitespace-nowrap text-[18px] text-gray-800 p-6`}>
                     {empleado.cbu} <br />
                     {empleado.alias}
                   </td>
-                  <td className={`whitespace-nowrap ${textContent} text-gray-800 ${empleado.estado === 'activo' ? 'bg-green-500' : 'bg-red-500'} font-bold`}>{empleado.estado.toUpperCase()}</td>
+                  <td className={`... ${empleado.estado_empleado?.descripcion?.toLowerCase() === 'activo' ? 'bg-green-500' : 'bg-red-500'} ...`}>
+                    {empleado.estado_empleado?.descripcion?.toUpperCase() ?? '-'}
+                  </td>
                   <td className="px-2 py-2 whitespace-nowrap text-sm text-gray-700">
                     {empleado.documentaciones.length > 0 ? (
                       empleado.documentaciones.map(doc => {

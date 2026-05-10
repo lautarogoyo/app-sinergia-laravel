@@ -3,6 +3,7 @@ import { useGrupos } from "../hooks/useGrupos.jsx";
 import { PostEmpleado } from "../api/empleados.js";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEstadosEmpleado } from "../hooks/useEmpleados.jsx";
 
 
 
@@ -22,9 +23,9 @@ export default function CreateEmpleado() {
         console.error("Error al crear el empleado", error);
         },
     });
-
-
-
+    const { data: estadosData } = useEstadosEmpleado();
+    const estados = estadosData?.estados ?? [];
+    console.log(estados);
 
     const onSubmit = handleSubmit ((data) => {
         mutate(data);
@@ -117,10 +118,14 @@ export default function CreateEmpleado() {
                     <select
                         id="estado"
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        {...register("estado", { required: true})}
+                        {...register("estado_empleado_id", { required: true, valueAsNumber: true })}
                     >
-                        <option value="activo">Activo</option>
-                        <option value="inactivo">Inactivo</option>
+                        <option value="">Seleccionar...</option>
+                        {estados.map((e) => (
+                            <option key={e.estado_empleado_id} value={e.estado_empleado_id}>
+                                {e.descripcion.toUpperCase()}
+                            </option>
+                        ))}
                     </select>
                 </div>
                 <div className="mb-6">
@@ -137,8 +142,8 @@ export default function CreateEmpleado() {
                     >
                         <option value="">Sin grupo</option>
                         {grupos.map((g) => (
-                            <option key={g.id} value={g.id}>
-                                {g.denominacion ?? `Grupo ${g.id}`}
+                            <option key={g.grupo_id} value={g.grupo_id}>
+                                {g.nombre_apellido ?? `Grupo ${g.grupo_id}`}
                             </option>
                         ))}
                     </select>

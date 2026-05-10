@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchEmpleadoById, fetchEmpleados } from '../api/empleados.js';
+import { fetchEmpleadoById, fetchEmpleados, fetchEstadosEmpleado } from '../api/empleados.js';
 
 export const useEmpleados = () => {
   return useQuery({
@@ -16,3 +16,11 @@ export const useEmpleadoById = (id) => {
     refetchOnWindowFocus: false
   });
 }
+
+export const useEstadosEmpleado = () => {
+  return useQuery({
+    queryKey: ['estados-empleado'],
+    queryFn: fetchEstadosEmpleado,
+    refetchOnWindowFocus: false,
+  });
+};

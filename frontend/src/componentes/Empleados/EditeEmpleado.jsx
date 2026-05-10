@@ -119,7 +119,7 @@ export default function EditeEmpleado() {
                                 <option value="">Sin grupo</option>
                                 {grupos.map((g) => (
                                 <option key={g.id} value={g.id}>
-                                    {g.denominacion}
+                                    {g.nombre_apellido}
                                 </option>
                                 ))}
                             </select>
