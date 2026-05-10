@@ -26,8 +26,8 @@ return new class extends Migration
             $table->string('cbu', 22)->nullable();
             $table->string('alias', 100)->nullable();
             $table->unsignedInteger('grupo_id');
-            $table->date('archivado_at')->nullable();
-            $table->date('cancelado_at')->nullable();
+            $table->dateTime('archivado_at')->nullable();
+            $table->dateTime('cancelado_at')->nullable();
             $table->unsignedInteger('estado_empleado_id');
 
             $table->foreign('grupo_id')

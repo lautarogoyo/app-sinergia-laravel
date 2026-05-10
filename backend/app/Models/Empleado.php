@@ -23,8 +23,8 @@ class Empleado extends SinergiaModel
     ];
 
     protected $casts = [
-        'archivado_at' => 'date',
-        'cancelado_at' => 'date',
+        'archivado_at' => 'datetime',
+        'cancelado_at' => 'datetime',
     ];
 
     public function grupo(): BelongsTo
