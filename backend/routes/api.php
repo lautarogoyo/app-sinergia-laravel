@@ -19,6 +19,7 @@ use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\RubroController;
 use App\Http\Controllers\TipoDocumentoController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\EstadoEmpleadoController;
 
 // Auth
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -66,6 +67,8 @@ Route::get('tipos_facturacion', [TipoFacturacionController::class, 'index']);
 
 // Empleados
 Route::apiResource('empleados', EmpleadoController::class);
+Route::get('estados_empleados', [EstadoEmpleadoController::class, 'index']);
+
 
 // Documentación de empleados
 Route::apiResource('empleados/{empleado}/documentaciones', DocumentacionController::class)->parameters([
