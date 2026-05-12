@@ -54,4 +54,10 @@ class Documentacion extends SinergiaModel
     {
         return $this->belongsTo(EstadoDocumentacion::class, 'estado_documentacion_id', 'estado_documentacion_id');
     }
+
+    public function resolveRouteBinding($value, $field = null): ?self
+    {
+        // $value llega como el {documentacion} de la URL, que es solo documentacion_id
+        return $this->where('documentacion_id', $value)->first();
+    }
 }

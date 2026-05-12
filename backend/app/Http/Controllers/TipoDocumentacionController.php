@@ -11,7 +11,10 @@ class TipoDocumentacionController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json([
+            'tipos_documento' => \App\Models\TipoDocumentacion::query()->orderBy('descripcion')->get(),
+            'status' => 200,
+        ]);
     }
 
     /**

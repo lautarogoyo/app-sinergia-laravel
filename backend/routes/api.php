@@ -17,7 +17,7 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\TipoFacturacionController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\RubroController;
-use App\Http\Controllers\TipoDocumentoController;
+use App\Http\Controllers\TipoDocumentacionController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\EstadoEmpleadoController;
 
@@ -75,9 +75,10 @@ Route::apiResource('empleados/{empleado}/documentaciones', DocumentacionControll
     'documentaciones' => 'documentacion',
 ]);
 Route::get('empleados/{empleado}/documentaciones/{documentacion}/download', [DocumentacionController::class, 'download']);
+Route::get('empleados/{empleado}/documentaciones/{documentacion}/preview/{filename}', [DocumentacionController::class, 'preview']);
 
 // Catálogos
-Route::apiResource('tipos_documentacion', TipoDocumentoController::class);
+Route::apiResource('tipos_documentacion', TipoDocumentacionController::class);
 Route::get('estado_grupos', [EstadoGrupoController::class, 'index']);
 
 // Facturas de obra

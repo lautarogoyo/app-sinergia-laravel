@@ -118,12 +118,30 @@ class DocumentacionController extends Controller
         }
 
         if (! Storage::disk('public')->exists($documentacion->path)) {
-            return response()->json([
-                'message' => 'El archivo no existe',
-                'status' => 404,
-            ], 404);
+            return response()->json(['message' => 'Archivo no encontrado', 'status' => 404], 404);
         }
 
-        return Storage::disk('public')->download($documentacion->path);
+            return Storage::disk('public')->download(
+                $documentacion->path,
+                basename($documentacion->path)
+            );
+        }
+
+    public function preview(Empleado $empleado, Documentacion $documentacion)
+    {
+        if ($documentacion->empleado_id !== $empleado->empleado_id) {
+            return response()->json(['message' => 'Forbidden', 'status' => 403], 403);
+        }
+
+        if (! Storage::disk('public')->exists($documentacion->path)) {
+            return response()->json(['message' => 'Archivo no encontrado', 'status' => 404], 404);
+        }
+
+        return Storage::disk('public')->response(
+            $documentacion->path,
+            basename($documentacion->path),
+            ['Content-Disposition' => 'inline']
+        );
+
     }
 }
