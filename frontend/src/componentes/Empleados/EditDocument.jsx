@@ -7,11 +7,13 @@ import {
   useUpdateDocumentacion,
   useDeleteDocumentacion,
 } from "../hooks/useDocumentaciones.jsx";
+import Swal from "sweetalert2";
+import Icon from "../Icons/Icons";
 
 export default function EditDocument() {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  
   const [exit, setExit] = useState(false);
   const [documentaciones, setDocumentaciones] = useState([]);
 
@@ -33,26 +35,26 @@ export default function EditDocument() {
   const [newTipo, setNewTipo] = useState("");
   const [newFecha, setNewFecha] = useState("");
 
-  const handleTipoDocumentoChange = (docId, value) => {
+  const handleTipoDocumentoChange = (documentacionId, value) => {
     setDocumentaciones((prev) =>
       prev.map((doc) =>
-        doc.id === docId ? { ...doc, tipo_documento_id: value, hasChanges: true } : doc
+        doc.documentacion_id === documentacionId ? { ...doc, tipo_documentacion_id: value, hasChanges: true } : doc
       )
     );
   };
 
-  const handleDocumentacionChange = (docId, nextFile) => {
+  const handleDocumentacionChange = (documentacionId, nextFile) => {
     setDocumentaciones((prev) =>
       prev.map((doc) =>
-        doc.id === docId ? { ...doc, newFile: nextFile, hasChanges: true } : doc
+        doc.documentacion_id === documentacionId ? { ...doc, newFile: nextFile, hasChanges: true } : doc
       )
     );
   };
 
-  const handleFechaVencimientoChange = (docId, value) => {
+  const handleFechaVencimientoChange = (documentacionId, value) => {
     setDocumentaciones((prev) =>
       prev.map((doc) =>
-        doc.id === docId ? { ...doc, fecha_vencimiento: value, hasChanges: true } : doc
+        doc.documentacion_id === documentacionId ? { ...doc, fecha_vencimiento: value, hasChanges: true } : doc
       )
     );
   };
@@ -63,13 +65,17 @@ export default function EditDocument() {
 
   const handleAgregarNuevo = () => {
     if (!newFile || !newTipo || !newFecha) {
-      alert("Selecciona tipo, archivo y fecha de vencimiento");
+      Swal.fire({
+        icon: "warning",
+        title: "Faltan datos",
+        text: "Selecciona tipo, archivo y fecha de vencimiento",
+      });
       return;
     }
 
     const formData = new FormData();
-    formData.append("tipo_documento_id", newTipo);
-    formData.append("estado", "vigente");
+    formData.append("tipo_documentacion_id", newTipo);
+    formData.append("estado_documentacion_id", "1");
     formData.append("fecha_vencimiento", newFecha);
     formData.append("archivo", newFile);
 
@@ -79,26 +85,36 @@ export default function EditDocument() {
         setNewFile(null);
         setNewTipo("");
         setNewFecha("");
+        Swal.fire({ icon: "success", title: "Documento creado", timer: 1500, showConfirmButton: false });
       },
       onError: (error) => {
         console.error(error.response?.data);
-        alert("Error al crear documentacion");
+        Swal.fire({ icon: "error", title: "Error", text: "Error al crear documentacion" });
       },
     });
   };
 
-  const handleEliminar = (docId) => {
-    if (!confirm("Estas seguro de eliminar este documento?")) {
-      return;
-    }
+  const handleEliminar = async (documentacionId) => {
+    const result = await Swal.fire({
+      title: "Confirmar eliminación",
+      text: "¿Estás seguro de eliminar este documento?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
 
-    deleteMutation.mutate(docId, {
+    if (!result.isConfirmed) return;
+
+    deleteMutation.mutate(documentacionId, {
       onSuccess: () => {
-        alert("Documento eliminado");
+        Swal.fire({ icon: "success", title: "Eliminado", text: "Documento eliminado", timer: 1400, showConfirmButton: false });
       },
       onError: (error) => {
         console.error(error.response?.data);
-        alert("Error al eliminar documentacion");
+        Swal.fire({ icon: "error", title: "Error", text: "Error al eliminar documentacion" });
       },
     });
   };
@@ -118,11 +134,11 @@ export default function EditDocument() {
         changes.map((doc) => {
           const formData = new FormData();
 
-          const tipoId = doc.tipo_documento_id ?? doc.tipo_documento?.id;
-          if (!tipoId) throw new Error("Falta tipo_documento");
+          const tipoId = doc.tipo_documentacion_id;
+          if (!tipoId) throw new Error("Falta tipo_documentacion");
 
-          formData.append("tipo_documento_id", String(tipoId));
-          formData.append("estado", "vigente");
+          formData.append("tipo_documentacion_id", String(tipoId));
+          formData.append("estado_documentacion_id", "1");
 
           if (doc.newFile) {
             formData.append("archivo", doc.newFile);
@@ -133,7 +149,7 @@ export default function EditDocument() {
           }
 
           return updateMutation.mutateAsync({
-            docId: doc.id,
+            docId: doc.documentacion_id,
             formData,
           });
         })
@@ -143,11 +159,11 @@ export default function EditDocument() {
     } catch (err) {
       console.error(err);
       console.error(err?.response?.data);
-      alert(
+      const message =
         err?.response?.data?.message ||
-          err?.response?.data?.errors?.tipo_documento_id?.[0] ||
-          "Error al editar documentaciones"
-      );
+        err?.response?.data?.errors?.tipo_documentacion_id?.[0] ||
+        "Error al editar documentaciones";
+      Swal.fire({ icon: "error", title: "Error", text: message });
     }
   };
 
@@ -177,6 +193,7 @@ export default function EditDocument() {
     return <div className="p-10 text-red-600">Error al cargar empleado</div>;
   }
 
+  console.log("Tipo Documento:", tiposDocumento);
   return (
     <div className="min-h-screen py-8 px-8">
       <div className="w-full max-w-7xl mx-auto">
@@ -196,30 +213,22 @@ export default function EditDocument() {
           ) : (
             documentaciones.map((doc) => (
               <div
-                key={doc.id}
-                className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500 relative"
+                key={doc.documentacion_id}
+                className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500"
               >
-                <button
-                  onClick={() => handleEliminar(doc.id)}
-                  className="absolute top-4 right-4 bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md transition duration-200 text-sm"
-                  disabled={deleteMutation.isPending}
-                >
-                  {deleteMutation.isPending ? "Eliminando..." : "Eliminar"}
-                </button>
-
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-end">
                   <div className="lg:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Tipo de Documento
                     </label>
                     <select
-                      value={String(doc.tipo_documento_id ?? doc.tipo_documento?.id ?? "")}
-                      onChange={(e) => handleTipoDocumentoChange(doc.id, e.target.value)}
+                      value={String(doc.tipo_documentacion_id ?? "")}
+                      onChange={(e) => handleTipoDocumentoChange(doc.documentacion_id, e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                       <option value="">Seleccionar...</option>
                       {tiposDocumento.map((tipo) => (
-                        <option key={tipo.id} value={String(tipo.id)}>
+                        <option key={tipo.tipo_documentacion_id} value={String(tipo.tipo_documentacion_id)}>
                           {formatTipoDocumentoLabel(tipo.descripcion).toUpperCase()}
                         </option>
                       ))}
@@ -233,7 +242,7 @@ export default function EditDocument() {
                     <input
                       type="date"
                       value={doc.fecha_vencimiento ? doc.fecha_vencimiento.split("T")[0] : ""}
-                      onChange={(e) => handleFechaVencimientoChange(doc.id, e.target.value)}
+                      onChange={(e) => handleFechaVencimientoChange(doc.documentacion_id, e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
@@ -244,13 +253,23 @@ export default function EditDocument() {
                     </label>
                     <input
                       type="file"
-                      onChange={(e) => handleDocumentacionChange(doc.id, e.target.files[0])}
+                      onChange={(e) => handleDocumentacionChange(doc.documentacion_id, e.target.files[0])}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                     {doc.newFile && (
                       <p className="text-sm text-green-600 mt-1">Nuevo archivo: {doc.newFile.name}</p>
                     )}
                   </div>
+                </div>
+
+                <div className="mt-4 flex justify-end">
+                  <button
+                    onClick={() => handleEliminar(doc.documentacion_id)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md transition duration-200 text-sm flex items-center gap-2"
+                    disabled={deleteMutation.isPending}
+                  >
+                    <Icon name="trash" className="h-6 w-5 text-white" />
+                  </button>
                 </div>
               </div>
             ))
@@ -281,8 +300,8 @@ export default function EditDocument() {
                   >
                     <option value="">Seleccionar tipo...</option>
                     {tiposDocumento.map((tipo) => (
-                      <option key={tipo.id} value={String(tipo.id)}>
-                        {formatTipoDocumentoLabel(tipo.descripcion)}
+                      <option key={tipo.tipo_documentacion_id} value={String(tipo.tipo_documentacion_id)}>
+                        {formatTipoDocumentoLabel(tipo.descripcion).toUpperCase()}
                       </option>
                     ))}
                   </select>
@@ -347,13 +366,13 @@ export default function EditDocument() {
           <button
             onClick={handleSubmit}
             disabled={documentaciones.length === 0 || updateMutation.isPending}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-3 px-6 rounded-lg transition duration-200"
+            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
           >
             {updateMutation.isPending ? "Guardando..." : "Guardar Cambios"}
           </button>
           <button
             onClick={() => setExit(true)}
-            className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200"
+            className="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
           >
             Volver
           </button>
