@@ -14,7 +14,6 @@ export default function Empleados() {
   const formatTipoDocumentoLabel = (value) =>
     String(value ?? "").replaceAll("_", " ");
   
-  
   if (isLoading) return (
     <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
       <div className="relative">
@@ -121,6 +120,7 @@ export default function Empleados() {
                   <td className="px-4 py-3 text-sm text-gray-700 max-w-[320px]">
                     {empleado.documentaciones.length > 0 ? (
                       empleado.documentaciones.map(doc => {
+                        const nombreArchivo = doc.path ? doc.path.split('/').pop() : '';
                         const diasRestantes = calcularDiasRestantes(doc.fecha_vencimiento);
                         const clases = getDocumentClasses(doc.fecha_vencimiento);
                         const mensaje = diasRestantes !== null 
@@ -131,12 +131,15 @@ export default function Empleados() {
                         
                         return (
                           <div 
-                            key={doc.id} 
+                            key={doc.documentacion_id} 
                             className={`${clases} rounded px-2 py-1 mb-2 text-[15px] shadow font-bold hover:bg-opacity-80 cursor-pointer relative group inline-block mr-2`} 
-                            onClick={() => window.open(`${backendUrl}/api/empleados/${empleado.id}/documentaciones/${doc.id}/download`, '_blank')}
+                            onClick={() => window.open(
+                              `${backendUrl}/api/empleados/${empleado.empleado_id}/documentaciones/${doc.documentacion_id}/preview/${encodeURIComponent(nombreArchivo)}`,
+                              '_blank'
+                            )}
                             title={mensaje}
                           >
-                            {formatTipoDocumentoLabel(doc.tipo_documento.descripcion).toUpperCase()}
+                            {formatTipoDocumentoLabel(doc.tipo_documentacion.descripcion).toUpperCase()}
                             <span className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 px-3 py-1 bg-gray-800 text-white text-sm rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
                               {mensaje}
                             </span>
