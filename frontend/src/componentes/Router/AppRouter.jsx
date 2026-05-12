@@ -3,7 +3,6 @@ import Home from "../Home/Home.jsx";
 import { Routes, Route, Navigate } from "react-router-dom";
 import CreateEmpleado from "../Empleados/CreateEmpleado.jsx";
 import EditeEmpleado from "../Empleados/EditeEmpleado.jsx";
-import RemoveEmpleado from "../Empleados/RemoveEmpleado.jsx";
 import EditDocument from "../Empleados/EditDocument.jsx";
 import Obras from "../Obras/Obras.jsx";
 import CreateObra from "../Obras/CreateObra.jsx";
@@ -26,7 +25,6 @@ function AppRouter() {
             <Route path="/editarobra/:id" element={<EditObra />} />
             <Route path="/crear-empleado" element={<CreateEmpleado />} />
             <Route path="/editarempleado/:id" element={<EditeEmpleado />} />
-            <Route path="/eliminarempleado/:id" element={<RemoveEmpleado />} />
             <Route path="/documentacionempleado/:id" element={<EditDocument />} />
             <Route path="/obra/:id/gestionar" element={<Gestionar />} />
             <Route path="/salir" element={<Navigate to="/home" replace />} />
