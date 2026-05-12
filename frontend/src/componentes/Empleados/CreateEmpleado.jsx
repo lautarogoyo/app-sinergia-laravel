@@ -23,9 +23,7 @@ export default function CreateEmpleado() {
         console.error("Error al crear el empleado", error);
         },
     });
-    const { data: estadosData } = useEstadosEmpleado();
-    const estados = estadosData?.estados ?? [];
-    console.log(estados);
+    const { data: estados = [] } = useEstadosEmpleado();
 
     const onSubmit = handleSubmit ((data) => {
         mutate(data);

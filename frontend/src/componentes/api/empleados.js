@@ -28,5 +28,5 @@ export const DeleteEmpleado = async (id) => {
 
 export const fetchEstadosEmpleado = async () => {
   const { data } = await axios.get(`${backendUrl}/api/estados_empleados`);
-  return data;
+  return data.estados;
 };

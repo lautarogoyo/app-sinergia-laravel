@@ -5,26 +5,27 @@ import { UpdateEmpleado } from "../api/empleados.js";
 import { useForm, Controller } from "react-hook-form";
 import {useEffect } from "react";
 import { useGrupos } from "../hooks/useGrupos.jsx";
+import { useEstadosEmpleado } from "../hooks/useEmpleados.jsx";
 
 
 export default function EditeEmpleado() {
     const { id } = useParams();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    const {register, handleSubmit, reset, control, watch} = useForm({
+    const {register, handleSubmit, reset, control} = useForm({
         defaultValues: {
             nombre: "",
             apellido: "",
             telefono: "",
             cbu: "",
             alias: "",
-            estado: "activo",
+            estado_empleado_id: "",
             grupo_id: "",
         }
     });
     const {data : empleado, isLoading} = useEmpleadoById(id);
     const {data: grupos = [], isLoading : isLoadingGrupo} = useGrupos();
-    
+    const { data: estados = [], isLoading: isLoadingEstados } = useEstadosEmpleado();
     useEffect(() => {
         if (empleado) {
             reset({
@@ -33,8 +34,8 @@ export default function EditeEmpleado() {
                 telefono: empleado.telefono,
                 cbu: empleado.cbu || "",
                 alias: empleado.alias || "",
-                estado: empleado.estado,
-                grupo_id: empleado.grupo?.id || "", 
+                estado_empleado_id: empleado.estado_empleado_id,
+                grupo_id: empleado.grupo?.grupo_id ?? "", 
             });
     }
     }, [empleado, reset]);
@@ -53,6 +54,7 @@ export default function EditeEmpleado() {
     const onSubmit = handleSubmit ((data) => {
         mutate(data);
     });
+    
     return (
         <>
         {(isLoading || isLoadingGrupo) && 
@@ -78,7 +80,7 @@ export default function EditeEmpleado() {
         </div>
         </div>}
         
-        {!isLoading && <div className="p-8 bg-gray-100 w-full flex flex-col items-center">
+        {!isLoading && !isLoadingEstados && <div className="p-8 bg-gray-100 w-full flex flex-col items-center">
             <h1 className="text-3xl text-gray-800 mb-6 font-sans">Editar Empleado</h1>
             <form className="w-full max-w-xl bg-white shadow-2xl rounded-xl border border-gray-200 p-6 space-y-4" onSubmit={onSubmit}>
                 <div className="mb-4">
@@ -118,7 +120,7 @@ export default function EditeEmpleado() {
                             >
                                 <option value="">Sin grupo</option>
                                 {grupos.map((g) => (
-                                <option key={g.id} value={g.id}>
+                                <option key={g.grupo_id} value={g.grupo_id}>
                                     {g.nombre_apellido}
                                 </option>
                                 ))}
@@ -162,22 +164,36 @@ export default function EditeEmpleado() {
                     />
                 </div>
                 <div className="mb-4">
-                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="estado">
+                    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="estado_empleado_id">
                         Estado
                     </label>
                     <select
                         className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                        id="estado"
-                        {...register("estado", {required: {value:true, message: "El estado es obligatorio"}})}
+                        id="estado_empleado_id"
+                        {...register("estado_empleado_id", { required: true, valueAsNumber: true })}
+                        disabled={isLoadingEstados}
                     >
-                        <option value="">Seleccione estado</option>
-                        <option value="activo">Activo</option>
-                        <option value="inactivo">Inactivo</option>
+                        <option value="">Seleccionar...</option>
+                        {estados.map((e) => (
+                            <option key={e.estado_empleado_id} value={e.estado_empleado_id}>
+                                {e.descripcion.toUpperCase()}
+                            </option>
+                        ))}
                     </select>
                 </div>
-                <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                    Guardar
-                </button>
+                <div className="flex gap-2">
+                    <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Guardar
+                    </button>
+                    
+                    <button 
+                        type="button" 
+                        className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                        onClick={() => navigate(-1)}
+                    >
+                        Volver
+                    </button>
+                </div>
             </form>
         </div>}
     </>

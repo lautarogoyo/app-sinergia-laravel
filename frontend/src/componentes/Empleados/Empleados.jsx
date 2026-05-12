@@ -107,7 +107,7 @@ export default function Empleados() {
                   <td className={`${textContent} text-gray-800 px-4 py-3 break-words max-w-[180px]`}>{empleado.nombre}</td>
                   <td className={`${textContent} text-gray-800 px-4 py-3 break-words max-w-[180px]`}>{empleado.apellido}</td>
                   <td className={`${textContent} text-gray-800 px-4 py-3 break-words max-w-[200px]`}>{empleado.grupo?.nombre_apellido}</td>
-                  <td className={`${textContent} text-gray-800 px-4 py-3 break-words max-w-[150px]`}>{empleado.telefono}</td>
+                  <td className={`${textContent} text-gray-800 px-4 py-3 break-words max-w-[170px]`}>{empleado.telefono}</td>
                   <td className={`text-[18px] text-gray-800 px-4 py-3 max-w-[260px] break-words`}>
                     <div className="truncate">{empleado.cbu}</div>
                     <div className="text-sm text-gray-600 break-words">{empleado.alias}</div>
