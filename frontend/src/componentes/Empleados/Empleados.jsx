@@ -1,6 +1,9 @@
 import { useState } from "react";
 import Icon from "../Icons/Icons";
 import { useEmpleados } from "../hooks/useEmpleados.jsx";
+import Swal from 'sweetalert2';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { DeleteEmpleado } from '../api/empleados.js';
 
 const backendUrl = import.meta.env.VITE_API_URL;
 
@@ -14,7 +17,33 @@ export default function Empleados() {
   const { data: empleados = [], isLoading, isError } = useEmpleados();
   const formatTipoDocumentoLabel = (value) =>
     String(value ?? "").replaceAll("_", " ");
-  
+  const queryClient = useQueryClient();
+  const { mutate } = useMutation({
+    mutationFn: (id) => DeleteEmpleado(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["empleados"]);
+    },
+    onError: (error) => {
+      console.error("Error al eliminar el empleado", error);
+      Swal.fire('Error', 'No se pudo eliminar el empleado', 'error');
+    },
+  });
+  const handleEliminar = (empleado) => {
+    Swal.fire({
+      title: '¿Eliminar empleado?',
+      html: `¿Está seguro que desea eliminar a <strong>${empleado.nombre} ${empleado.apellido}</strong>? Esta acción no se puede deshacer.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#3b82f6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        mutate(empleado.empleado_id);
+      }
+    });
+  };
   if (isLoading) return (
     <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
       <div className="relative">
@@ -212,7 +241,7 @@ export default function Empleados() {
                       </button>
                       <button
                         title="Eliminar"
-                        onClick={() => window.location.href = `/eliminarempleado/${empleado.empleado_id}`}
+                        onClick={() => handleEliminar(empleado)}
                         className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
                       >
                         <Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
