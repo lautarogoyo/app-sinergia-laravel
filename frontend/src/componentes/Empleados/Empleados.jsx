@@ -152,7 +152,7 @@ export default function Empleados() {
                     <div className="flex gap-4 w-full justify-center p-2">
                       <button
                         title="Cambiar Documentación"
-                        onClick={() => window.location.href = `/documentacionempleado/${empleado.id}`}
+                        onClick={() => window.location.href = `/documentacionempleado/${empleado.empleado_id}`}
                         className="group bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
                       >
                         <Icon name="filetext" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
@@ -160,7 +160,7 @@ export default function Empleados() {
                       </button>
                       <button
                         title="Editar"
-                        onClick={() => window.location.href = `/editarempleado/${empleado.id}`}
+                        onClick={() => window.location.href = `/editarempleado/${empleado.empleado_id}`}
                         className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
                       >
                         <Icon name="pencil" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
@@ -168,7 +168,7 @@ export default function Empleados() {
                       </button>
                       <button
                         title="Eliminar"
-                        onClick={() => window.location.href = `/eliminarempleado/${empleado.id}`}
+                        onClick={() => window.location.href = `/eliminarempleado/${empleado.empleado_id}`}
                         className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
                       >
                         <Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
