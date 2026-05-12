@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { PostObra } from "../api/obras.js";
+import { PostObra } from "../../api/obras.js";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
-import { useGrupos } from "../hooks/useGrupos.jsx";
+import { useGrupos } from "../../hooks/useGrupos.jsx";
 import Swal from "sweetalert2";
 
 export default function CreateObra() {

@@ -1,5 +1,4 @@
-import { useForm } from "react-hook-form";
-import Icon from "../Icons/Icons";
+import Icon from "../../Icons/Icons";
 
 export default function PedidoCotizacion({ obraData, register, watch, tabActiva, setTabActiva }) {
 	const estadoCotizacionValue = watch("estado_cotizacion");

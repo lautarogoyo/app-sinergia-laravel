@@ -1,5 +1,4 @@
-import { useState } from "react";
-import Icon from "../Icons/Icons";
+import Icon from "../../Icons/Icons";
 
 const backendUrl = import.meta.env.VITE_API_URL;
 

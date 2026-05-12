@@ -1,10 +1,10 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { useObraById } from "../hooks/useObras.jsx";
+import { useObraById } from "../../hooks/useObras.jsx";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { UpdateObra } from "../api/obras.js";
+import { UpdateObra } from "../../api/obras.js";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { useGrupos } from "../hooks/useGrupos.jsx";
+import { useGrupos } from "../../hooks/useGrupos.jsx";
 
 export default function EditObra() {
     const { id } = useParams();
