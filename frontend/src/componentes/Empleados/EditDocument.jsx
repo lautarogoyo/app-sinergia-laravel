@@ -14,7 +14,6 @@ export default function EditDocument() {
   const { id } = useParams();
   const navigate = useNavigate();
   
-  const [exit, setExit] = useState(false);
   const [documentaciones, setDocumentaciones] = useState([]);
 
   const { data: empleado, isLoading: isLoadingEmpleado, isError } =
@@ -167,7 +166,6 @@ export default function EditDocument() {
     }
   };
 
-  if (exit) navigate("/empleados");
 
   if (isLoadingEmpleado) {
     return (
@@ -203,90 +201,33 @@ export default function EditDocument() {
           </h1>
           <p className="text-gray-600">Gestiona los documentos del empleado</p>
         </div>
-
-        <div className="space-y-4 mb-8">
-          <h2 className="text-2xl font-semibold text-gray-800">Documentos Registrados</h2>
-          {documentaciones.length === 0 ? (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-              <p className="text-yellow-800">No hay documentos registrados aun</p>
-            </div>
-          ) : (
-            documentaciones.map((doc) => (
-              <div
-                key={doc.documentacion_id}
-                className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500"
-              >
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 items-end">
-                  <div className="lg:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Tipo de Documento
-                    </label>
-                    <select
-                      value={String(doc.tipo_documentacion_id ?? "")}
-                      onChange={(e) => handleTipoDocumentoChange(doc.documentacion_id, e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Seleccionar...</option>
-                      {tiposDocumento.map((tipo) => (
-                        <option key={tipo.tipo_documentacion_id} value={String(tipo.tipo_documentacion_id)}>
-                          {formatTipoDocumentoLabel(tipo.descripcion).toUpperCase()}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div className="lg:col-span-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Fecha Vencimiento
-                    </label>
-                    <input
-                      type="date"
-                      value={doc.fecha_vencimiento ? doc.fecha_vencimiento.split("T")[0] : ""}
-                      onChange={(e) => handleFechaVencimientoChange(doc.documentacion_id, e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  <div className="lg:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Reemplazar Archivo
-                    </label>
-                    <input
-                      type="file"
-                      onChange={(e) => handleDocumentacionChange(doc.documentacion_id, e.target.files[0])}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                    {doc.newFile && (
-                      <p className="text-sm text-green-600 mt-1">Nuevo archivo: {doc.newFile.name}</p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="mt-4 flex justify-end">
-                  <button
-                    onClick={() => handleEliminar(doc.documentacion_id)}
-                    className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md transition duration-200 text-sm flex items-center gap-2"
-                    disabled={deleteMutation.isPending}
-                  >
-                    <Icon name="trash" className="h-6 w-5 text-white" />
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-
         <div className="mb-6">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">Agregar Nuevo Documento</h2>
+            <div className="flex gap-3 mb-6">
+              <button
+                onClick={() => setFile(true)}
+                disabled={file}
+                className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-semibold py-2 px-5 rounded-lg transition duration-200 flex items-center gap-2"
+              >
+                <span className="text-xl">+</span> Nuevo Documento
+              </button>
 
-          {!file ? (
-            <button
-              onClick={() => setFile(true)}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 flex items-center justify-center gap-2"
-            >
-              <span className="text-xl">+</span> Nuevo Documento
-            </button>
-          ) : (
+              <button
+                onClick={handleSubmit}
+                disabled={!documentaciones.some((doc) => doc.hasChanges) || updateMutation.isPending}
+                className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-2 px-5 rounded-lg transition duration-200"
+              >
+                {updateMutation.isPending ? "Guardando..." : "Guardar Cambios"}
+              </button>
+
+              <button
+                onClick={() => navigate("/empleados")}
+                className="bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-5 rounded-lg transition duration-200"
+              >
+                Volver
+              </button>
+            </div>
+          {file && (
             <div className="bg-white rounded-lg shadow-md p-6 border-2 border-green-500">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div>
@@ -361,21 +302,81 @@ export default function EditDocument() {
             </div>
           )}
         </div>
+        <div className="space-y-4 mb-8">
+          <h2 className="text-2xl font-semibold text-gray-800">Documentos Registrados</h2>
+          {documentaciones.length === 0 ? (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+              <p className="text-yellow-800">No hay documentos registrados aun</p>
+            </div>
+          ) : (
+            documentaciones.map((doc) => (
+              <div
+                key={doc.documentacion_id}
+                className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500"
+              >
+                <div className="grid grid-cols-1 lg:grid-cols-6 gap-4 items-end">
+                  <div className="lg:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Tipo de Documento
+                    </label>
+                    <select
+                      value={String(doc.tipo_documentacion_id ?? "")}
+                      onChange={(e) => handleTipoDocumentoChange(doc.documentacion_id, e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Seleccionar...</option>
+                      {tiposDocumento.map((tipo) => (
+                        <option key={tipo.tipo_documentacion_id} value={String(tipo.tipo_documentacion_id)}>
+                          {formatTipoDocumentoLabel(tipo.descripcion).toUpperCase()}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
 
-        <div className="flex gap-4">
-          <button
-            onClick={handleSubmit}
-            disabled={documentaciones.length === 0 || updateMutation.isPending}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
-          >
-            {updateMutation.isPending ? "Guardando..." : "Guardar Cambios"}
-          </button>
-          <button
-            onClick={() => setExit(true)}
-            className="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-4 rounded-lg transition duration-200"
-          >
-            Volver
-          </button>
+                  <div className="lg:col-span-1">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Fecha Vencimiento
+                    </label>
+                    <input
+                      type="date"
+                      value={doc.fecha_vencimiento ? doc.fecha_vencimiento.split("T")[0] : ""}
+                      onChange={(e) => handleFechaVencimientoChange(doc.documentacion_id, e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+
+                  <div className="lg:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Reemplazar Archivo
+                    </label>
+                    {doc.path && (
+                      <p className="text-sm text-gray-500 mb-1">
+                        Actual: <span className="font-medium">{doc.path.split('/').pop()}</span>
+                      </p>
+                    )}
+                    <input
+                      type="file"
+                      onChange={(e) => handleDocumentacionChange(doc.documentacion_id, e.target.files[0])}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    {doc.newFile && (
+                      <p className="text-sm text-green-600 mt-1">Nuevo: {doc.newFile.name}</p>
+                    )}
+                  </div>
+
+                  <div className="lg:col-span-1 flex m-1">
+                    <button
+                      onClick={() => handleEliminar(doc.documentacion_id)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md transition duration-200 text-sm flex items-center gap-2"
+                      disabled={deleteMutation.isPending}
+                    >
+                      <Icon name="trash" className="h-6 w-5 text-white" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>
