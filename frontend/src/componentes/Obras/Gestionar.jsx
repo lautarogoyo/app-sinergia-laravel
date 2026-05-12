@@ -4,10 +4,10 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Icon from "../Icons/Icons";
-import PedidoCotizacion from "./PedidoCotizacion";
-import EnCurso from "./EnCurso";
-import Cotizada from "./Cotizada";
-import Finalizada from "./Finalizada";
+import PedidoCotizacion from "./Estados/PedidoCotizacion";
+import EnCurso from "./Estados/EnCurso";
+import Cotizada from "./Estados/Cotizada";
+import Finalizada from "./Estados/Finalizada";
 import { useObraById } from "../hooks/useObras";
 import { useGrupos } from "../hooks/useGrupos";
 import { UpdateObra } from "../api/obras";
@@ -289,27 +289,19 @@ export default function Gestionar() {
 	};
 
 	const handleArchivarPedido = async (pedido) => {
-		const nuevoEstado = pedido.estado === "archivado" ? "activo" : "archivado";
-		const msg = nuevoEstado === "archivado" ? "Archivar este pedido de compra?" : "Desarchivar este pedido de compra?";
+		const estaArchivado = Boolean(pedido.archivado_at);
+		const msg = estaArchivado ? "¿Desarchivar este pedido?" : "¿Archivar este pedido?";
 		const result = await Swal.fire({
-			icon: "question",
-			title: "Confirmar accion",
-			text: msg,
-			showCancelButton: true,
-			confirmButtonText: "Si, continuar",
-			cancelButtonText: "Cancelar",
+			icon: "question", title: "Confirmar acción", text: msg,
+			showCancelButton: true, confirmButtonText: "Sí, continuar", cancelButtonText: "Cancelar",
 		});
 		if (!result.isConfirmed) return;
 		try {
 			const formData = new FormData();
-			formData.append("estado", nuevoEstado);
+			formData.append("archivado_at", estaArchivado ? "" : new Date().toISOString().split("T")[0]);
 			await updatePedidoCompraMutation.mutateAsync({ pedidoId: pedido.id, formData });
 		} catch (err) {
-			await Swal.fire({
-				icon: "error",
-				title: "Error al actualizar pedido",
-				text: err.response?.data?.message || err.message,
-			});
+			await Swal.fire({ icon: "error", title: "Error", text: err.response?.data?.message || err.message });
 		}
 	};
 
@@ -379,10 +371,10 @@ export default function Gestionar() {
 
 	const pedidosCompra = obraData?.pedido_compra || [];
 	const pedidosFiltrados = pedidosCompra.filter((p) =>
-		mostrarArchivados ? p.estado === "archivado" : p.estado !== "archivado"
+		mostrarArchivados ? Boolean(p.archivado_at) : !p.archivado_at
 	);
-	const pedidosActivosCount = pedidosCompra.filter((p) => p.estado !== "archivado").length;
-	const pedidosArchivadosCount = pedidosCompra.filter((p) => p.estado === "archivado").length;
+	const pedidosActivosCount = pedidosCompra.filter((p) => !p.archivado_at).length;
+	const pedidosArchivadosCount = pedidosCompra.filter((p) => Boolean(p.archivado_at)).length;
 	const estadoActualLabel = labelEstado(estadoActual || obraData?.estado || "");
 
 	// --- Loading / Error ---
@@ -554,7 +546,7 @@ export default function Gestionar() {
 													</div>
 													<div className="flex items-center gap-2">
 														<span className="px-2 py-1 rounded text-xs font-bold bg-blue-100 text-blue-700 uppercase">
-															{pedido.estado_pedido || pedido.estado}
+															{pedido.archivado_at ? "archivado" : (pedido.estado_pedido || "pendiente")}
 														</span>
 														<button type="button" onClick={(e) => { e.stopPropagation(); editarPedido(pedido); }} className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded" title="Editar">
 															<Icon name="pencil" className="w-4 h-4" />
