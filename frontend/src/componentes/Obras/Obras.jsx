@@ -69,7 +69,7 @@ export default function Obras() {
 		);
 	}
 
-	const getEstado = (obra) => obra.estado_obra?.descripcion ?? "";
+	const getEstado = (obra) => obra.estado_obra?.descripcion;
 
 	const obrasFiltradas = obrasData.filter((o) => {
 		const val = filtro.toLowerCase();
@@ -113,7 +113,7 @@ export default function Obras() {
 		const mapa = {
 			pedida: "Pedido de Cotizacion",
 			cotizada: "Cotizada",
-			encurso: "En Curso",
+			en_curso: "En Curso",
 			finalizada: "Finalizada",
 		};
 		return mapa[estado.toLowerCase()] || estado;
@@ -122,7 +122,7 @@ export default function Obras() {
 	const statusClass = (estado) => {
 		if (!estado) return "bg-gray-300 text-gray-800";
 		const norm = estado.toLowerCase();
-		if (norm === "encurso") return "bg-green-500 text-white";
+		if (norm === "en_curso") return "bg-green-500 text-white";
 		if (norm === "pedida") return "bg-yellow-400 text-gray-900";
 		if (norm === "cotizada") return "bg-orange-400 text-white";
 		if (norm === "finalizada") return "bg-blue-600 text-white";
@@ -196,7 +196,7 @@ export default function Obras() {
 						<tbody className="bg-gray-50 divide-y divide-gray-200 text-center">
 							{obrasOrdenadas.length > 0 ? (
 								obrasOrdenadas.map((obra) => (
-									<tr key={obra.id} className="hover:bg-gray-200 transition-colors duration-150">
+									<tr key={obra.nro_obra} className="hover:bg-gray-200 transition-colors duration-150">
 										<td className="whitespace-nowrap text-lg text-gray-800 px-6 py-4">{obra.nro_obra ?? "-"}</td>
 										<td className="text-left text-lg text-gray-800 px-6 py-4 max-w-xl break-words">
 											{fixMojibake(obra.detalle ?? "Sin detalle")}
@@ -211,7 +211,7 @@ export default function Obras() {
 												{obra.grupos && obra.grupos.length > 0 ? (
 													obra.grupos.map((grupo) => (
 														<span key={grupo.id} className="px-3 py-1 border-1 text-lg font-semibold ">
-															{grupo.denominacion}
+															{grupo.nombre_apellido}
 														</span>
 													))
 												) : (
@@ -225,18 +225,13 @@ export default function Obras() {
 										<td className="px-6 py-4">
 											<div className="flex gap-2 justify-center flex-wrap">
 												<button
-													className=" border-2 border-black hover:bg-gray-300 py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-													onClick={() => navigate(`/editarobra/${obra.id}`)}
+													className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
+													onClick={() => navigate(`/obra/${obra.nro_obra}/gestionar`)}
 												>
-													<Icon name="pencil" className="w-5 h-5" />
+													Gestionar
 												</button>
-												<button
-													className="bg-red-500 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer disabled:opacity-50"
-													onClick={() => handleEliminarObra(obra)}
-													disabled={deleteMutation.isPending}
-												>
-													<Icon name="trash" className="w-5 h-5" />
-												</button>
+												
+												
 												<button
 													className="border-2 border-black hover:bg-gray-300 py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
 													onClick={() => abrirModalComentarios(obra)}
@@ -244,10 +239,17 @@ export default function Obras() {
 													<Icon name="message" className="w-5 h-5" />
 												</button>
 												<button
-													className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-													onClick={() => navigate(`/obra/${obra.id}/gestionar`)}
+													className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
+													onClick={() => navigate(`/editarobra/${obra.nro_obra}`)}
 												>
-													Gestionar
+														<Icon name="pencil" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
+												</button>
+												<button
+													className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center disabled:opacity-50"
+													onClick={() => handleEliminarObra(obra)}
+													disabled={deleteMutation.isPending}
+												>
+														<Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
 												</button>
 											</div>
 										</td>

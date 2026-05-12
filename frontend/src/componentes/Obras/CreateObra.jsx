@@ -20,7 +20,7 @@ export default function CreateObra() {
         defaultValues: {
             nro_obra: "",
             detalle: "",
-            id_estado_obra: "1",
+            estado_obra_id: "1",
             fecha_visto: obtenerFechaHoy(),
             fecha_ingreso: obtenerFechaHoy(),
         }
@@ -121,13 +121,13 @@ export default function CreateObra() {
 
                         {/* Estado */}
                         <div className="mb-4">
-                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="id_estado_obra">
+                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="estado_obra_id">
                                 Estado *
                             </label>
                             <select
                                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                id="id_estado_obra"
-                                {...register("id_estado_obra", { required: { value: true, message: "El estado es obligatorio" } })}
+                                id="estado_obra_id"
+                                {...register("estado_obra_id", { required: { value: true, message: "El estado es obligatorio" } })}
                             >
                                 <option value="1">Pedida</option>
                                 <option value="2">Cotizada</option>
@@ -172,7 +172,7 @@ export default function CreateObra() {
                                             key={grupo.grupo_id}
                                             className="flex justify-between items-center bg-white p-3 rounded border border-blue-300"
                                         >
-                                            <span className="text-gray-700">{grupo.denominacion}</span>
+                                            <span className="text-gray-700">{grupo.nombre_apellido}</span>
                                             <button
                                                 type="button"
                                                 onClick={() => eliminarGrupo(grupo.grupo_id)}
@@ -207,7 +207,7 @@ export default function CreateObra() {
                                         .filter(g => !gruposSeleccionados.find(gs => gs.grupo_id === g.grupo_id))
                                         .map((g) => (
                                             <option key={g.grupo_id} value={g.grupo_id}>
-                                                {g.denominacion}
+                                                {g.nombre_apellido}
                                             </option>
                                         ))}
                                 </select>

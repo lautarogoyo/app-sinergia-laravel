@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
 
 export default function ComentariosModal({ isOpen, onClose, obra }) {
   const queryClient = useQueryClient();
-  const { data: comentarios = [], isLoading } = useComentariosByObra(obra?.id);
+  const { data: comentarios = [], isLoading } = useComentariosByObra(obra?.nro_obra);
   const {
     register,
     handleSubmit,
@@ -22,7 +22,7 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
   const createMutation = useMutation({
     mutationFn: createComentario,
     onSuccess: () => {
-      queryClient.invalidateQueries(["comentarios", obra.id]);
+      queryClient.invalidateQueries({ queryKey: ["comentarios", obra.nro_obra] });
       reset();
     },
   });
@@ -30,25 +30,25 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
   const deleteMutation = useMutation({
     mutationFn: deleteComentario,
     onSuccess: () => {
-      queryClient.invalidateQueries(["comentarios", obra.id]);
+      queryClient.invalidateQueries({ queryKey: ["comentarios", obra.nro_obra] });
     },
   });
 
   const updateMutation = useMutation({
     mutationFn: updateComentario,
     onSuccess: () => {
-      queryClient.invalidateQueries(["comentarios", obra.id]);
+      queryClient.invalidateQueries({ queryKey: ["comentarios", obra.nro_obra] });
       setEditingId(null);
       setEditingText("");
     },
   });
 
   const onSubmit = (formData) => {
-    if (!formData.denominacion.trim()) return;
-    createMutation.mutate({ obraId: obra.id, denominacion: formData.denominacion });
+    if (!formData.detalle.trim()) return;
+    createMutation.mutate({ obraId: obra.nro_obra, detalle: formData.detalle });
   };
 
-  const handleEliminar = async (comentarioId) => {
+  const handleEliminar = async (comentario_id) => {
     const result = await Swal.fire({
       icon: "warning",
       title: "Eliminar comentario",
@@ -58,13 +58,13 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
       cancelButtonText: "Cancelar",
     });
     if (result.isConfirmed) {
-      deleteMutation.mutate({ obraId: obra.id, comentarioId });
+      deleteMutation.mutate({ obraId: obra.nro_obra, comentarioId: comentario_id });
     }
   };
 
   const handleStartEdit = (comentario) => {
-    setEditingId(comentario.id);
-    setEditingText(comentario.denominacion ?? "");
+    setEditingId(comentario.comentario_id);
+    setEditingText(comentario.detalle ?? "");
   };
 
   const handleCancelEdit = () => {
@@ -72,14 +72,14 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
     setEditingText("");
   };
 
-  const handleSaveEdit = (comentarioId) => {
+  const handleSaveEdit = (comentario_id) => {
     const text = editingText.trim();
     if (!text) return;
 
     updateMutation.mutate({
-      obraId: obra.id,
-      comentarioId,
-      denominacion: text,
+      obraId: obra.nro_obra,
+      comentarioId: comentario_id,
+      detalle: text,
     });
   };
 
@@ -110,12 +110,12 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
             <div className="space-y-4 mb-6">
               {comentarios.map((comentario) => (
                 <div
-                  key={comentario.id}
+                  key={comentario.comentario_id}
                   className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-gray-300 transition-colors"
                 >
                   <div className="flex justify-between items-start gap-4">
                     <div className="flex-1">
-                      {editingId === comentario.id ? (
+                      {editingId === comentario.comentario_id ? (
                         <textarea
                           value={editingText}
                           onChange={(e) => setEditingText(e.target.value)}
@@ -124,18 +124,26 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
                         />
                       ) : (
                         <p className="text-gray-800 text-sm leading-relaxed">
-                          {fixMojibake(comentario.denominacion)}
+                          {fixMojibake(comentario.detalle)}
                         </p>
                       )}
                       <p className="text-gray-500 text-xs mt-2">
-                        {new Date(comentario.created_at).toLocaleString("es-AR")}
+                          {new Date(comentario.updated_at ?? comentario.created_at).toLocaleString("es-AR", {
+                              day: "2-digit",
+                              month: "2-digit",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: false,
+                          })}
+                          {comentario.updated_at && ""}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      {editingId === comentario.id ? (
+                      {editingId === comentario.comentario_id ? (
                         <>
                           <button
-                            onClick={() => handleSaveEdit(comentario.id)}
+                            onClick={() => handleSaveEdit(comentario.comentario_id)}
                             className="px-2 py-1 text-xs font-semibold bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50"
                             title="Guardar comentario"
                             disabled={updateMutation.isPending || !editingText.trim()}
@@ -162,7 +170,7 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
                             <Icon name="pencil" className="w-5 h-5" />
                           </button>
                           <button
-                            onClick={() => handleEliminar(comentario.id)}
+                            onClick={() => handleEliminar(comentario.comentario_id)}
                             className="text-red-500 hover:text-red-700 transition-colors"
                             title="Eliminar comentario"
                             disabled={deleteMutation.isPending || updateMutation.isPending}
@@ -188,7 +196,7 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
                 Agregar nuevo comentario
               </label>
               <textarea
-                {...register("denominacion", {
+                {...register("detalle", {
                   required: "El comentario es obligatorio",
                   maxLength: { value: 1000, message: "Maximo 1000 caracteres" },
                 })}
@@ -196,8 +204,8 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 rows="3"
               />
-              {errors.denominacion && (
-                <p className="text-red-600 text-sm font-semibold">{errors.denominacion.message}</p>
+              {errors.detalle && (
+                <p className="text-red-600 text-sm font-semibold">{errors.detalle.message}</p>
               )}
               <button
                 type="submit"

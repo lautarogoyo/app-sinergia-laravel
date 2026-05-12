@@ -7,8 +7,8 @@ export const getComentariosByObra = async (obraId) => {
     return data.comentarios;
 };
 
-export const createComentario = async ({ obraId, denominacion }) => {
-    const { data } = await axios.post(`${backendUrl}/api/obras/${obraId}/comentarios`, { denominacion });
+export const createComentario = async ({ obraId, detalle }) => {
+    const { data } = await axios.post(`${backendUrl}/api/obras/${obraId}/comentarios`, { detalle });
     return data;
 };
 
@@ -17,7 +17,7 @@ export const deleteComentario = async ({ obraId, comentarioId }) => {
     return data;
 };
 
-export const updateComentario = async ({ obraId, comentarioId, denominacion }) => {
-    const { data } = await axios.put(`${backendUrl}/api/obras/${obraId}/comentarios/${comentarioId}`, { denominacion });
+export const updateComentario = async ({ obraId, comentarioId, detalle }) => {
+    const { data } = await axios.put(`${backendUrl}/api/obras/${obraId}/comentarios/${comentarioId}`, { detalle });
     return data;
 };
