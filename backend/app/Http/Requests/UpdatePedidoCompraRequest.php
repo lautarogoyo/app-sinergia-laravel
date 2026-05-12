@@ -26,6 +26,7 @@ class UpdatePedidoCompraRequest extends FormRequest
             'observaciones'          => 'sometimes|nullable|string|max:2000',
             'rubros_ids'             => 'sometimes|nullable|array',
             'rubros_ids.*'           => 'integer|exists:Rubro,rubro_id',
+            'archivado_at' => 'sometimes|nullable|date',
         ];
     }
 }

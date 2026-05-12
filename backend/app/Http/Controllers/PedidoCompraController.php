@@ -18,6 +18,7 @@ class PedidoCompraController extends Controller
             'estadoContratista',
             'estadoPedido',
             'estadoRegistro',
+            'archivado_at',
         ])->get();
 
         return response()->json([
@@ -25,6 +26,11 @@ class PedidoCompraController extends Controller
             'status'        => 200,
         ], 200);
     }
+
+    public $casts = [
+        'archivado_at' => 'datetime',
+    ];
+    
 
     public function store(StorePedidoCompraRequest $request)
     {
