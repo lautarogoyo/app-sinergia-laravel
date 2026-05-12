@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Icon from "../Icons/Icons";
 import { useEmpleados } from "../hooks/useEmpleados.jsx";
 
 const backendUrl = import.meta.env.VITE_API_URL;
@@ -86,36 +87,38 @@ export default function Empleados() {
         </div>
       </div>
       
-      <div className="shadow-2xl rounded-xl border border-gray-300 bg-white flex flex-col">
-        <table className="">
+      <div className="shadow-2xl rounded-xl border border-gray-300 bg-white flex flex-col overflow-x-auto">
+        <table className="min-w-full table-auto w-full">
           <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
             <tr>
-              <th className={`px-6 py-3 text-center ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Nombre</th>
-              <th className={`px-6 py-3 text-center ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Apellido</th>
-              <th className={`px-6 py-3 text-center ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Grupo</th>
-              <th className={`px-6 py-3 text-center ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Teléfono</th>
-              <th className={`px-6 py-3 text-center ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Datos Bancarios</th>
-              <th className={`px-6 py-3 text-center ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Estado</th>
-              <th className={`px-6 py-3 text-center ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Documentaciones</th>
-              <th className={`px-6 py-3 text-center ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Acciones</th>
+              <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Nombre</th>
+              <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Apellido</th>
+              <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Grupo</th>
+              <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Teléfono</th>
+              <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Datos Bancarios</th>
+              <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Estado</th>
+              <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Documentaciones</th>
+              <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Acciones</th>
             </tr>
           </thead>
-          <tbody className="bg-gray-50 divide-y divide-gray-200 text-center">
+          <tbody className="bg-gray-50 divide-y divide-gray-200">
             {empleadosFiltrados.length > 0 ? (
               empleadosFiltrados.map((empleado) => (
                 <tr key={empleado.id} className="hover:bg-gray-200 transition-colors duration-150">
-                  <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.nombre}</td>
-                  <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.apellido}</td>
-                  <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.grupo?.nombre_apellido}</td>
-                  <td className={`whitespace-nowrap ${textContent} text-gray-800`}>{empleado.telefono}</td>
-                  <td className={`whitespace-nowrap text-[18px] text-gray-800 p-6`}>
-                    {empleado.cbu} <br />
-                    {empleado.alias}
+                  <td className={`${textContent} text-gray-800 px-4 py-3 break-words max-w-[180px]`}>{empleado.nombre}</td>
+                  <td className={`${textContent} text-gray-800 px-4 py-3 break-words max-w-[180px]`}>{empleado.apellido}</td>
+                  <td className={`${textContent} text-gray-800 px-4 py-3 break-words max-w-[200px]`}>{empleado.grupo?.nombre_apellido}</td>
+                  <td className={`${textContent} text-gray-800 px-4 py-3 break-words max-w-[150px]`}>{empleado.telefono}</td>
+                  <td className={`text-[18px] text-gray-800 px-4 py-3 max-w-[260px] break-words`}>
+                    <div className="truncate">{empleado.cbu}</div>
+                    <div className="text-sm text-gray-600 break-words">{empleado.alias}</div>
                   </td>
-                  <td className={`... ${empleado.estado_empleado?.descripcion?.toLowerCase() === 'activo' ? 'bg-green-500' : 'bg-red-500'} ...`}>
-                    {empleado.estado_empleado?.descripcion?.toUpperCase() ?? '-'}
+                  <td className={`px-4 py-3 text-center`}> 
+                    <span className={`inline-block px-3 py-1 font-bold text-white rounded ${empleado.estado_empleado?.descripcion?.toLowerCase() === 'activo' ? 'bg-green-500' : 'bg-red-500'}`}>
+                      {empleado.estado_empleado?.descripcion?.toUpperCase() ?? '-'}
+                    </span>
                   </td>
-                  <td className="px-2 py-2 whitespace-nowrap text-sm text-gray-700">
+                  <td className="px-4 py-3 text-sm text-gray-700 max-w-[320px]">
                     {empleado.documentaciones.length > 0 ? (
                       empleado.documentaciones.map(doc => {
                         const diasRestantes = calcularDiasRestantes(doc.fecha_vencimiento);
@@ -129,7 +132,7 @@ export default function Empleados() {
                         return (
                           <div 
                             key={doc.id} 
-                            className={`${clases} rounded px-2 py-1 mb-3 text-[17px] shadow font-bold hover:bg-opacity-80 cursor-pointer relative group`} 
+                            className={`${clases} rounded px-2 py-1 mb-2 text-[15px] shadow font-bold hover:bg-opacity-80 cursor-pointer relative group inline-block mr-2`} 
                             onClick={() => window.open(`${backendUrl}/api/empleados/${empleado.id}/documentaciones/${doc.id}/download`, '_blank')}
                             title={mensaje}
                           >
@@ -144,13 +147,36 @@ export default function Empleados() {
                       <span className="text-gray-400 italic">Sin documentos</span>
                     )}
                   </td>
-                  <td className="px-6 py-4 flex-1 gap-2 ">
+                  <td className="px-4 py-3 max-w-[260px]">
                     <div className="">
-                    <div className="flex gap-2 w-full justify-center p-2">
-                      <button className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => window.location.href = `/editarempleado/${empleado.id}`}>Editar</button>
-                      <button className="bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => window.location.href = `/eliminarempleado/${empleado.id}`}>Eliminar</button>
+                    <div className="flex gap-4 w-full justify-center p-2">
+                      <button
+                        title="Cambiar Documentación"
+                        onClick={() => window.location.href = `/documentacionempleado/${empleado.id}`}
+                        className="group bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
+                      >
+                        <Icon name="filetext" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
+                        <span className="sr-only">Cambiar Documentación</span>
+                      </button>
+                      <button
+                        title="Editar"
+                        onClick={() => window.location.href = `/editarempleado/${empleado.id}`}
+                        className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
+                      >
+                        <Icon name="pencil" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
+                        <span className="sr-only">Editar</span>
+                      </button>
+                      <button
+                        title="Eliminar"
+                        onClick={() => window.location.href = `/eliminarempleado/${empleado.id}`}
+                        className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
+                      >
+                        <Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
+                        <span className="sr-only">Eliminar</span>
+                      </button>
+                      
                     </div>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 w-full cursor-pointer" onClick={() => window.location.href = `/documentacionempleado/${empleado.id}`}>Cambiar Documentacion</button>
+                    
                     </div>
                   </td>
                 </tr>
