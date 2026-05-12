@@ -31,6 +31,7 @@ class DocumentacionController extends Controller
         $path = Storage::disk('public')->putFileAs('documentos', $file, $file->getClientOriginalName());
 
         $data['path'] = $path;
+        $data['estado_documentacion_id'] = $this->resolverEstadoDocumentacion($data['fecha_vencimiento'] ?? null);
         unset($data['archivo']);
 
         $documentacion = $empleado->documentaciones()->create($data);
@@ -97,6 +98,7 @@ class DocumentacionController extends Controller
             $data['path'] = Storage::disk('public')->putFileAs('documentos', $file, $file->getClientOriginalName());
         }
 
+        $data['estado_documentacion_id'] = $this->resolverEstadoDocumentacion($data['fecha_vencimiento'] ?? $documentacion->fecha_vencimiento);
         unset($data['archivo']);
 
         $documentacion->update($data);
@@ -143,5 +145,12 @@ class DocumentacionController extends Controller
             ['Content-Disposition' => 'inline']
         );
 
+    }
+    private function resolverEstadoDocumentacion(?string $fechaVencimiento): int
+    {
+        if ($fechaVencimiento && \Carbon\Carbon::parse($fechaVencimiento)->startOfDay()->lt(now()->startOfDay())) {
+            return 2; // vencida
+        }
+        return 1; // vigente
     }
 }
