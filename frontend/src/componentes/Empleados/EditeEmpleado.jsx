@@ -21,8 +21,11 @@ export default function EditeEmpleado() {
             alias: "",
             estado_empleado_id: "",
             grupo_id: "",
+            archivado: false,
+            cancelado: false,
         }
     });
+    const today = new Date().toISOString().split('T')[0];
     const {data : empleado, isLoading} = useEmpleadoById(id);
     const {data: grupos = [], isLoading : isLoadingGrupo} = useGrupos();
     const { data: estados = [], isLoading: isLoadingEstados } = useEstadosEmpleado();
@@ -36,6 +39,8 @@ export default function EditeEmpleado() {
                 alias: empleado.alias || "",
                 estado_empleado_id: empleado.estado_empleado_id,
                 grupo_id: empleado.grupo?.grupo_id ?? "", 
+                archivado: !!empleado.archivado_at,
+                cancelado: !!empleado.cancelado_at,
             });
     }
     }, [empleado, reset]);
@@ -52,7 +57,13 @@ export default function EditeEmpleado() {
 
     })
     const onSubmit = handleSubmit ((data) => {
-        mutate(data);
+        mutate({
+        ...data,
+        estado_empleado_id: Number(data.estado_empleado_id),
+        grupo_id: data.grupo_id ? Number(data.grupo_id) : null,
+        archivado_at: data.archivado ? today : null,
+        cancelado_at: data.cancelado ? today : null,
+    });
     });
     
     return (
@@ -151,7 +162,7 @@ export default function EditeEmpleado() {
                         {...register("cbu")}
                     />
                 </div>
-                <div className="mb-4">
+                <div className="mb-6">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="alias">
                         Alias
                     </label>
@@ -162,6 +173,24 @@ export default function EditeEmpleado() {
                         placeholder="Ingrese Alias (opcional)"
                         {...register("alias")}
                     />
+                </div>
+                <div className="mb-6 flex gap-6">
+                    <label className="flex items-center gap-2 text-gray-700 text-sm font-bold cursor-pointer">
+                        <input
+                            type="checkbox"
+                            {...register("archivado")}
+                            className="w-4 h-4"
+                        />
+                        Archivado
+                    </label>
+                    <label className="flex items-center gap-2 text-gray-700 text-sm font-bold cursor-pointer">
+                        <input
+                            type="checkbox"
+                            {...register("cancelado")}
+                            className="w-4 h-4"
+                        />
+                        Cancelado
+                    </label>
                 </div>
                 <div className="mb-4">
                     <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="estado_empleado_id">

@@ -6,7 +6,8 @@ const backendUrl = import.meta.env.VITE_API_URL;
 
 export default function Empleados() {
   
-  
+  const [vista, setVista] = useState("activos");
+  const [ordenEstado, setOrdenEstado] = useState(null);
   const [filtro, setFiltro] = useState("");
   const textHeader = "text-xl lg:text-xl";
   const textContent = "text-xl lg:text-xl";
@@ -62,12 +63,26 @@ export default function Empleados() {
   // Filtrado simple por nombre, apellido o grupo
   const empleadosFiltrados = empleados.filter(e => {
     const val = filtro.toLowerCase();
-    return (
-      e.nombre.toLowerCase().includes(val) ||
-      e.apellido.toLowerCase().includes(val) ||
-      (e.grupo ? e.grupo.nombre_apellido?.toLowerCase().includes(val) : false)
+    const matchTexto = (
+        e.nombre.toLowerCase().includes(val) ||
+        e.apellido.toLowerCase().includes(val) ||
+        (e.grupo?.nombre_apellido?.toLowerCase().includes(val) ?? false)
     );
-  });
+    const matchVista = 
+      vista === "archivados" ? !!e.archivado_at :
+      vista === "cancelados" ? !!e.cancelado_at :
+      !e.archivado_at && !e.cancelado_at;
+
+      return matchTexto && matchVista;
+    })
+      .sort((a, b) => {
+          if (!ordenEstado) return 0;
+          const descA = a.estado_empleado?.descripcion ?? "";
+          const descB = b.estado_empleado?.descripcion ?? "";
+          return ordenEstado === "asc"
+              ? descA.localeCompare(descB)
+              : descB.localeCompare(descA);
+      });
 
   return (
     <div className="p-8 bg-gray-100  lg:w-full flex flex-col ">
@@ -81,9 +96,30 @@ export default function Empleados() {
           value={filtro}
           onChange={e => setFiltro(e.target.value)}
         />
-        <div className="mt-2">
-          <button className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => window.location.href = `/crear-empleado`}>Agregar Empleado</button>
-        </div>
+        <div className="mt-2 flex justify-between items-center">
+          <button className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => window.location.href = `/crear-empleado`}>
+              Agregar Empleado
+          </button>
+          <div className="flex gap-2 items-end justify-end">
+              <button
+                  className={`text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer ${vista === "archivados" ? "bg-yellow-500 text-white" : "bg-white border border-yellow-500 text-yellow-500 hover:bg-yellow-50"}`}
+                  onClick={() => setVista(v => v === "archivados" ? null : "archivados")}
+
+              >
+                  <span className="inline-flex items-center gap-1">
+                  <Icon name="archive" className="h-5 w-5" />
+                  </span>
+              </button>
+              <button
+                  className={`text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer ${vista === "cancelados" ? "bg-red-500 text-white" : "bg-white border border-red-500 text-red-500 hover:bg-red-50"}`}
+                  onClick={() => setVista(v => v === "cancelados" ? null : "cancelados")}
+              >
+                  <span className="inline-flex items-center gap-1">
+                  <Icon name="canceled" className="h-5 w-5" />
+                  </span>
+              </button>
+          </div>
+      </div>
       </div>
       
       <div className="shadow-2xl rounded-xl border border-gray-300 bg-white flex flex-col overflow-x-auto">
@@ -95,7 +131,12 @@ export default function Empleados() {
               <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Grupo</th>
               <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Teléfono</th>
               <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Datos Bancarios</th>
-              <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Estado</th>
+              <th
+                  className={`px-3 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500 cursor-pointer select-none`}
+                  onClick={() => setOrdenEstado(o => o === "asc" ? "desc" : "asc")}
+              >
+                  Estado {ordenEstado === "asc" ? "↑" : ordenEstado === "desc" ? "↓" : "↕"}
+              </th>
               <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Documentaciones</th>
               <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Acciones</th>
             </tr>

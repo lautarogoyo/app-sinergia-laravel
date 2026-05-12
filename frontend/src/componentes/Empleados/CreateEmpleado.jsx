@@ -77,10 +77,6 @@ export default function CreateEmpleado() {
                         placeholder="Ej: 3511234567"
                         {...register("telefono", {
                             required: { value: true, message: "El teléfono es obligatorio" },
-                            pattern: {
-                                value: /^[0-9]{10}$/,
-                                message: "Debe tener 10 dígitos numéricos"
-                            }
                         })}
                     />
                     {errors?.telefono?.message && (
