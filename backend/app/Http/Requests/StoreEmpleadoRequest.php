@@ -25,16 +25,18 @@ class StoreEmpleadoRequest extends FormRequest
             ],
             'cbu'                => 'sometimes|nullable|string|max:22',
             'alias'              => 'sometimes|nullable|string|max:100',
-            'grupo_id'           => [
-                $isUpdate ? 'sometimes' : 'required',
+            'grupo_id' => [
+                'sometimes',
+                'nullable',
                 'exists:Grupo,grupo_id',
             ],
+
             'estado_empleado_id' => [
                 $isUpdate ? 'sometimes' : 'required',
                 'exists:Estado_Empleado,estado_empleado_id',
             ],
-            'archivado_at'       => 'sometimes|nullable|date_format:Y-m-d H:i:s',
-            'cancelado_at'       => 'sometimes|nullable|date_format:Y-m-d H:i:s',
+            'archivado_at' => 'sometimes|nullable|date_format:Y-m-d',
+            'cancelado_at' => 'sometimes|nullable|date_format:Y-m-d',
         ];
     }
 }
