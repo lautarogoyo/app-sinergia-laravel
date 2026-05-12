@@ -11,7 +11,7 @@ class ComentarioController extends Controller
     public function index(Obra $obra)
     {
         return response()->json([
-            'comentarios' => $obra->comentarios()->with('obra')->get(),
+            'comentarios' => $obra->comentarios()->orderBy('created_at', 'desc')->get(),
             'status' => 200
         ], 200);
     }
@@ -26,6 +26,7 @@ class ComentarioController extends Controller
 
         return response()->json($comentario->load('obra'), 201);
     }
+
 
     public function show(Obra $obra, Comentario $comentario)
     {
