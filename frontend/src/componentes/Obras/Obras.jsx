@@ -16,7 +16,7 @@ export default function Obras() {
 	const [modalComentarios, setModalComentarios] = useState({ isOpen: false, obra: null });
 	const { data: obrasData = [], isLoading: isLoadingObras } = useObras();
 	const queryClient = useQueryClient();
-
+	
 	const deleteMutation = useMutation({
 		mutationFn: (id) => DeleteObra(id),
 		onSuccess: () => {
@@ -43,11 +43,9 @@ export default function Obras() {
 			cancelButtonText: "Cancelar",
 		});
 		if (result.isConfirmed) {
-			deleteMutation.mutate(obra.id);
+			deleteMutation.mutate(obra.nro_obra);
 		}
 	};
-
-	console.log(obrasData);
 
 	if (isLoadingObras) {
 		return (
@@ -223,34 +221,44 @@ export default function Obras() {
 											{formatearFecha(obra.fecha_visto)}
 										</td>
 										<td className="px-6 py-4">
-											<div className="flex gap-2 justify-center flex-wrap">
-												<button
-													className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-													onClick={() => navigate(`/obra/${obra.nro_obra}/gestionar`)}
-												>
-													Gestionar
-												</button>
-												
-												
-												<button
-													className="border-2 border-black hover:bg-gray-300 py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-													onClick={() => abrirModalComentarios(obra)}
-												>
-													<Icon name="message" className="w-5 h-5" />
-												</button>
-												<button
-													className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
-													onClick={() => navigate(`/editarobra/${obra.nro_obra}`)}
-												>
+											<div className="flex flex-col gap-2 items-center">
+												{/* Grupo principal: Gestionar, Gastos, Comentarios */}
+												<div className="flex gap-2 justify-center flex-wrap">
+													<button
+														className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
+														onClick={() => navigate(`/obra/${obra.nro_obra}/gestionar`)}
+													>
+														Gestionar
+													</button>
+													<button
+														className="bg-green-700 hover:bg-green-900 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
+														onClick={() => navigate(`/obra/${obra.nro_obra}/gestionar`)}
+													>
+														Gastos
+													</button>
+													<button
+														className="border-2 border-black hover:bg-gray-300 py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
+														onClick={() => abrirModalComentarios(obra)}
+													>
+														<Icon name="message" className="w-5 h-5" />
+													</button>
+												</div>
+												{/* Grupo secundario: Editar, Eliminar */}
+												<div className="flex gap-2 justify-center">
+													<button
+														className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
+														onClick={() => navigate(`/editarobra/${obra.nro_obra}`)}
+													>
 														<Icon name="pencil" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
-												</button>
-												<button
-													className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center disabled:opacity-50"
-													onClick={() => handleEliminarObra(obra)}
-													disabled={deleteMutation.isPending}
-												>
+													</button>
+													<button
+														className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center disabled:opacity-50"
+														onClick={() => handleEliminarObra(obra)}
+														disabled={deleteMutation.isPending}
+													>
 														<Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
-												</button>
+													</button>
+												</div>
 											</div>
 										</td>
 									</tr>
