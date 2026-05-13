@@ -1,45 +1,42 @@
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PostObra } from "../../api/obras.js";
-import { useForm } from "react-hook-form";
-import { useState } from "react";
-import { useGrupos } from "../../hooks/useGrupos.jsx";
+import { useForm, useController } from "react-hook-form";
+import { useRef } from "react";
 import Swal from "sweetalert2";
+import GruposSelect from "../../shared/GruposSelect.jsx";
 
 export default function CreateObra() {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    
+    const submitLock = useRef(false);
+
     // Obtener la fecha de hoy en formato YYYY-MM-DD
     const obtenerFechaHoy = () => {
         const hoy = new Date();
         return hoy.toISOString().split('T')[0];
     };
     
-    const { register, handleSubmit } = useForm({
+    const { register, handleSubmit, control  } = useForm({
         defaultValues: {
             nro_obra: "",
             detalle: "",
             estado_obra_id: "1",
             fecha_visto: obtenerFechaHoy(),
             fecha_ingreso: obtenerFechaHoy(),
+            grupo_ids: [],
         }
     });
-    const { data: grupos = [], isLoading: isLoadingGrupo } = useGrupos();
-    const [gruposSeleccionados, setGruposSeleccionados] = useState([]);
-    const [nuevoGrupoId, setNuevoGrupoId] = useState("");
+    const { field: gruposField } = useController({ name: "grupo_ids", control });
+
 
     const { mutate, isPending } = useMutation({
-        mutationFn: (data) => {
-            const grupoIds = gruposSeleccionados.map(g => g.grupo_id);
-            return PostObra({ ...data, grupo_id: grupoIds });
-        },
+        mutationFn: (data) => PostObra({ ...data, grupo_id: data.grupo_ids }),
         onSuccess: () => {
             queryClient.invalidateQueries(["obras"]);
             navigate("/obras");
         },
         onError: (error) => {
-            console.error("Error al crear la obra", error);
             Swal.fire({
                 icon: "error",
                 title: "Error al crear la obra",
@@ -49,45 +46,15 @@ export default function CreateObra() {
     });
 
     const onSubmit = handleSubmit((data) => {
+        if (submitLock.current) return;
+        submitLock.current = true;
         mutate(data);
     });
 
-    const agregarGrupo = () => {
-        if (nuevoGrupoId && !gruposSeleccionados.find(g => g.grupo_id === parseInt(nuevoGrupoId))) {
-            const grupoSeleccionado = grupos.find(g => g.grupo_id === parseInt(nuevoGrupoId));
-            if (grupoSeleccionado) {
-                setGruposSeleccionados([...gruposSeleccionados, grupoSeleccionado]);
-                setNuevoGrupoId("");
-            }
-        }
-    };
-
-    const eliminarGrupo = (grupoId) => {
-        setGruposSeleccionados(gruposSeleccionados.filter(g => g.grupo_id !== grupoId));
-    };
 
     return (
         <>
-            {isLoadingGrupo &&
-                <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
-                    <div className="relative">
-                        <div className="mt-8 text-center">
-                            <h2 className="text-3xl font-bold text-white mb-4 animate-pulse">Cargando Grupos</h2>
-                            <div className="w-80 h-3 bg-gray-700 rounded-full overflow-hidden shadow-lg">
-                                <div className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-full animate-loading-bar"></div>
-                            </div>
-                            <div className="mt-4 flex justify-center gap-2">
-                                <span className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                                <span className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                                <span className="w-3 h-3 bg-blue-300 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }
-
-            {!isLoadingGrupo && (
-                <div className="p-8 bg-gray-100 w-full flex flex-col items-center">
+            <div className="p-8 bg-gray-100 w-full flex flex-col items-center">
                     <h1 className="text-3xl text-gray-800 mb-6 font-sans">Crear Nueva Obra</h1>
                     <form className="w-full max-w-xl bg-white shadow-2xl rounded-xl border border-gray-200 p-6 space-y-4" onSubmit={onSubmit}>
                         
@@ -165,63 +132,8 @@ export default function CreateObra() {
                             <label className="block text-gray-700 text-sm font-bold mb-2">
                                 Grupos Asignados
                             </label>
-                            {gruposSeleccionados.length > 0 ? (
-                                <div className="space-y-2 mb-4 p-3 bg-blue-50 rounded border border-blue-200">
-                                    {gruposSeleccionados.map((grupo) => (
-                                        <div
-                                            key={grupo.grupo_id}
-                                            className="flex justify-between items-center bg-white p-3 rounded border border-blue-300"
-                                        >
-                                            <span className="text-gray-700">{grupo.nombre_apellido}</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => eliminarGrupo(grupo.grupo_id)}
-                                                className="bg-red-500 hover:bg-red-600 text-white text-sm font-bold py-1 px-3 rounded transition"
-                                            >
-                                                ✕ Eliminar
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p className="text-gray-500 text-sm mb-4 p-3 bg-gray-50 rounded">
-                                    Sin grupos asignados
-                                </p>
-                            )}
+                            <GruposSelect value={gruposField.value} onChange={gruposField.onChange} />
                         </div>
-
-                        {/* Agregar Grupo */}
-                        <div className="mb-4">
-                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nuevoGrupo">
-                                Agregar Grupo (opcional)
-                            </label>
-                            <div className="flex gap-2">
-                                <select
-                                    id="nuevoGrupo"
-                                    value={nuevoGrupoId}
-                                    onChange={(e) => setNuevoGrupoId(e.target.value)}
-                                    className="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                >
-                                    <option value="">Seleccionar grupo...</option>
-                                    {grupos
-                                        .filter(g => !gruposSeleccionados.find(gs => gs.grupo_id === g.grupo_id))
-                                        .map((g) => (
-                                            <option key={g.grupo_id} value={g.grupo_id}>
-                                                {g.nombre_apellido}
-                                            </option>
-                                        ))}
-                                </select>
-                                <button
-                                    type="button"
-                                    onClick={agregarGrupo}
-                                    disabled={!nuevoGrupoId}
-                                    className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded transition"
-                                >
-                                    + Agregar
-                                </button>
-                            </div>
-                        </div>
-
                         {/* Botones */}
                         <div className="flex gap-2 pt-4">
                             <button
@@ -240,8 +152,7 @@ export default function CreateObra() {
                             </button>
                         </div>
                     </form>
-                </div>
-            )}
+            </div>
         </>
     );
 }

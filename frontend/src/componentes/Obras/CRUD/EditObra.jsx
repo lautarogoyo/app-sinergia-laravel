@@ -2,34 +2,35 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useObraById } from "../../hooks/useObras.jsx";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UpdateObra } from "../../api/obras.js";
-import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
-import { useGrupos } from "../../hooks/useGrupos.jsx";
+import { useForm, useController } from "react-hook-form";
+import { useEffect, useRef } from "react";
+import GruposSelect from "../../shared/GruposSelect.jsx";
 
 export default function EditObra() {
     const { id } = useParams();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    const { register, handleSubmit, reset } = useForm({
+    const submitLock = useRef(false);
+
+    const { register, handleSubmit, reset, control } = useForm({
         defaultValues: {
             nro_obra: "",
             detalle: "",
             estado_obra_id: "1",
             fecha_visto: "",
             fecha_ingreso: "",
+            grupo_ids: [],
         }
     });
-    const { data: obra, isLoading } = useObraById(id);
-    const { data: grupos = [], isLoading: isLoadingGrupo } = useGrupos();
-    const [gruposSeleccionados, setGruposSeleccionados] = useState([]);
-    const [nuevoGrupoId, setNuevoGrupoId] = useState("");
 
-    // Función para formatear fecha a YYYY-MM-DD
+    const { field: gruposField } = useController({ name: "grupo_ids", control });
+
+    const { data: obra, isLoading } = useObraById(id);
+
     const formatearFechaInput = (fecha) => {
         if (!fecha) return "";
         try {
-            const date = new Date(fecha);
-            return date.toISOString().split('T')[0];
+            return new Date(fecha).toISOString().split('T')[0];
         } catch {
             return "";
         }
@@ -43,18 +44,13 @@ export default function EditObra() {
                 estado_obra_id: String(obra.estado_obra_id || "1"),
                 fecha_visto: formatearFechaInput(obra.fecha_visto),
                 fecha_ingreso: formatearFechaInput(obra.fecha_ingreso),
+                grupo_ids: (obra.grupos || []).map(g => g.grupo_id),
             });
-            // Cargar los grupos actuales de la obra
-            setGruposSeleccionados(obra.grupos || []);
         }
     }, [obra, reset]);
 
-    const { mutate } = useMutation({
-        mutationFn: (data) => {
-            // Enviar los IDs de los grupos
-            const grupoIds = gruposSeleccionados.map(g => g.grupo_id);
-            return UpdateObra(id, { ...data, grupo_id: grupoIds });
-        },
+    const { mutate, isPending } = useMutation({
+        mutationFn: (data) => UpdateObra(id, { ...data, grupo_id: data.grupo_ids }),
         onSuccess: () => {
             queryClient.invalidateQueries(["obras"]);
             navigate("/obras");
@@ -65,26 +61,14 @@ export default function EditObra() {
     });
 
     const onSubmit = handleSubmit((data) => {
+        if (submitLock.current) return;
+        submitLock.current = true;
         mutate(data);
     });
 
-    const agregarGrupo = () => {
-        if (nuevoGrupoId && !gruposSeleccionados.find(g => g.grupo_id === parseInt(nuevoGrupoId))) {
-            const grupoSeleccionado = grupos.find(g => g.grupo_id === parseInt(nuevoGrupoId));
-            if (grupoSeleccionado) {
-                setGruposSeleccionados([...gruposSeleccionados, grupoSeleccionado]);
-                setNuevoGrupoId("");
-            }
-        }
-    };
-
-    const eliminarGrupo = (grupoId) => {
-        setGruposSeleccionados(gruposSeleccionados.filter(g => g.grupo_id !== grupoId));
-    };
-
     return (
         <>
-            {(isLoading || isLoadingGrupo) &&
+            {isLoading &&
                 <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
                     <div className="relative">
                         <div className="mt-8 text-center">
@@ -106,7 +90,7 @@ export default function EditObra() {
                 <div className="p-8 bg-gray-100 w-full flex flex-col items-center">
                     <h1 className="text-3xl text-gray-800 mb-6 font-sans">Editar Obra</h1>
                     <form className="w-full max-w-xl bg-white shadow-2xl rounded-xl border border-gray-200 p-6 space-y-4" onSubmit={onSubmit}>
-                        
+
                         {/* Nro Obra */}
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nro_obra">
@@ -117,7 +101,7 @@ export default function EditObra() {
                                 id="nro_obra"
                                 type="text"
                                 disabled
-                                {...register("nro_obra", { required: { value: true, message: "El nro de obra es obligatorio" } })}
+                                {...register("nro_obra")}
                             />
                         </div>
 
@@ -177,80 +161,27 @@ export default function EditObra() {
                             />
                         </div>
 
-                        {/* Grupos Asignados */}
+                        {/* Grupos */}
                         <div className="mb-4">
                             <label className="block text-gray-700 text-sm font-bold mb-2">
                                 Grupos Asignados
                             </label>
-                            {gruposSeleccionados.length > 0 ? (
-                                <div className="space-y-2 mb-4 p-3 bg-blue-50 rounded border border-blue-200">
-                                    {gruposSeleccionados.map((grupo) => (
-                                        <div
-                                            key={grupo.grupo_id}
-                                            className="flex justify-between items-center bg-white p-3 rounded border border-blue-300"
-                                        >
-                                            <span className="text-gray-700">{grupo.nombre_apellido}</span>
-                                            <button
-                                                type="button"
-                                                onClick={() => eliminarGrupo(grupo.grupo_id)}
-                                                className="bg-red-500 hover:bg-red-600 text-white text-sm font-bold py-1 px-3 rounded transition"
-                                            >
-                                                ✕ Eliminar
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            ) : (
-                                <p className="text-gray-500 text-sm mb-4 p-3 bg-gray-50 rounded">
-                                    Sin grupos asignados
-                                </p>
-                            )}
-                        </div>
-
-                        {/* Agregar Nuevo Grupo */}
-                        <div className="mb-4">
-                            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nuevoGrupo">
-                                Agregar Grupo
-                            </label>
-                            <div className="flex gap-2">
-                                <select
-                                    id="nuevoGrupo"
-                                    value={nuevoGrupoId}
-                                    onChange={(e) => setNuevoGrupoId(e.target.value)}
-                                    className="flex-1 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                >
-                                    <option value="">Seleccionar grupo...</option>
-                                    {grupos
-                                        .filter(g => !gruposSeleccionados.find(gs => gs.grupo_id === g.grupo_id))
-                                        .map((g) => (
-                                            <option key={g.grupo_id} value={g.grupo_id}>
-                                                {g.nombre_apellido}
-                                            </option>
-                                        ))}
-                                </select>
-                                <button
-                                    type="button"
-                                    onClick={agregarGrupo}
-                                    disabled={!nuevoGrupoId}
-                                    className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded transition"
-                                >
-                                    + Agregar
-                                </button>
-                            </div>
+                            <GruposSelect value={gruposField.value} onChange={gruposField.onChange} />
                         </div>
 
                         {/* Botones */}
                         <div className="flex gap-2 pt-4">
                             <button
                                 type="submit"
-                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                disabled={isPending}
+                                className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition"
                             >
-                                Guardar
+                                {isPending ? "Guardando..." : "Guardar"}
                             </button>
                             <button
                                 type="button"
                                 onClick={() => navigate("/obras")}
-                                className="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                                className="flex-1 bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition"
                             >
                                 Cancelar
                             </button>
