@@ -20,6 +20,7 @@ use App\Http\Controllers\RubroController;
 use App\Http\Controllers\TipoDocumentacionController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\EstadoEmpleadoController;
+use App\Http\Controllers\EstadoObraController;
 
 // Auth
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -34,6 +35,8 @@ Route::apiResource('usuarios', UsuarioController::class);
 
 // Obras
 Route::apiResource('obras', ObraController::class);
+//Estado Obra
+Route::get('estados_obras', [EstadoObraController::class, 'index']);
 
 // Comentarios de obra
 Route::apiResource('obras/{obra}/comentarios', ComentarioController::class);

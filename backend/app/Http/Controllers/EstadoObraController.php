@@ -13,7 +13,7 @@ class EstadoObraController extends Controller
     public function index()
     {
         return response()->json([
-            'estados' => EstadoObra::query()->orderBy('descripcion')->get(),
+            'estados' => EstadoObra::query()->get(),
             'status' => 200,
         ]);
     }
