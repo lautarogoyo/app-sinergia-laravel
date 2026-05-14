@@ -21,6 +21,8 @@ use App\Http\Controllers\TipoDocumentacionController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\EstadoEmpleadoController;
 use App\Http\Controllers\EstadoObraController;
+use App\Http\Controllers\EstadoCotizacionController;
+use App\Http\Controllers\EstadoComparativaController;
 
 // Auth
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -52,6 +54,8 @@ Route::apiResource(
 
 Route::post('pedidos_cotizacion/{pedido}/grupos', [PedidoCotizacionController::class, 'asignarGrupos']);
 Route::delete('pedidos_cotizacion/{pedido}/grupos/{grupo}', [PedidoCotizacionController::class, 'quitarGrupo']);
+//Estado de cotizacion
+Route::post('estados_cotizacion', [EstadoCotizacionController::class, 'store']);
 
 // Pedidos de compra
 Route::apiResource('pedidos_compra', PedidoCompraController::class)->parameters(['pedidos_compra' => 'pedido']);

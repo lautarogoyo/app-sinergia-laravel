@@ -6,6 +6,8 @@ use App\Models\PedidoCotizacion;
 use App\Http\Requests\StorePedidoCotizacionRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Obra;
+use App\Models\EstadoCotizacion;
+use App\Models\EstadoComparativa;
 
 class PedidoCotizacionController extends Controller
 {
@@ -44,6 +46,7 @@ class PedidoCotizacionController extends Controller
 
         unset($data['archivo_cotizacion'], $data['archivo_mano_obra']);
 
+        $this->resolverEstados($data);
         $pedido = $obra->pedidosCotizacion()->create($data);
 
         return response()->json([
@@ -110,7 +113,7 @@ class PedidoCotizacionController extends Controller
         }
 
         unset($data['archivo_cotizacion'], $data['archivo_mano_obra']);
-
+        $this->resolverEstados($data);
         $pedido->update($data);
 
         return response()->json([
@@ -145,6 +148,25 @@ class PedidoCotizacionController extends Controller
             'message' => 'Pedido eliminado',
             'status' => 200
         ]);
+    }
+
+    private function resolverEstados(array &$data): void
+    {
+        if (isset($data['estado_cotizacion_id'])) {
+            // ya viene resuelto desde el frontend, no hacer nada
+        } elseif (isset($data['estado_cotizacion'])) {
+            $data['estado_cotizacion_id'] = EstadoCotizacion::where('descripcion', $data['estado_cotizacion'])
+                ->firstOrFail()
+                ->estado_cotizacion_id;
+        }
+
+        if (isset($data['estado_comparativa'])) {
+            $data['estado_comparativa_id'] = EstadoComparativa::where('descripcion', $data['estado_comparativa'])
+                ->firstOrFail()
+                ->estado_comparativa_id;
+        }
+
+        unset($data['estado_cotizacion'], $data['estado_cotizacion_otro'], $data['estado_comparativa']);
     }
 
 

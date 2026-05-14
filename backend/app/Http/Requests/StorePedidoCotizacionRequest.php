@@ -19,14 +19,9 @@ class StorePedidoCotizacionRequest extends FormRequest
             'archivo_cotizacion'      => 'nullable|file|max:10240',
             'archivo_mano_obra'       => 'nullable|file|max:10240',
             'fecha_cierre_cotizacion' => 'nullable|date',
-            'estado_cotizacion_id'    => [
-                $isUpdate ? 'sometimes' : 'required',
-                'exists:Estado_Cotizacion,estado_cotizacion_id',
-            ],
-            'estado_comparativa_id'   => [
-                $isUpdate ? 'sometimes' : 'required',
-                'exists:Estado_Comparativa,estado_comparativa_id',
-            ],
+            'estado_cotizacion'       => 'nullable|string',
+            'estado_cotizacion_id'    => 'nullable|exists:Estado_Cotizacion,estado_cotizacion_id',
+            'estado_comparativa'      => [$isUpdate ? 'sometimes' : 'required', 'string'],
         ];
     }
 }

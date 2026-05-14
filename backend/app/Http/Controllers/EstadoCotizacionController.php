@@ -21,9 +21,20 @@ class EstadoCotizacionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+   public function store(Request $request)
     {
-        //
+        $request->validate([
+            'descripcion' => 'required|string|max:100',
+        ]);
+
+        $estado = EstadoCotizacion::firstOrCreate([
+            'descripcion' => $request->descripcion,
+        ]);
+
+        return response()->json([
+            'estado' => $estado,
+            'status' => 201,
+        ], 201);
     }
 
     /**
