@@ -10,7 +10,7 @@ class ObraGrupo extends SinergiaModel
     use HasCompositePrimaryKey;
 
     protected $table = 'Obra_Grupo';
-    protected $primaryKey = ['id_grupo', 'nro_obra'];
+    protected $primaryKey = ['grupo_id', 'nro_obra'];
     public $incrementing = false;
     protected $keyType = 'array';
 
@@ -21,6 +21,6 @@ class ObraGrupo extends SinergiaModel
 
     public function grupo(): BelongsTo
     {
-        return $this->belongsTo(Grupo::class, 'id_grupo', 'grupo_id');
+        return $this->belongsTo(Grupo::class, 'grupo_id', 'grupo_id');
     }
 }

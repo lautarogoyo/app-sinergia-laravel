@@ -89,7 +89,7 @@ class Obra extends SinergiaModel
             Grupo::class,
             'Obra_Grupo',
             'nro_obra',
-            'id_grupo',
+            'grupo_id',
             'nro_obra',
             'grupo_id'
         );
