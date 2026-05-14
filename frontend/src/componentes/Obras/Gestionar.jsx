@@ -11,26 +11,15 @@ import Finalizada from "./Estados/Finalizada";
 import { useObraById } from "../hooks/useObras";
 import { useGrupos } from "../hooks/useGrupos";
 import { UpdateObra } from "../api/obras";
+import { fetchEstadosObra } from "../api/estadosObra";
 import { createPedidoCotizacion, updatePedidoCotizacion } from "../api/pedidosCotizacion";
 import { createOrdenCompra, updateOrdenCompra } from "../api/ordenesCompra";
 import { createPedidoCompra, updatePedidoCompra, deletePedidoCompra } from "../api/pedidosCompra";
 import Swal from "sweetalert2";
 
-const estadosFlujo = [
-	{ id: 1, nombre: "pedida", label: "Pedido de cotización" },
-	{ id: 2, nombre: "cotizada", label: "Cotizada" },
-	{ id: 3, nombre: "enCurso", label: "En curso" },
-	{ id: 4, nombre: "finalizada", label: "Finalizada" }
-];
-
-const labelEstado = (estado) => {
-	const map = {
-		pedida: "Pedido de Cotización",
-		cotizada: "Cotizada",
-		enCurso: "En Curso",
-		finalizada: "Finalizada"
-	};
-	return map[estado] || estado;
+const normalizeEstadoDescription = (description) => {
+	if (!description) return "Sin definir";
+	return description.replace(/_/g, " ").toUpperCase();
 };
 
 const PEDIDO_FORM_INICIAL = {
@@ -55,7 +44,7 @@ export default function Gestionar() {
 	const { data: obraData, isLoading, isError } = useObraById(id);
 
 	const [tabActiva, setTabActiva] = useState("datos");
-	const [estadoActual, setEstadoActual] = useState(null);
+	const [estadoObraIdActual, setEstadoObraIdActual] = useState(null);
 	const [mostrarModalPedido, setMostrarModalPedido] = useState(false);
 	const [pedidoEditando, setPedidoEditando] = useState(null);
 	const [mostrarArchivados, setMostrarArchivados] = useState(false);
@@ -69,6 +58,12 @@ export default function Gestionar() {
 
 	// --- Data para selects ---
 	const { data: gruposDisponibles = [] } = useGrupos();
+
+	const { data: estadosObraDisponibles = [] } = useQuery({
+		queryKey: ["estados-obra"],
+		queryFn: fetchEstadosObra,
+		refetchOnWindowFocus: false,
+	});
 
 	const { data: rubrosDisponibles = [], refetch: refetchRubros } = useQuery({
 		queryKey: ["rubros"],
@@ -104,10 +99,10 @@ export default function Gestionar() {
 	// --- Sincronizar estado cuando llegan los datos de la obra ---
 	useEffect(() => {
 		if (obraData) {
-			setEstadoActual(obraData.estado);
+			setEstadoObraIdActual(obraData.estado_obra_id);
 			const pedidoCot = obraData.pedidos_cotizacion?.[0];
 			reset({
-				estado: obraData.estado,
+				estado_obra_id: obraData.estado_obra_id,
 				fecha_cierre: pedidoCot?.fecha_cierre_cotizacion?.split("T")[0] || "",
 				estado_cotizacion: pedidoCot?.estado_cotizacion || "",
 				estado_comparativa: pedidoCot?.estado_comparativa || "",
@@ -148,7 +143,7 @@ export default function Gestionar() {
 			const pedidoCotExistente = obraData.pedidos_cotizacion?.[0];
 
 			const obraPayload = {
-				estado: estadoActual,
+			estado_obra_id: estadoObraIdActual,
 				fecha_visto: new Date().toISOString().split("T")[0],
 				detalle_caratula: data.detalle_caratula || null,
 				fecha_programacion_inicio: data.fecha_programacion_inicio || null,
@@ -180,7 +175,9 @@ export default function Gestionar() {
 				}
 			}
 
-			if (estadoActual === "enCurso" || estadoActual === "finalizada") {
+			// Buscar descripciones de estados para determinar si es "En Curso" o "Finalizada"
+		const estadoActualDesc = estadosObraDisponibles.find(e => e.estado_obra_id === estadoObraIdActual)?.descripcion?.toLowerCase() || "";
+		if (estadoActualDesc.includes("curso") || estadoActualDesc.includes("finalizada")) {
 				const ordenExistente = obraData.orden_compra;
 				const ordenPayload = {
 					nro_orden_compra: data.nro_orden_compra_oc || null,
@@ -215,19 +212,21 @@ export default function Gestionar() {
 	};
 
 	const handleEstadoChange = async (e) => {
-		const nuevoEstado = e.target.value;
-		if (nuevoEstado !== estadoActual) {
+		const nuevoEstadoId = parseInt(e.target.value);
+		if (nuevoEstadoId !== estadoObraIdActual) {
+			const estadoActualDesc = normalizeEstadoDescription(estadosObraDisponibles.find(e => e.estado_obra_id === estadoObraIdActual)?.descripcion);
+			const nuevoEstadoDesc = normalizeEstadoDescription(estadosObraDisponibles.find(e => e.estado_obra_id === nuevoEstadoId)?.descripcion);
 			const result = await Swal.fire({
 				icon: "question",
 				title: "Confirmar cambio de estado",
-				text: `Esta seguro de cambiar el estado de "${labelEstado(estadoActual)}" a "${labelEstado(nuevoEstado)}"?`,
+				text: `Esta seguro de cambiar el estado de "${estadoActualDesc}" a "${nuevoEstadoDesc}"?`,
 				showCancelButton: true,
 				confirmButtonText: "Si, cambiar",
 				cancelButtonText: "Cancelar",
 			});
 			if (result.isConfirmed) {
-				setEstadoActual(nuevoEstado);
-				setValue("estado", nuevoEstado);
+				setEstadoObraIdActual(nuevoEstadoId);
+				setValue("estado_obra_id", nuevoEstadoId);
 			}
 		}
 	};
@@ -249,7 +248,7 @@ export default function Gestionar() {
 			fecha_entrega_estimada: pedido.fecha_entrega_estimada?.split("T")[0] || "",
 			estado_contratista: pedido.estado_contratista || "Falta Cargar",
 			estado_pedido: pedido.estado_pedido || "pendiente",
-			estado: pedido.estado || "activo",
+			estado_obra: pedido.estado_obra || "activo",
 			observaciones: pedido.observaciones || "",
 			grupo_id: pedido.grupo_id || "",
 			rubros_ids: pedido.rubros?.map((r) => r.id) || [],
@@ -312,7 +311,7 @@ export default function Gestionar() {
 		if (pedidoForm.fecha_entrega_estimada) formData.append("fecha_entrega_estimada", pedidoForm.fecha_entrega_estimada);
 		formData.append("estado_contratista", pedidoForm.estado_contratista);
 		formData.append("estado_pedido", pedidoForm.estado_pedido);
-		formData.append("estado", pedidoForm.estado);
+		formData.append("estado_obra", pedidoForm.estado_obra);
 		formData.append("observaciones", pedidoForm.observaciones || "");
 		if (pedidoForm.archivo_presupuesto) formData.append("archivo", pedidoForm.archivo_presupuesto);
 		if (pedidoForm.archivo_material) formData.append("archivo_material", pedidoForm.archivo_material);
@@ -358,13 +357,14 @@ export default function Gestionar() {
 
 	const renderContenidoSegunEstado = () => {
 		if (!obraDataForComponents) return null;
-		if (estadoActual === "pedida") {
+		const estadoDesc = estadosObraDisponibles.find(e => e.estado_obra_id === estadoObraIdActual)?.descripcion?.toLowerCase() || "";
+		if (estadoDesc.includes("pedida") || estadoDesc.includes("cotización")) {
 			return <PedidoCotizacion obraData={obraDataForComponents} register={register} watch={watch} tabActiva={tabActiva} setTabActiva={setTabActiva} />;
-		} else if (estadoActual === "cotizada") {
+		} else if (estadoDesc.includes("cotizada")) {
 			return <Cotizada obraData={obraDataForComponents} register={register} watch={watch} tabActiva={tabActiva} setTabActiva={setTabActiva} />;
-		} else if (estadoActual === "enCurso") {
+		} else if (estadoDesc.includes("curso")) {
 			return <EnCurso obraData={obraDataForComponents} register={register} />;
-		} else if (estadoActual === "finalizada") {
+		} else if (estadoDesc.includes("finalizada")) {
 			return <Finalizada obraData={obraDataForComponents} register={register} />;
 		}
 	};
@@ -375,7 +375,7 @@ export default function Gestionar() {
 	);
 	const pedidosActivosCount = pedidosCompra.filter((p) => !p.archivado_at).length;
 	const pedidosArchivadosCount = pedidosCompra.filter((p) => Boolean(p.archivado_at)).length;
-	const estadoActualLabel = labelEstado(estadoActual || obraData?.estado || "");
+	const estadoActualLabel = normalizeEstadoDescription(estadosObraDisponibles.find(e => e.estado_obra_id === estadoObraIdActual)?.descripcion);
 
 	// --- Loading / Error ---
 	if (isLoading) {
@@ -424,7 +424,7 @@ export default function Gestionar() {
 						<div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
 							<div className="flex flex-wrap items-center gap-2">
 								<span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-sm font-semibold">
-									Estado actual: {estadoActualLabel}
+								Estado actual: {estadoActualLabel}
 								</span>
 								<span className="inline-flex items-center px-3 py-1 rounded-full bg-white border border-gray-200 text-gray-700 text-sm">
 									Activos: {pedidosActivosCount}
@@ -436,14 +436,16 @@ export default function Gestionar() {
 							<div className="flex items-center gap-2">
 							<label className="text-sm font-medium text-gray-700 mr-2">Estado:</label>
 							<select
-								value={estadoActual || ""}
-								onChange={handleEstadoChange}
-								className="px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[220px]"
-							>
-								<option value="pedida">Pedido de Cotización</option>
-								<option value="cotizada">Cotizada</option>
-								<option value="enCurso">En Curso</option>
-								<option value="finalizada">Finalizada</option>
+							value={estadoObraIdActual || ""}
+							onChange={handleEstadoChange}
+							className="px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[220px]"
+						>
+							<option value="">Selecciona un estado</option>
+							{estadosObraDisponibles.map((estado) => (
+								<option key={estado.estado_obra_id} value={estado.estado_obra_id}>
+									{normalizeEstadoDescription(estado.descripcion)}
+								</option>
+							))}
 							</select>
 							</div>
 						</div>
@@ -459,27 +461,27 @@ export default function Gestionar() {
 							<div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm lg:sticky lg:top-28">
 							<h3 className="text-lg font-semibold mb-4 text-gray-800">Flujo de estados</h3>
 							<div className="space-y-4">
-								{estadosFlujo.map((estado, index) => {
-									const estadoIndex = estadosFlujo.findIndex((e) => e.nombre === estadoActual);
-									const currentIndex = estadosFlujo.findIndex((e) => e.nombre === estado.nombre);
-									const isActivo = estado.nombre === estadoActual;
+						{estadosObraDisponibles.map((estado, index) => {
+							const estadoIndex = estadosObraDisponibles.findIndex((e) => e.estado_obra_id === estadoObraIdActual);
+							const currentIndex = index;
+							const isActivo = estado.estado_obra_id === estadoObraIdActual;
 									const isCompletado = currentIndex < estadoIndex;
 									return (
-										<div key={estado.id} className="flex items-start gap-3">
+										<div key={estado.estado_obra_id} className="flex items-start gap-3">
 											<div className="flex flex-col items-center">
 												<div className={`w-6 h-6 rounded-full flex items-center justify-center ${
 													isActivo ? "bg-blue-600 text-white" : isCompletado ? "bg-green-500 text-white" : "bg-gray-300 text-gray-500"
 												}`}>
 													{isActivo ? "●" : isCompletado ? "✓" : "○"}
 												</div>
-												{index < estadosFlujo.length - 1 && (
+												{index < estadosObraDisponibles.length - 1 && (
 													<div className={`w-0.5 h-8 mt-1 ${isCompletado ? "bg-green-500" : "bg-gray-300"}`}></div>
 												)}
 											</div>
 											<div className={`flex-1 pt-0.5 ${
 												isActivo ? "font-medium text-gray-900" : isCompletado ? "text-green-700" : "text-gray-500"
 											}`}>
-												{estado.label}
+											{normalizeEstadoDescription(estado.descripcion)}
 											</div>
 										</div>
 									);
