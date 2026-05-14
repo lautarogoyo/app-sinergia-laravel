@@ -22,7 +22,7 @@ export default function Cotizada({ obraData, register, watch }) {
 
 	const renderGrupos = () => {
 		if (!obraData.grupos || obraData.grupos.length === 0) return "Sin grupos asignados";
-		return obraData.grupos.map(grupo => grupo.denominacion).join(", ");
+		return obraData.grupos.map(grupo => grupo.nombre_apellido).join(", ");
 	};
 
 	return (
@@ -57,7 +57,7 @@ export default function Cotizada({ obraData, register, watch }) {
 									key={grupo.id}
 									className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg font-semibold text-sm border-2 border-blue-300"
 								>
-									{grupo.denominacion}
+									{grupo.nombre_apellido}
 								</div>
 							))
 						) : (
@@ -71,7 +71,7 @@ export default function Cotizada({ obraData, register, watch }) {
 					<label className="block text-sm font-medium text-gray-700 mb-2">Fecha Cierre Cotización</label>
 					<input
 						type="date"
-						{...register("fecha_cierre")}
+						{...register("fecha_cierre_cotizacion")}
 						className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
 					/>
 				</div>
@@ -89,12 +89,13 @@ export default function Cotizada({ obraData, register, watch }) {
 						<option value="otro">Otro</option>
 					</select>
                     {estadoCotizacionValue === "otro" && (
-                                    <input 
-                                        type="text" 
-                                        placeholder="Especifique otro estado"
-                                        className="w-full px-4 py-2 border border-gray-300 rounded-md mt-2"
-                                    />
-                                )}
+						<input 
+							type="text" 
+							{...register("estado_cotizacion_otro")}  // ← faltaba
+							placeholder="Especifique otro estado"
+							className="w-full px-4 py-2 border border-gray-300 rounded-md mt-2"
+						/>
+						)}
 				</div>
 
 				{/* Estado Comparativa */}
@@ -116,12 +117,12 @@ export default function Cotizada({ obraData, register, watch }) {
 					<label className="block text-sm font-medium text-gray-700 mb-2">Cotización de la Obra</label>
 					
 					<div className="space-y-2">
-						{obraData.pedido_cotizacion?.path_archivo_cotizacion && (
+						{obraData.pedido_cotizacion?.path_archivo && (
 							<div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-md">
 								<div className="flex items-center gap-2">
 									<div>
 										<p className="text-sm font-medium text-gray-900">
-											{obraData.pedido_cotizacion.path_archivo_cotizacion.split('/').pop()}
+											{obraData.pedido_cotizacion.path_archivo.split('/').pop()}
 										</p>
 										<p className="text-xs text-gray-500">Archivo actual</p>
 									</div>
@@ -129,7 +130,7 @@ export default function Cotizada({ obraData, register, watch }) {
 								<div className="flex gap-2">
 									<button
 										type="button"
-										onClick={() => handleVerPrevia(`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo_cotizacion}`)}
+										onClick={() => handleVerPrevia(`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo}`)}
 										className="text-blue-600 hover:text-blue-800 p-1"
 										title="Ver previsualización"
 									>
@@ -138,8 +139,8 @@ export default function Cotizada({ obraData, register, watch }) {
 									<button
 										type="button"
 										onClick={() => handleDescargar(
-											obraData.pedido_cotizacion.path_archivo_cotizacion.split('/').pop(),
-											`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo_cotizacion}`
+											obraData.pedido_cotizacion.path_archivo.split('/').pop(),
+											`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo}`
 										)}
 										className="text-blue-600 hover:text-blue-800 p-1"
 										title="Descargar"
