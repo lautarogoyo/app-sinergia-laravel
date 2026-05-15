@@ -26,3 +26,5 @@ export const deletePedidoCompra = async (pedidoId) => {
   const { data } = await axios.delete(`${backendUrl}/api/pedidos_compra/${pedidoId}`);
   return data;
 };
+
+

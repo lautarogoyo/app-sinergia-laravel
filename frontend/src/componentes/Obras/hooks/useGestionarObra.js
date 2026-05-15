@@ -19,18 +19,18 @@ const normalizeEstadoDescription = (description) => {
 
 const ESTADOS_FIJOS = ["debe_pasar", "pasada", ""];
 const PEDIDO_FORM_INICIAL = {
-  rol: "cotizar",
+  rol_pedido_id: "",
   archivo_presupuesto: null,
   archivo_material: null,
   fecha_pedido: new Date().toISOString().slice(0, 10),
   fecha_entrega_estimada: "",
-  estado_contratista: "Falta Cargar",
-  estado_pedido: "pendiente",
-  estado: "activo",
+  estado_contratista_id: "",
+  estado_pedido_id: "",
+  estado_registro_id: "",
   observaciones: "",
-  grupo_id: "",
+  grupos_ids: [],
+  proveedores_ids: [],
   rubros_ids: [],
-  proveedores: [""],
 };
 
 export default function useGestionarObra() {
@@ -55,7 +55,41 @@ export default function useGestionarObra() {
     },
     refetchOnWindowFocus: false,
   });
+  const { data: estadosContratista = [] } = useQuery({
+    queryKey: ["estado-contratista"],
+    queryFn: async () => {
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/estado-contratista`);
+      return data;
+    },
+    refetchOnWindowFocus: false,
+  });
 
+  const { data: estadosPedido = [] } = useQuery({
+    queryKey: ["estado-pedido"],
+    queryFn: async () => {
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/estado-pedido`);
+      return data;
+    },
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: estadosRegistro = [] } = useQuery({
+    queryKey: ["estado-registro"],
+    queryFn: async () => {
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/estado-registro`);
+      return data;
+    },
+    refetchOnWindowFocus: false,
+  });
+
+  const { data: rolesPedido = [] } = useQuery({
+    queryKey: ["rol-pedido"],
+    queryFn: async () => {
+      const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/api/rol-pedido`);
+      return data;
+    },
+    refetchOnWindowFocus: false,
+  });
   const [tabActiva, setTabActiva] = useState("datos");
   const [estadoObraIdActual, setEstadoObraIdActual] = useState(null);
   const [mostrarModalPedido, setMostrarModalPedido] = useState(false);
@@ -230,18 +264,18 @@ export default function useGestionarObra() {
   const editarPedido = (pedido) => {
     setPedidoEditando(pedido);
     setPedidoForm({
-      rol: pedido.rol || "cotizar",
+      rol_pedido_id: pedido.rol_pedido_id || "",
       archivo_presupuesto: null,
       archivo_material: null,
       fecha_pedido: pedido.fecha_pedido?.split("T")[0] || "",
       fecha_entrega_estimada: pedido.fecha_entrega_estimada?.split("T")[0] || "",
-      estado_contratista: pedido.estado_contratista || "Falta Cargar",
-      estado_pedido: pedido.estado_pedido || "pendiente",
-      estado_obra: pedido.estado_obra || "activo",
+      estado_contratista_id: pedido.estado_contratista_id || "",
+      estado_pedido_id: pedido.estado_pedido_id || "",
+      estado_registro_id: pedido.estado_registro_id || "",
       observaciones: pedido.observaciones || "",
-      grupo_id: pedido.grupo_id || "",
+      grupos_ids: pedido.grupos?.map((g) => g.id) || [],
+      proveedores_ids: pedido.proveedores?.map((p) => p.proveedor_id) || [],
       rubros_ids: pedido.rubros?.map((r) => r.id) || [],
-      proveedores: pedido.proveedores?.length ? pedido.proveedores : [""],
     });
     setMostrarModalPedido(true);
   };
@@ -278,28 +312,27 @@ export default function useGestionarObra() {
       await Swal.fire({ icon: "error", title: "Error", text: err.response?.data?.message || err.message });
     }
   };
-
+ 
   const handleGuardarPedido = async () => {
     const formData = new FormData();
-    formData.append("rol", pedidoForm.rol);
+    formData.append("rol_pedido_id", pedidoForm.rol_pedido_id);
     formData.append("fecha_pedido", pedidoForm.fecha_pedido || new Date().toISOString().slice(0, 10));
     if (pedidoForm.fecha_entrega_estimada) formData.append("fecha_entrega_estimada", pedidoForm.fecha_entrega_estimada);
-    formData.append("estado_contratista", pedidoForm.estado_contratista);
-    formData.append("estado_pedido", pedidoForm.estado_pedido);
-    formData.append("estado_obra", pedidoForm.estado_obra);
+    if (pedidoForm.estado_contratista_id) formData.append("estado_contratista_id", pedidoForm.estado_contratista_id);
+    formData.append("estado_pedido_id", pedidoForm.estado_pedido_id);
+    formData.append("estado_registro_id", pedidoForm.estado_registro_id);
     formData.append("observaciones", pedidoForm.observaciones || "");
     if (pedidoForm.archivo_presupuesto) formData.append("archivo", pedidoForm.archivo_presupuesto);
     if (pedidoForm.archivo_material) formData.append("archivo_material", pedidoForm.archivo_material);
-    if (pedidoForm.grupo_id) formData.append("grupo_id", pedidoForm.grupo_id);
     pedidoForm.rubros_ids.forEach((rubroId) => formData.append("rubros_ids[]", rubroId));
-    const proveedoresFiltrados = pedidoForm.proveedores.filter((p) => p.trim() !== "");
-    proveedoresFiltrados.forEach((p) => formData.append("proveedores[]", p));
+    pedidoForm.grupos_ids.forEach((grupoId) => formData.append("grupos_ids[]", grupoId));
+    pedidoForm.proveedores_ids.forEach((proveedorId) => formData.append("proveedores_ids[]", proveedorId));
 
     try {
       if (pedidoEditando) {
         await updatePedidoCompraMutation.mutateAsync({ pedidoId: pedidoEditando.id, formData });
       } else {
-        formData.append("obra_id", id);
+        formData.append("nro_obra", id);
         await createPedidoCompraMutation.mutateAsync(formData);
       }
       setMostrarModalPedido(false);
@@ -361,5 +394,10 @@ export default function useGestionarObra() {
     pedidosArchivadosCount,
     pedidosCompra,
     normalizeEstadoDescription,
+    estadosContratista,
+    estadosPedido,
+    estadosRegistro,
+    rolesPedido,
+
   };
 }

@@ -1,8 +1,14 @@
 import React from "react";
 import Icon from "../../Icons/Icons";
+import RubrosSelect from "../../shared/RubrosSelect.jsx";
+import GruposSelect from "../../shared/GruposSelect.jsx";
+import ProveedorSelect from "../../shared/ProveedorSelect.jsx";
 
-export default function ModalPedidoCompra({ pedidoForm, actualizarPedidoCampo, onGuardar, onCerrar, gruposDisponibles = [], rubrosDisponibles = [], pedidoEditando, mostrarInputNuevoRubro, setMostrarInputNuevoRubro, nuevoRubroTexto, setNuevoRubroTexto, handleCrearRubro, creandoRubro }) {
+export default function ModalPedidoCompra({ pedidoForm, actualizarPedidoCampo, onGuardar, onCerrar, gruposDisponibles = [], pedidoEditando, mostrarInputNuevoRubro, setMostrarInputNuevoRubro, nuevoRubroTexto, setNuevoRubroTexto, handleCrearRubro, creandoRubro, estadosContratista = [], estadosPedido = [], estadosRegistro = [], rolesPedido = [] }) {
+  const normalize = (str) => str?.replace(/_/g, " ").toUpperCase() || "";
+
   return (
+    
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={onCerrar}></div>
       <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6 space-y-4">
@@ -14,19 +20,15 @@ export default function ModalPedidoCompra({ pedidoForm, actualizarPedidoCampo, o
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Rol del pedido</label>
-            <select value={pedidoForm.rol} onChange={(e) => actualizarPedidoCampo("rol", e.target.value)} className="w-full border border-gray-300 rounded-md px-3 py-2">
-              <option value="cotizar">Cotizar</option>
-              <option value="comprar">Comprar</option>
+            <select value={pedidoForm.rol_pedido_id} onChange={(e) => actualizarPedidoCampo("rol_pedido_id", e.target.value)} className="w-full border border-gray-300 rounded-md px-3 py-2">
+              <option value="">— Seleccionar —</option>
+              {rolesPedido.map((r) => (
+                <option key={r.rol_id} value={r.rol_id}>{normalize(r.descripcion)}</option>
+              ))}
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Contratista</label>
-            <select value={pedidoForm.grupo_id} onChange={(e) => actualizarPedidoCampo("grupo_id", e.target.value)} className="w-full border border-gray-300 rounded-md px-3 py-2">
-              <option value="">— Sin asignar —</option>
-              {gruposDisponibles.map((g) => (<option key={g.id} value={g.id}>{g.nombre_apellido}</option>))}
-            </select>
-          </div>
+          
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Archivo de presupuesto</label>
@@ -58,18 +60,30 @@ export default function ModalPedidoCompra({ pedidoForm, actualizarPedidoCampo, o
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Estado del contratista</label>
-            <select value={pedidoForm.estado_contratista} onChange={(e) => actualizarPedidoCampo("estado_contratista", e.target.value)} className="w-full border border-gray-300 rounded-md px-3 py-2">
-              <option value="Falta Cargar">Falta Cargar</option>
-              <option value="Solicitado">Solicitado</option>
-              <option value="Entregado">Entregado</option>
+            <select value={pedidoForm.estado_contratista_id} onChange={(e) => actualizarPedidoCampo("estado_contratista_id", e.target.value)} className="w-full border border-gray-300 rounded-md px-3 py-2">
+              <option value="">— Sin asignar —</option>
+              {estadosContratista.map((e) => (
+                <option key={e.estado_contratista_id} value={e.estado_contratista_id}>{normalize(e.descripcion)}</option>
+              ))}
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Estado del pedido</label>
-            <select value={pedidoForm.estado_pedido} onChange={(e) => actualizarPedidoCampo("estado_pedido", e.target.value)} className="w-full border border-gray-300 rounded-md px-3 py-2">
-              <option value="pendiente">Pendiente</option>
-              <option value="pedido">Pedido</option>
+            <select value={pedidoForm.estado_pedido_id} onChange={(e) => actualizarPedidoCampo("estado_pedido_id", e.target.value)} className="w-full border border-gray-300 rounded-md px-3 py-2">
+              <option value="">— Seleccionar —</option>
+              {estadosPedido.map((e) => (
+                <option key={e.estado_pedido_id} value={e.estado_pedido_id}>{normalize(e.descripcion)}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Estado del registro</label>
+            <select value={pedidoForm.estado_registro_id} onChange={(e) => actualizarPedidoCampo("estado_registro_id", e.target.value)} className="w-full border border-gray-300 rounded-md px-3 py-2">
+              <option value="">— Seleccionar —</option>
+              {estadosRegistro.map((e) => (
+                <option key={e.estado_registro_id} value={e.estado_registro_id}>{normalize(e.descripcion)}</option>
+              ))}
             </select>
           </div>
 
@@ -91,36 +105,25 @@ export default function ModalPedidoCompra({ pedidoForm, actualizarPedidoCampo, o
               </div>
             )}
 
-            <div className="border border-gray-300 rounded-md p-3 max-h-36 overflow-y-auto space-y-1 bg-gray-50">
-              {rubrosDisponibles.length === 0 ? (
-                <p className="text-sm text-gray-400">No hay rubros. Creá uno nuevo arriba.</p>
-              ) : (
-                rubrosDisponibles.map((rubro) => (
-                  <label key={rubro.id} className="flex items-center gap-2 cursor-pointer hover:bg-white px-2 py-1 rounded transition-colors">
-                    <input type="checkbox" checked={pedidoForm.rubros_ids.includes(rubro.id)} onChange={(e) => {
-                      const ids = e.target.checked ? [...pedidoForm.rubros_ids, rubro.id] : pedidoForm.rubros_ids.filter((rid) => rid !== rubro.id);
-                      actualizarPedidoCampo("rubros_ids", ids);
-                    }} className="rounded accent-blue-600" />
-                    <span className="text-sm text-gray-700">{rubro.descripcion}</span>
-                  </label>
-                ))
-              )}
-            </div>
+            <RubrosSelect
+              value={pedidoForm.rubros_ids}
+              onChange={(ids) => actualizarPedidoCampo("rubros_ids", ids)}
+            />
           </div>
 
           <div className="md:col-span-2">
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-semibold text-gray-700">Proveedores <span className="text-xs font-normal text-gray-400">(uno o más)</span></label>
-              <button type="button" onClick={() => actualizarPedidoCampo("proveedores", [...pedidoForm.proveedores, ""]) } className="text-xs text-blue-600 hover:text-blue-800 font-semibold">+ Agregar proveedor</button>
-            </div>
-            <div className="space-y-2">
-              {pedidoForm.proveedores.map((prov, idx) => (
-                <div key={idx} className="flex gap-2 items-center">
-                  <input type="text" value={prov} onChange={(e) => { const nueva = [...pedidoForm.proveedores]; nueva[idx] = e.target.value; actualizarPedidoCampo("proveedores", nueva); }} placeholder={`Proveedor ${idx + 1}`} className="flex-1 border border-gray-300 rounded-md px-3 py-2 text-sm" />
-                  {pedidoForm.proveedores.length > 1 && (<button type="button" onClick={() => actualizarPedidoCampo("proveedores", pedidoForm.proveedores.filter((_, i) => i !== idx))} className="p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded"><Icon name="x" className="w-4 h-4" /></button>)}
-                </div>
-              ))}
-            </div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Proveedores</label>
+            <ProveedorSelect
+              value={pedidoForm.proveedores_ids}
+              onChange={(ids) => actualizarPedidoCampo("proveedores_ids", ids)}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Contratista</label>
+            <GruposSelect
+              value={pedidoForm.grupos_ids}
+              onChange={(ids) => actualizarPedidoCampo("grupos_ids", ids)}
+            />
           </div>
         </div>
 
