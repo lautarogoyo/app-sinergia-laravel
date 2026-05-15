@@ -60,6 +60,18 @@ Route::post('estados_cotizacion', [EstadoCotizacionController::class, 'store']);
 // Pedidos de compra
 Route::apiResource('pedidos_compra', PedidoCompraController::class)->parameters(['pedidos_compra' => 'pedido']);
 
+//Estado contratista
+Route::get('/estado-contratista', fn() => response()->json(DB::table('Estado_Contratista')->get()));
+
+//Estado pedido
+Route::get('/estado-pedido',      fn() => response()->json(DB::table('Estado_Pedido')->get()));
+
+//Estado registro
+Route::get('/estado-registro',    fn() => response()->json(DB::table('Estado_Registro')->get()));
+
+//Rol pedido de compra
+Route::get('/rol-pedido', fn() => response()->json(DB::table('Rol_Pedido')->get()));
+
 // Grupos (contratistas)
 Route::apiResource('grupos', GrupoController::class);
 
