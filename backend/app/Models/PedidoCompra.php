@@ -22,11 +22,14 @@ class PedidoCompra extends SinergiaModel
         'estado_pedido_id',
         'estado_registro_id',
         'observaciones',
+        'archivado_at',
+
     ];
 
     protected $casts = [
         'fecha_pedido'           => 'date',
         'fecha_entrega_estimada' => 'date',
+        'archivado_at' => 'date',
     ];
 
     public function obra(): BelongsTo
@@ -72,4 +75,29 @@ class PedidoCompra extends SinergiaModel
         )->withPivot('nro_obra')
             ->wherePivot('nro_obra', $this->nro_obra);
     }
-}
+    public function grupos(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Grupo::class,
+            'Compra_Grupo',
+            'pedido_compra_id',
+            'grupo_id',
+            'pedido_compra_id',
+            'grupo_id'
+        )->withPivot('nro_obra')
+            ->wherePivot('nro_obra', $this->nro_obra);
+    }
+
+    public function proveedores(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Proveedor::class,
+            'Compra_Proveedor',
+            'pedido_compra_id',
+            'proveedor_id',
+            'pedido_compra_id',
+            'proveedor_id'
+        )->withPivot('nro_obra')
+            ->wherePivot('nro_obra', $this->nro_obra);
+    }
+    }

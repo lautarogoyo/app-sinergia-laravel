@@ -20,7 +20,7 @@ class ObraController extends Controller
             // CORRECCIÓN: ordenCompra (hasOne) y pedidoCompra (hasMany) consistentes
             'ordenCompra',
             'comentarios',
-            'pedidoCompra.grupo',
+            'pedidoCompra.grupos',
             'pedidoCompra.rubros',
         ])->get();
 
@@ -70,7 +70,7 @@ class ObraController extends Controller
                 'pedidosCotizacion.estadoComparativa',
                 'comentarios',
                 'ordenCompra',
-                'pedidoCompra.grupo',
+                'pedidoCompra.grupos',
                 'pedidoCompra.rubros',
             ]),
             'status' => 200,
@@ -115,7 +115,7 @@ class ObraController extends Controller
                 'pedidosCotizacion',
                 'comentarios',
                 'ordenCompra',
-                'pedidoCompra.grupo',
+                'pedidoCompra.grupos',
                 'pedidoCompra.rubros',
             ]),
             'status' => 200,
