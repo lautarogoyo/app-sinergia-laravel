@@ -10,6 +10,7 @@ import EditObra from "../Obras/CRUD/EditObra.jsx";
 import Gestionar from "../Obras/Gestionar.jsx";
 import DiagramaObras from "../Obras/DiagramaObras.jsx";
 import Personas from "../Personas/Personas.jsx";
+import Finanzas from "../Finanzas/Finanzas.jsx";
 
 function AppRouter() {
     return (
@@ -27,6 +28,8 @@ function AppRouter() {
             <Route path="/editarempleado/:id" element={<EditeEmpleado />} />
             <Route path="/documentacionempleado/:id" element={<EditDocument />} />
             <Route path="/obra/:id/gestionar" element={<Gestionar />} />
+            <Route path="/finanzas" element={<Finanzas />} />
+            
             <Route path="/salir" element={<Navigate to="/home" replace />} />
         </Routes>
     );

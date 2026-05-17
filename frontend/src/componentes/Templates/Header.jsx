@@ -84,6 +84,15 @@ export default function Header({ onLogout }) {
               <Icon name="build" className="w-6 h-6 flex-shrink-0" />
               {visible ? <span className="whitespace-nowrap">Obras</span> : <span className="sr-only">Obras</span>}
             </NavLink>
+
+            <NavLink 
+              to="/finanzas" 
+              className={({ isActive }) => 
+                `${navLinkBase} ${isActive ? navLinkActive : ''}`}
+            >
+              <Icon name="finance" className="w-6 h-6 flex-shrink-0" />
+              {visible ? <span className="whitespace-nowrap">Finanzas</span> : <span className="sr-only">Finanzas</span>}
+            </NavLink>
           </div>
 
           <div className="mt-auto px-3 mb-6">
