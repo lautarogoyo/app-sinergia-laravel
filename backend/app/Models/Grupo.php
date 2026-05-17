@@ -17,6 +17,8 @@ class Grupo extends SinergiaModel
         'tipo_facturacion_id',
         'estado_grupo_id',
         'telefono',
+        'cbu',
+        'alias',
         'email',
         'ciudad',
         'calificacion',
