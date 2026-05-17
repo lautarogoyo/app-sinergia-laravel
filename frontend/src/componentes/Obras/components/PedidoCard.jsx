@@ -29,7 +29,7 @@ export default function PedidoCard({ pedido, onEditar, onArchivar, onEliminar })
           <button type="button" onClick={(e) => { e.stopPropagation(); onArchivar?.(pedido); }} className="p-1 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded" title="Archivar">
             <Icon name="archive" className="w-4 h-4" />
           </button>
-          <button type="button" onClick={(e) => { e.stopPropagation(); onEliminar?.(pedido.id); }} className="p-1 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded" title="Eliminar">
+          <button type="button" onClick={(e) => { e.stopPropagation(); onEliminar?.(pedido.pedido_compra_id); }} className="p-1 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded" title="Eliminar">
             <Icon name="trash" className="w-4 h-4" />
           </button>
         </div>

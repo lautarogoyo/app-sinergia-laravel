@@ -307,7 +307,8 @@ export default function useGestionarObra() {
     try {
       const formData = new FormData();
       formData.append("archivado_at", estaArchivado ? "" : new Date().toISOString().split("T")[0]);
-      await updatePedidoCompraMutation.mutateAsync({ pedidoId: pedido.id, formData });
+      await updatePedidoCompraMutation.mutateAsync({ pedidoId: pedido.pedido_compra_id, formData });
+
     } catch (err) {
       await Swal.fire({ icon: "error", title: "Error", text: err.response?.data?.message || err.message });
     }
@@ -330,7 +331,7 @@ export default function useGestionarObra() {
 
     try {
       if (pedidoEditando) {
-        await updatePedidoCompraMutation.mutateAsync({ pedidoId: pedidoEditando.id, formData });
+      await updatePedidoCompraMutation.mutateAsync({ pedidoId: pedidoEditando.pedido_compra_id, formData });
       } else {
         formData.append("nro_obra", id);
         await createPedidoCompraMutation.mutateAsync(formData);
