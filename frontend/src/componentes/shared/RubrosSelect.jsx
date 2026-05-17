@@ -6,6 +6,7 @@ export default function RubrosSelect({ value = [], onChange }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const ref = useRef();
+  const numericValue = value.map(Number);
 
   useEffect(() => {
     const handler = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); };
@@ -15,7 +16,7 @@ export default function RubrosSelect({ value = [], onChange }) {
 
   const filtrados = rubros.filter(r =>
     r.descripcion.toLowerCase().includes(query.toLowerCase()) &&
-    !value.includes(r.rubro_id)
+    !numericValue.includes(r.rubro_id)
   );
 
   const agregar = (rubro) => {
@@ -26,7 +27,7 @@ export default function RubrosSelect({ value = [], onChange }) {
 
   const quitar = (id) => onChange(value.filter(v => v !== id));
 
-  const seleccionados = rubros.filter(r => value.includes(r.rubro_id));
+  const seleccionados = rubros.filter(r => numericValue.includes(r.rubro_id));
 
   return (
     <div className="relative" ref={ref}>

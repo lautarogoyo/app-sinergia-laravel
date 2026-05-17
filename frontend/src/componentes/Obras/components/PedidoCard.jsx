@@ -2,6 +2,7 @@ import React from "react";
 import Icon from "../../Icons/Icons";
 
 export default function PedidoCard({ pedido, onEditar, onArchivar, onEliminar }) {
+  console.log("Renderizando PedidoCard para pedido:", pedido);
   return (
     <div
       onClick={() => onEditar?.(pedido)}
@@ -13,10 +14,15 @@ export default function PedidoCard({ pedido, onEditar, onArchivar, onEliminar })
       <div className="flex justify-between items-start gap-3">
         <div>
           <p className="text-sm text-gray-500">Rol</p>
-          <p className="text-base font-semibold text-gray-900 uppercase">{pedido.rol}</p>
+          <p className="text-base font-semibold text-gray-900 uppercase">
+            {pedido.rolPedido?.descripcion ?? pedido.rol}
+          </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="px-2 py-1 rounded text-xs font-bold bg-blue-100 text-blue-700 uppercase">{pedido.archivado_at ? "archivado" : (pedido.estado_pedido || "pendiente")}</span>
+          <span className="px-2 py-1 rounded text-xs font-bold bg-blue-100 text-blue-700 uppercase"> {pedido.archivado_at
+            ? "archivado"
+            : (pedido.estadoPedido?.descripcion ?? pedido.estado_pedido ?? "pendiente")}
+          </span>
           <button type="button" onClick={(e) => { e.stopPropagation(); onEditar?.(pedido); }} className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded" title="Editar">
             <Icon name="pencil" className="w-4 h-4" />
           </button>
@@ -40,10 +46,16 @@ export default function PedidoCard({ pedido, onEditar, onArchivar, onEliminar })
         </div>
       </div>
 
-      {pedido.grupo && (
+      {pedido.grupos?.length > 0 && (
         <div className="text-sm">
           <p className="text-gray-500">Contratista</p>
-          <span className="inline-block bg-gray-200 text-gray-800 text-xs font-semibold px-2 py-0.5 rounded mt-0.5">{pedido.grupo.nombre_apellido}</span>
+          <div className="flex flex-wrap gap-1">
+            {pedido.grupos.map((g) => (
+              <span key={g.grupo_id} className="inline-block bg-gray-200 text-gray-800 text-xs font-semibold px-2 py-0.5 rounded">
+                {g.nombre_apellido}
+              </span>
+            ))}
+          </div>
         </div>
       )}
 
@@ -52,7 +64,7 @@ export default function PedidoCard({ pedido, onEditar, onArchivar, onEliminar })
           <p className="text-gray-500 mb-1">Rubros</p>
           <div className="flex flex-wrap gap-1">
             {pedido.rubros.map((r) => (
-              <span key={r.id} className="bg-blue-50 text-blue-700 text-xs font-medium px-2 py-0.5 rounded border border-blue-100">{r.descripcion}</span>
+              <span key={r.rubro_id} className="bg-blue-50 text-blue-700 text-xs font-medium px-2 py-0.5 rounded border border-blue-100">{r.descripcion}</span>
             ))}
           </div>
         </div>
@@ -62,8 +74,10 @@ export default function PedidoCard({ pedido, onEditar, onArchivar, onEliminar })
         <div className="text-sm">
           <p className="text-gray-500 mb-1">Proveedores</p>
           <div className="flex flex-wrap gap-1">
-            {pedido.proveedores.map((prov, idx) => (
-              <span key={idx} className="bg-green-50 text-green-700 text-xs font-medium px-2 py-0.5 rounded border border-green-100">{prov}</span>
+            {pedido.proveedores.map((prov) => (
+              <span key={prov.proveedor_id} className="bg-green-50 text-green-700 text-xs font-medium px-2 py-0.5 rounded border border-green-100">
+                {prov.nombre_apellido}
+              </span>
             ))}
           </div>
         </div>

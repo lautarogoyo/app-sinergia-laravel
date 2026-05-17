@@ -6,6 +6,7 @@ export default function GruposSelect({ value = [], onChange }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const ref = useRef();
+  const numericValue = value.map(Number);
 
   useEffect(() => {
     const handler = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); };
@@ -15,8 +16,9 @@ export default function GruposSelect({ value = [], onChange }) {
 
   const filtrados = grupos.filter(g =>
     g.nombre_apellido.toLowerCase().includes(query.toLowerCase()) &&
-    !value.includes(g.grupo_id)
+    !numericValue.includes(g.grupo_id)
   );
+
 
   const agregar = (grupo) => {
     onChange([...value, grupo.grupo_id]);
@@ -26,7 +28,7 @@ export default function GruposSelect({ value = [], onChange }) {
 
   const quitar = (id) => onChange(value.filter(v => v !== id));
 
-  const seleccionados = grupos.filter(g => value.includes(g.grupo_id));
+  const seleccionados = grupos.filter(g => numericValue.includes(g.grupo_id));
 
   return (
     <div className="relative" ref={ref}>

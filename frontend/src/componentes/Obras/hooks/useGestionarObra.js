@@ -273,9 +273,9 @@ export default function useGestionarObra() {
       estado_pedido_id: pedido.estado_pedido_id || "",
       estado_registro_id: pedido.estado_registro_id || "",
       observaciones: pedido.observaciones || "",
-      grupos_ids: pedido.grupos?.map((g) => g.id) || [],
-      proveedores_ids: pedido.proveedores?.map((p) => p.proveedor_id) || [],
-      rubros_ids: pedido.rubros?.map((r) => r.id) || [],
+      grupos_ids: pedido.grupos?.map((g) => g.grupo_id) || [], 
+      proveedores_ids: pedido.proveedores?.map((p) => p.proveedor_id) || [], 
+      rubros_ids: pedido.rubros?.map((r) => r.rubro_id) || [], 
     });
     setMostrarModalPedido(true);
   };

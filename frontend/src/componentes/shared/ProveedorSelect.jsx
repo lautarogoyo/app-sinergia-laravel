@@ -5,7 +5,9 @@ export default function ProveedorSelect({ value = [], onChange }) {
   const { data: proveedores = [] } = useProveedores();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
-  const ref = useRef();
+  const ref = useRef(); 
+  const numericValue = value.map(Number);
+
 
   useEffect(() => {
     const handler = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); };
@@ -15,7 +17,7 @@ export default function ProveedorSelect({ value = [], onChange }) {
 
   const filtrados = proveedores.filter(p =>
     p.nombre_apellido.toLowerCase().includes(query.toLowerCase()) &&
-    !value.includes(p.proveedor_id)
+    !numericValue.includes(p.proveedor_id)
   );
 
   const agregar = (proveedor) => {
@@ -26,7 +28,7 @@ export default function ProveedorSelect({ value = [], onChange }) {
 
   const quitar = (id) => onChange(value.filter(v => v !== id));
 
-  const seleccionados = proveedores.filter(p => value.includes(p.proveedor_id));
+  const seleccionados = proveedores.filter(p => numericValue.includes(p.proveedor_id));
 
   return (
     <div className="relative" ref={ref}>
