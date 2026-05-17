@@ -133,10 +133,8 @@ export default function useGestionarObra() {
         estado_cotizacion_otro: esFijo ? "" : descCot,
         estado_comparativa: pedidoCot?.estado_comparativa?.descripcion || "",
         detalle_caratula: obraData.detalle_caratula || "",
-        nro_orden_compra_oc: obraData.orden_compra?.nro_orden_compra || "",
-        detalle_oc: obraData.orden_compra?.detalle || "",
-        fecha_inicio_oc: obraData.orden_compra?.fecha_inicio_orden_compra?.split("T")[0] || "",
-        fecha_fin_oc: obraData.orden_compra?.fecha_fin_orden_compra?.split("T")[0] || "",
+        fecha_inicio_oc: obraData.fecha_inicio_orden_compra?.split("T")[0] || "",        
+        fecha_fin_oc: obraData.fecha_finalizacion_orden_compra?.split("T")[0] || "",    
         fecha_programacion_inicio: obraData.fecha_programacion_inicio?.split("T")[0] || "",
         fecha_recepcion_provisoria: obraData.fecha_recepcion_provisoria?.split("T")[0] || "",
         fecha_recepcion_definitiva: obraData.fecha_recepcion_definitiva?.split("T")[0] || "",
@@ -175,6 +173,8 @@ export default function useGestionarObra() {
         fecha_programacion_inicio: data.fecha_programacion_inicio || null,
         fecha_recepcion_provisoria: data.fecha_recepcion_provisoria || null,
         fecha_recepcion_definitiva: data.fecha_recepcion_definitiva || null,
+        fecha_inicio_orden_compra: data.fecha_inicio_oc || null,
+        fecha_finalizacion_orden_compra: data.fecha_fin_oc || null,  
       };
       await UpdateObra(id, obraPayload);
 
@@ -206,23 +206,6 @@ export default function useGestionarObra() {
           await createPedidoCotizacion(id, formData);
         }
       }
-
-      const estadoActualDesc = estadosObraDisponibles.find((e) => e.estado_obra_id === estadoObraIdActual)?.descripcion?.toLowerCase() || "";
-      if (estadoActualDesc.includes("curso") || estadoActualDesc.includes("finalizada")) {
-        const ordenExistente = obraData.orden_compra;
-        const ordenPayload = {
-          nro_orden_compra: data.nro_orden_compra_oc || null,
-          detalle: data.detalle_oc || null,
-          fecha_inicio_orden_compra: data.fecha_inicio_oc || null,
-          fecha_fin_orden_compra: data.fecha_fin_oc || null,
-        };
-        if (ordenExistente) {
-          await updateOrdenCompra(id, ordenExistente.id, ordenPayload);
-        } else {
-          await createOrdenCompra(id, ordenPayload);
-        }
-      }
-
       queryClient.invalidateQueries({ queryKey: ["obra", id] });
       queryClient.invalidateQueries({ queryKey: ["obras"] });
       await Swal.fire({ icon: "success", title: "Guardado", text: "Cambios guardados correctamente" });

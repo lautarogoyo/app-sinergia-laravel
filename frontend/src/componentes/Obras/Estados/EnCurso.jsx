@@ -44,7 +44,7 @@ export default function EnCurso({ obraData, register }) {
 								key={grupo.id}
 								className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg font-semibold text-sm border-2 border-blue-300"
 							>
-								{grupo.denominacion}
+								{grupo.nombre_apellido}
 							</div>
 						))
 					) : (
@@ -57,18 +57,18 @@ export default function EnCurso({ obraData, register }) {
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">Cotizacion</label>
 					<div className="space-y-2">
-						{obraData.pedido_cotizacion?.path_archivo_cotizacion ? (
+						{obraData.pedido_cotizacion?.path_archivo ? (
 							<div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-md">
 								<div>
 									<p className="text-sm font-medium text-gray-900">
-										{obraData.pedido_cotizacion.path_archivo_cotizacion.split("/").pop()}
+										{obraData.pedido_cotizacion.path_archivo.split("/").pop()}
 									</p>
 									<p className="text-xs text-gray-500">Archivo de cotizacion</p>
 								</div>
 								<div className="flex gap-2">
 									<button
 										type="button"
-										onClick={() => handleVerPrevia(`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo_cotizacion}`)}
+										onClick={() => handleVerPrevia(`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo}`)}
 										className="text-blue-600 hover:text-blue-800 p-1"
 										title="Ver previsualizacion"
 									>
@@ -78,8 +78,8 @@ export default function EnCurso({ obraData, register }) {
 										type="button"
 										onClick={() =>
 											handleDescargar(
-												obraData.pedido_cotizacion.path_archivo_cotizacion.split("/").pop(),
-												`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo_cotizacion}`
+												obraData.pedido_cotizacion.path_archivo.split("/").pop(),
+												`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo}`
 											)
 										}
 										className="text-blue-600 hover:text-blue-800 p-1"
@@ -154,24 +154,6 @@ export default function EnCurso({ obraData, register }) {
 							/>
 						</div>
 					</div>
-				</div>
-
-				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-2">Nro Orden de Compra</label>
-					<input
-						type="text"
-						{...register("nro_orden_compra_oc")}
-						className="w-full px-4 py-2 border border-gray-300 rounded-md"
-					/>
-				</div>
-
-				<div>
-					<label className="block text-sm font-medium text-gray-700 mb-2">Detalle Orden de Compra</label>
-					<input
-						type="text"
-						{...register("detalle_oc")}
-						className="w-full px-4 py-2 border border-gray-300 rounded-md"
-					/>
 				</div>
 
 				<div>
