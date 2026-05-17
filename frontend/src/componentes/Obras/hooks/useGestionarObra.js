@@ -9,7 +9,6 @@ import { useGrupos } from "../../hooks/useGrupos";
 import { UpdateObra } from "../../api/obras";
 import { fetchEstadosObra } from "../../api/estadosObra";
 import { createPedidoCotizacion, updatePedidoCotizacion } from "../../api/pedidosCotizacion";
-import { createOrdenCompra, updateOrdenCompra } from "../../api/ordenesCompra";
 import { createPedidoCompra, updatePedidoCompra, deletePedidoCompra } from "../../api/pedidosCompra";
 
 const normalizeEstadoDescription = (description) => {
