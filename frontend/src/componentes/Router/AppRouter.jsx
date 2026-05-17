@@ -11,6 +11,8 @@ import Gestionar from "../Obras/Gestionar.jsx";
 import DiagramaObras from "../Obras/DiagramaObras.jsx";
 import Personas from "../Personas/Personas.jsx";
 import Finanzas from "../Finanzas/Finanzas.jsx";
+import Facturas from "../Finanzas/Facturas.jsx";
+import OrdenesDeCompra from "../Finanzas/OrdenesDeCompra.jsx";
 
 function AppRouter() {
     return (
@@ -29,7 +31,8 @@ function AppRouter() {
             <Route path="/documentacionempleado/:id" element={<EditDocument />} />
             <Route path="/obra/:id/gestionar" element={<Gestionar />} />
             <Route path="/finanzas" element={<Finanzas />} />
-            
+            <Route path="/finanzas/facturas" element={<Facturas />} />
+            <Route path="/finanzas/ordenes-de-compra" element={<OrdenesDeCompra />} />
             <Route path="/salir" element={<Navigate to="/home" replace />} />
         </Routes>
     );
