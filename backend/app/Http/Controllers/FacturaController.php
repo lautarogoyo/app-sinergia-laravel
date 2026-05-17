@@ -38,8 +38,16 @@ class FacturaController extends Controller
             'importe_total' => 'required|numeric|min:0',
         ]);
 
-        $validated['nro_obra'] = $obra->nro_obra;
+        // ── Validaciones de negocio ANTES de persistir ──
+        if (!empty($validated['proveedor_id']) && !empty($validated['grupo_id'])) {
+            abort(422, 'La factura no puede tener proveedor y grupo al mismo tiempo.');
+        }
 
+        if (!empty($validated['nro_oc'])) {
+            $this->validarMontoOC($obra, $validated['nro_oc'], (float) $validated['importe_total']);
+        }
+
+        $validated['nro_obra'] = $obra->nro_obra;
         $factura = Factura::create($validated);
 
         return response()->json([
@@ -90,6 +98,19 @@ class FacturaController extends Controller
             'importe_total' => 'sometimes|required|numeric|min:0',
         ]);
 
+        if (!empty($validated['proveedor_id']) && !empty($validated['grupo_id'])) {
+            abort(422, 'La factura no puede tener proveedor y grupo al mismo tiempo.');
+        }
+
+        if (!empty($validated['nro_oc'])) {
+            $this->validarMontoOC(
+                $obra,
+                $validated['nro_oc'] ?? $factura->nro_oc,
+                (float) ($validated['importe_total'] ?? $factura->importe_total),
+                $factura->nro_factura
+            );
+        }
+
         $factura->update($validated);
 
         return response()->json([
@@ -114,5 +135,24 @@ class FacturaController extends Controller
             'message' => 'Factura eliminada',
             'status'  => 200,
         ], 200);
+    }
+    private function validarMontoOC(Obra $obra, string $nroOc, float $importeNuevo, ?string $nroFacturaExcluir = null): void
+    {
+        $oc = \App\Models\OrdenCompra::where('nro_oc', $nroOc)
+            ->where('nro_obra', $obra->nro_obra)
+            ->firstOrFail();
+
+        $query = \App\Models\Factura::where('nro_oc', $nroOc)
+            ->where('nro_obra', $obra->nro_obra);
+
+        if ($nroFacturaExcluir) {
+            $query->where('nro_factura', '!=', $nroFacturaExcluir);
+        }
+
+        $sumaActual = $query->sum('importe_total');
+
+        if (($sumaActual + $importeNuevo) > $oc->importe) {
+            abort(422, "El importe excede el saldo disponible de la OC. Disponible: $" . number_format($oc->importe - $sumaActual, 2));
+        }
     }
 }
