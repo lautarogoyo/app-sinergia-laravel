@@ -23,6 +23,7 @@ class ObraController extends Controller
             'pedidoCompra.grupos',
             'pedidoCompra.rubros',
             'pedidoCompra.proveedores',
+            'pedidoCompra.presupuestos',
         ])->get();
 
         return response()->json(['obras' => $obras, 'status' => 200]);
@@ -74,6 +75,7 @@ class ObraController extends Controller
                 'pedidoCompra.grupos',
                 'pedidoCompra.rubros',
                 'pedidoCompra.proveedores',
+                'pedidoCompra.presupuestos',
             ]),
             'status' => 200,
         ]);
@@ -120,7 +122,7 @@ class ObraController extends Controller
                 'pedidoCompra.grupos',
                 'pedidoCompra.rubros',
                 'pedidoCompra.proveedores',
-
+                'pedidoCompra.presupuestos',
             ]),
             'status' => 200,
         ]);
@@ -142,10 +144,12 @@ class ObraController extends Controller
                     });
 
                 $obra->pedidoCompra()
-                    ->get(['nro_obra', 'pedido_compra_id', 'path_presupuesto', 'path_material'])
+                    ->with('presupuestos')
+                    ->get()
                     ->each(function ($pedido) {
-                        if ($pedido->path_presupuesto) {
-                            Storage::disk('public')->delete($pedido->path_presupuesto);
+                        foreach ($pedido->presupuestos as $presupuesto) {
+                            Storage::disk('public')->delete($presupuesto->path_archivo);
+                            $presupuesto->delete();
                         }
                         if ($pedido->path_material) {
                             Storage::disk('public')->delete($pedido->path_material);

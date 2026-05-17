@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
+
 
 class PedidoCompra extends SinergiaModel
 {
@@ -13,11 +16,9 @@ class PedidoCompra extends SinergiaModel
     public $incrementing = true;
     protected $keyType = 'int';
 
-
     protected $fillable = [
         'nro_obra',
         'rol_pedido_id',
-        'path_presupuesto',
         'path_material',
         'fecha_pedido',
         'fecha_entrega_estimada',
@@ -26,19 +27,19 @@ class PedidoCompra extends SinergiaModel
         'estado_registro_id',
         'observaciones',
         'archivado_at',
-
     ];
 
     protected $casts = [
         'fecha_pedido'           => 'date',
         'fecha_entrega_estimada' => 'date',
-        'archivado_at' => 'date',
+        'archivado_at'           => 'date',
     ];
 
     public function resolveRouteBinding($value, $field = null): ?self
     {
         return $this->where('pedido_compra_id', $value)->firstOrFail();
     }
+
     public function obra(): BelongsTo
     {
         return $this->belongsTo(Obra::class, 'nro_obra', 'nro_obra');
@@ -70,7 +71,7 @@ class PedidoCompra extends SinergiaModel
             ->where('nro_obra', $this->nro_obra);
     }
 
-        public function rubros(): BelongsToMany
+    public function rubros(): BelongsToMany
     {
         return $this->belongsToMany(
             Rubro::class,
@@ -99,4 +100,8 @@ class PedidoCompra extends SinergiaModel
             'proveedor_id'
         );
     }
-    }
+    public function presupuestos(): HasMany
+{
+    return $this->hasMany(Presupuesto::class, 'pedido_compra_id', 'pedido_compra_id');
+}
+}

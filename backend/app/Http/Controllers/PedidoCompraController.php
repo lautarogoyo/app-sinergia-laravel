@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\PedidoCompra;
+use App\Models\Presupuesto;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StorePedidoCompraRequest;
@@ -16,6 +18,7 @@ class PedidoCompraController extends Controller
             'rubros',
             'grupos',
             'proveedores',
+            'presupuestos',
             'obra.estadoObra',
             'rolPedido',
             'estadoContratista',
@@ -72,12 +75,26 @@ class PedidoCompraController extends Controller
         }
     }
 
+    private function storePresupuestos(PedidoCompra $pedido, array $archivos): void
+    {
+        foreach ($archivos as $file) {
+            $path = $file->storeAs('presupuestos', $file->getClientOriginalName(), 'public');
+            Presupuesto::create([
+                'pedido_compra_id' => $pedido->pedido_compra_id,
+                'nro_obra'         => $pedido->nro_obra,
+                'path_archivo'     => $path,
+                'nombre_archivo'   => $file->getClientOriginalName(),
+            ]);
+        }
+    }
+
     public function index()
     {
         $pedidos = PedidoCompra::with([
             'rubros',
             'grupos',
             'proveedores',
+            'presupuestos',
             'obra.estadoObra',
             'rolPedido',
             'estadoContratista',
@@ -92,11 +109,6 @@ class PedidoCompraController extends Controller
     {
         $data = $request->validated();
 
-        if ($request->hasFile('archivo')) {
-            $file = $request->file('archivo');
-            $data['path_presupuesto'] = $file->storeAs('presupuestos', $file->getClientOriginalName(), 'public');
-        }
-
         if ($request->hasFile('archivo_material')) {
             $file = $request->file('archivo_material');
             $data['path_material'] = $file->storeAs('materiales', $file->getClientOriginalName(), 'public');
@@ -105,9 +117,13 @@ class PedidoCompraController extends Controller
         $rubrosIds      = $data['rubros_ids'] ?? [];
         $gruposIds      = $data['grupos_ids'] ?? [];
         $proveedoresIds = $data['proveedores_ids'] ?? [];
-        unset($data['archivo'], $data['archivo_material'], $data['rubros_ids'], $data['grupos_ids'], $data['proveedores_ids']);
+        unset($data['archivos_presupuesto'], $data['archivo_material'], $data['rubros_ids'], $data['grupos_ids'], $data['proveedores_ids']);
 
         $pedido = PedidoCompra::create($data);
+
+        if ($request->hasFile('archivos_presupuesto')) {
+            $this->storePresupuestos($pedido, $request->file('archivos_presupuesto'));
+        }
 
         if (!empty($rubrosIds))      $this->syncRubros($pedido, $rubrosIds);
         if (!empty($gruposIds))      $this->syncGrupos($pedido, $gruposIds);
@@ -132,12 +148,6 @@ class PedidoCompraController extends Controller
     {
         $data = $request->validated();
 
-        if ($request->hasFile('archivo')) {
-            if ($pedido->path_presupuesto) Storage::disk('public')->delete($pedido->path_presupuesto);
-            $file = $request->file('archivo');
-            $data['path_presupuesto'] = $file->storeAs('presupuestos', $file->getClientOriginalName(), 'public');
-        }
-
         if ($request->hasFile('archivo_material')) {
             if ($pedido->path_material) Storage::disk('public')->delete($pedido->path_material);
             $file = $request->file('archivo_material');
@@ -147,9 +157,14 @@ class PedidoCompraController extends Controller
         $rubrosIds      = $data['rubros_ids'] ?? null;
         $gruposIds      = $data['grupos_ids'] ?? null;
         $proveedoresIds = $data['proveedores_ids'] ?? null;
-        unset($data['archivo'], $data['archivo_material'], $data['rubros_ids'], $data['grupos_ids'], $data['proveedores_ids']);
+        unset($data['archivos_presupuesto'], $data['archivo_material'], $data['rubros_ids'], $data['grupos_ids'], $data['proveedores_ids']);
 
         $pedido->update($data);
+
+        // Los presupuestos se acumulan (append), no se reemplazan
+        if ($request->hasFile('archivos_presupuesto')) {
+            $this->storePresupuestos($pedido, $request->file('archivos_presupuesto'));
+        }
 
         if ($rubrosIds !== null)      $this->syncRubros($pedido, $rubrosIds);
         if ($gruposIds !== null)      $this->syncGrupos($pedido, $gruposIds);
@@ -164,10 +179,17 @@ class PedidoCompraController extends Controller
 
     public function destroy(PedidoCompra $pedido)
     {
-        if ($pedido->path_presupuesto) Storage::disk('public')->delete($pedido->path_presupuesto);
-        if ($pedido->path_material)    Storage::disk('public')->delete($pedido->path_material);
+        if ($pedido->path_material) Storage::disk('public')->delete($pedido->path_material);
 
-        // Las tablas junction se eliminan antes por integridad referencial
+        $presupuestos = Presupuesto::where('pedido_compra_id', $pedido->pedido_compra_id)
+            ->where('nro_obra', $pedido->nro_obra)
+            ->get();
+
+        foreach ($presupuestos as $presupuesto) {
+            Storage::disk('public')->delete($presupuesto->path_archivo);
+            $presupuesto->delete();
+        }
+
         DB::table('Compra_Grupo')->where('nro_obra', $pedido->nro_obra)->where('pedido_compra_id', $pedido->pedido_compra_id)->delete();
         DB::table('Compra_Proveedor')->where('nro_obra', $pedido->nro_obra)->where('pedido_compra_id', $pedido->pedido_compra_id)->delete();
         DB::table('Compra_Rubro')->where('nro_obra', $pedido->nro_obra)->where('pedido_compra_id', $pedido->pedido_compra_id)->delete();
@@ -175,5 +197,14 @@ class PedidoCompraController extends Controller
         $pedido->delete();
 
         return response()->json(['message' => 'Pedido eliminado', 'status' => 200]);
+    }
+
+    public function destroyPresupuesto(int $presupuestoId)
+    {
+        $presupuesto = Presupuesto::findOrFail($presupuestoId);
+        Storage::disk('public')->delete($presupuesto->path_archivo);
+        $presupuesto->delete();
+
+        return response()->json(['message' => 'Presupuesto eliminado', 'status' => 200]);
     }
 }

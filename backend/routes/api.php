@@ -59,6 +59,8 @@ Route::post('estados_cotizacion', [EstadoCotizacionController::class, 'store']);
 
 // Pedidos de compra
 Route::apiResource('pedidos_compra', PedidoCompraController::class)->parameters(['pedidos_compra' => 'pedido']);
+//Presupuesto del pedido de compra
+Route::delete('pedidos-compra/presupuesto/{presupuestoId}', [PedidoCompraController::class, 'destroyPresupuesto']);
 
 //Estado contratista
 Route::get('/estado-contratista', fn() => response()->json(DB::table('Estado_Contratista')->get()));

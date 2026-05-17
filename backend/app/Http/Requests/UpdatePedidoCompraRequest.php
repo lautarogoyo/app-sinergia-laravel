@@ -16,7 +16,8 @@ class UpdatePedidoCompraRequest extends FormRequest
         return [
             'nro_obra'               => 'sometimes|required|exists:Obra,nro_obra',
             'rol_pedido_id'          => 'sometimes|required|exists:Rol_Pedido,rol_id',
-            'archivo'                => 'sometimes|nullable|file|max:10240',
+            'archivos_presupuesto' => 'nullable|array',
+            'archivos_presupuesto.*' => 'file|mimes:pdf,jpg,png|max:10240',
             'archivo_material'       => 'sometimes|nullable|file|max:10240',
             'fecha_pedido'           => 'sometimes|required|date',
             'fecha_entrega_estimada' => 'sometimes|nullable|date',
