@@ -23,6 +23,13 @@ const modules = [
     to: '/obras',
     color: 'sky',
   },
+  {
+    name: 'Finanzas',
+    description: 'Gestión de facturas, gastos y presupuestos',
+    icon: 'finance',
+    to: '/finanzas',
+    color: 'blue',
+  },
 ];
 
 const colorMap = {
