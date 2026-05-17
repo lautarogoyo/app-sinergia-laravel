@@ -19,7 +19,7 @@ const normalizeEstadoDescription = (description) => {
 const ESTADOS_FIJOS = ["debe_pasar", "pasada", ""];
 const PEDIDO_FORM_INICIAL = {
   rol_pedido_id: "",
-  archivo_presupuesto: null,
+  archivos_presupuesto: [],
   archivo_material: null,
   fecha_pedido: new Date().toISOString().slice(0, 10),
   fecha_entrega_estimada: "",
@@ -54,6 +54,7 @@ export default function useGestionarObra() {
     },
     refetchOnWindowFocus: false,
   });
+
   const { data: estadosContratista = [] } = useQuery({
     queryKey: ["estado-contratista"],
     queryFn: async () => {
@@ -89,10 +90,11 @@ export default function useGestionarObra() {
     },
     refetchOnWindowFocus: false,
   });
+
   const [tabActiva, setTabActiva] = useState("datos");
   const [estadoObraIdActual, setEstadoObraIdActual] = useState(null);
   const [mostrarModalPedido, setMostrarModalPedido] = useState(false);
-  const [pedidoEditando, setPedidoEditando] = useState(null);
+  const [pedidoEditandoId, setPedidoEditandoId] = useState(null);
   const [mostrarArchivados, setMostrarArchivados] = useState(false);
   const [pedidoForm, setPedidoForm] = useState(PEDIDO_FORM_INICIAL);
   const [guardando, setGuardando] = useState(false);
@@ -101,6 +103,11 @@ export default function useGestionarObra() {
   const [creandoRubro, setCreandoRubro] = useState(false);
 
   const { register, handleSubmit, watch, setValue, reset } = useForm();
+
+  // Derivado siempre desde obraData
+  const pedidoEditando = pedidoEditandoId
+    ? obraData?.pedido_compra?.find((p) => p.pedido_compra_id === pedidoEditandoId) ?? null
+    : null;
 
   // Mutations
   const createPedidoCompraMutation = useMutation({
@@ -132,8 +139,8 @@ export default function useGestionarObra() {
         estado_cotizacion_otro: esFijo ? "" : descCot,
         estado_comparativa: pedidoCot?.estado_comparativa?.descripcion || "",
         detalle_caratula: obraData.detalle_caratula || "",
-        fecha_inicio_oc: obraData.fecha_inicio_orden_compra?.split("T")[0] || "",        
-        fecha_fin_oc: obraData.fecha_finalizacion_orden_compra?.split("T")[0] || "",    
+        fecha_inicio_oc: obraData.fecha_inicio_orden_compra?.split("T")[0] || "",
+        fecha_fin_oc: obraData.fecha_finalizacion_orden_compra?.split("T")[0] || "",
         fecha_programacion_inicio: obraData.fecha_programacion_inicio?.split("T")[0] || "",
         fecha_recepcion_provisoria: obraData.fecha_recepcion_provisoria?.split("T")[0] || "",
         fecha_recepcion_definitiva: obraData.fecha_recepcion_definitiva?.split("T")[0] || "",
@@ -173,7 +180,7 @@ export default function useGestionarObra() {
         fecha_recepcion_provisoria: data.fecha_recepcion_provisoria || null,
         fecha_recepcion_definitiva: data.fecha_recepcion_definitiva || null,
         fecha_inicio_orden_compra: data.fecha_inicio_oc || null,
-        fecha_finalizacion_orden_compra: data.fecha_fin_oc || null,  
+        fecha_finalizacion_orden_compra: data.fecha_fin_oc || null,
       };
       await UpdateObra(id, obraPayload);
 
@@ -236,18 +243,17 @@ export default function useGestionarObra() {
     }
   };
 
-  // Pedidos handlers
   const abrirModalPedido = () => {
-    setPedidoEditando(null);
+    setPedidoEditandoId(null);
     setPedidoForm(PEDIDO_FORM_INICIAL);
     setMostrarModalPedido(true);
   };
 
   const editarPedido = (pedido) => {
-    setPedidoEditando(pedido);
+    setPedidoEditandoId(pedido.pedido_compra_id);
     setPedidoForm({
       rol_pedido_id: pedido.rol_pedido_id || "",
-      archivo_presupuesto: null,
+      archivos_presupuesto: [],
       archivo_material: null,
       fecha_pedido: pedido.fecha_pedido?.split("T")[0] || "",
       fecha_entrega_estimada: pedido.fecha_entrega_estimada?.split("T")[0] || "",
@@ -255,16 +261,16 @@ export default function useGestionarObra() {
       estado_pedido_id: pedido.estado_pedido_id || "",
       estado_registro_id: pedido.estado_registro_id || "",
       observaciones: pedido.observaciones || "",
-      grupos_ids: pedido.grupos?.map((g) => g.grupo_id) || [], 
-      proveedores_ids: pedido.proveedores?.map((p) => p.proveedor_id) || [], 
-      rubros_ids: pedido.rubros?.map((r) => r.rubro_id) || [], 
+      grupos_ids: pedido.grupos?.map((g) => g.grupo_id) || [],
+      proveedores_ids: pedido.proveedores?.map((p) => p.proveedor_id) || [],
+      rubros_ids: pedido.rubros?.map((r) => r.rubro_id) || [],
     });
     setMostrarModalPedido(true);
   };
 
   const cerrarModalPedido = () => {
     setMostrarModalPedido(false);
-    setPedidoEditando(null);
+    setPedidoEditandoId(null);
   };
 
   const actualizarPedidoCampo = (field, value) => {
@@ -290,12 +296,11 @@ export default function useGestionarObra() {
       const formData = new FormData();
       formData.append("archivado_at", estaArchivado ? "" : new Date().toISOString().split("T")[0]);
       await updatePedidoCompraMutation.mutateAsync({ pedidoId: pedido.pedido_compra_id, formData });
-
     } catch (err) {
       await Swal.fire({ icon: "error", title: "Error", text: err.response?.data?.message || err.message });
     }
   };
- 
+
   const handleGuardarPedido = async () => {
     const formData = new FormData();
     formData.append("rol_pedido_id", pedidoForm.rol_pedido_id);
@@ -305,7 +310,9 @@ export default function useGestionarObra() {
     formData.append("estado_pedido_id", pedidoForm.estado_pedido_id);
     formData.append("estado_registro_id", pedidoForm.estado_registro_id);
     formData.append("observaciones", pedidoForm.observaciones || "");
-    if (pedidoForm.archivo_presupuesto) formData.append("archivo", pedidoForm.archivo_presupuesto);
+    if (pedidoForm.archivos_presupuesto?.length > 0) {
+      pedidoForm.archivos_presupuesto.forEach((file) => formData.append("archivos_presupuesto[]", file));
+    }
     if (pedidoForm.archivo_material) formData.append("archivo_material", pedidoForm.archivo_material);
     pedidoForm.rubros_ids.forEach((rubroId) => formData.append("rubros_ids[]", rubroId));
     pedidoForm.grupos_ids.forEach((grupoId) => formData.append("grupos_ids[]", grupoId));
@@ -313,15 +320,33 @@ export default function useGestionarObra() {
 
     try {
       if (pedidoEditando) {
-      await updatePedidoCompraMutation.mutateAsync({ pedidoId: pedidoEditando.pedido_compra_id, formData });
+        await updatePedidoCompraMutation.mutateAsync({ pedidoId: pedidoEditando.pedido_compra_id, formData });
       } else {
         formData.append("nro_obra", id);
         await createPedidoCompraMutation.mutateAsync(formData);
       }
       setMostrarModalPedido(false);
-      setPedidoEditando(null);
+      setPedidoEditandoId(null);
     } catch (err) {
       await Swal.fire({ icon: "error", title: "Error al guardar pedido", text: err.response?.data?.message || err.message });
+    }
+  };
+
+  const handleEliminarPresupuesto = async (presupuestoId) => {
+    const result = await Swal.fire({
+      icon: "warning",
+      title: "Eliminar presupuesto",
+      text: "¿Estás seguro de eliminar este archivo?",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+    if (!result.isConfirmed) return;
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/pedidos-compra/presupuesto/${presupuestoId}`);
+      queryClient.invalidateQueries({ queryKey: ["obra", id] });
+    } catch (err) {
+      await Swal.fire({ icon: "error", title: "Error", text: err.response?.data?.message || err.message });
     }
   };
 
@@ -346,7 +371,6 @@ export default function useGestionarObra() {
     mostrarModalPedido,
     setMostrarModalPedido,
     pedidoEditando,
-    setPedidoEditando,
     mostrarArchivados,
     setMostrarArchivados,
     pedidoForm,
@@ -381,6 +405,6 @@ export default function useGestionarObra() {
     estadosPedido,
     estadosRegistro,
     rolesPedido,
-
+    handleEliminarPresupuesto,
   };
 }

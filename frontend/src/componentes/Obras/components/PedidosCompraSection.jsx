@@ -2,7 +2,7 @@ import React from "react";
 import Icon from "../../Icons/Icons";
 import PedidoCard from "./PedidoCard";
 
-export default function PedidosCompraSection({ pedidosFiltrados = [], mostrarArchivados, setMostrarArchivados, abrirModalPedido, pedidosActivosCount, pedidosArchivadosCount, onEditar, onArchivar, onEliminar }) {
+export default function PedidosCompraSection({ pedidosFiltrados = [], mostrarArchivados, setMostrarArchivados, abrirModalPedido, pedidosActivosCount, pedidosArchivadosCount, onEditar, onArchivar, onEliminar, handleEliminarPresupuesto }) {
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-5">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
@@ -25,7 +25,8 @@ export default function PedidosCompraSection({ pedidosFiltrados = [], mostrarArc
       {pedidosFiltrados.length > 0 ? (
         <div className="space-y-3">
           {pedidosFiltrados.map((pedido) => (
-            <PedidoCard key={pedido.id} pedido={pedido} onEditar={onEditar} onArchivar={onArchivar} onEliminar={onEliminar} />
+            <PedidoCard key={pedido.pedido_compra_id} pedido={pedido} onEditar={onEditar} onArchivar={onArchivar} onEliminar={onEliminar}  onEliminarPresupuesto={handleEliminarPresupuesto}
+ />
           ))}
         </div>
       ) : (

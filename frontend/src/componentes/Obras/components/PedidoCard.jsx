@@ -1,8 +1,7 @@
 import React from "react";
 import Icon from "../../Icons/Icons";
 
-export default function PedidoCard({ pedido, onEditar, onArchivar, onEliminar }) {
-  console.log("Renderizando PedidoCard para pedido:", pedido);
+export default function PedidoCard({ pedido, onEditar, onArchivar, onEliminar, onEliminarPresupuesto }) {
   return (
     <div
       onClick={() => onEditar?.(pedido)}
@@ -19,9 +18,8 @@ export default function PedidoCard({ pedido, onEditar, onArchivar, onEliminar })
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="px-2 py-1 rounded text-xs font-bold bg-blue-100 text-blue-700 uppercase"> {pedido.archivado_at
-            ? "archivado"
-            : (pedido.estadoPedido?.descripcion ?? pedido.estado_pedido ?? "pendiente")}
+          <span className="px-2 py-1 rounded text-xs font-bold bg-blue-100 text-blue-700 uppercase">
+            {pedido.archivado_at ? "archivado" : (pedido.estadoPedido?.descripcion ?? pedido.estado_pedido ?? "pendiente")}
           </span>
           <button type="button" onClick={(e) => { e.stopPropagation(); onEditar?.(pedido); }} className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded" title="Editar">
             <Icon name="pencil" className="w-4 h-4" />
@@ -83,12 +81,34 @@ export default function PedidoCard({ pedido, onEditar, onArchivar, onEliminar })
         </div>
       )}
 
-      {pedido.path_presupuesto && (
-        <div className="text-sm">
-          <p className="text-gray-500">Presupuesto</p>
-          <a href={`${import.meta.env.VITE_API_URL}/storage/${pedido.path_presupuesto}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-blue-600 hover:underline">📎 {pedido.path_presupuesto.split("/").pop()}</a>
+      {pedido.presupuestos?.length > 0 && (
+      <div className="text-sm">
+        <p className="text-gray-500 mb-1">Presupuestos</p>
+        <div className="flex flex-col gap-0.5">
+          {pedido.presupuestos.map((p) => (
+            <div key={p.presupuesto_id} className="flex items-center gap-2">
+              <a 
+                href={`${import.meta.env.VITE_API_URL}/storage/${p.path_archivo}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-blue-600 hover:underline"
+              >
+                📎 {p.nombre_archivo || p.path_archivo.split("/").pop()}
+              </a>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); onEliminarPresupuesto?.(p.presupuesto_id); }}
+                className="text-red-400 hover:text-red-600"
+                title="Eliminar presupuesto"
+              >
+                <Icon name="x" className="w-3 h-3" />
+              </button>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
+    )}
 
       {pedido.path_material && (
         <div className="text-sm">

@@ -56,7 +56,7 @@ export default function Gestionar() {
     estadosPedido,
     estadosRegistro,
     rolesPedido,
-
+    handleEliminarPresupuesto
   } = hook;
 
   if (isLoading) return <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50"><div className="relative"><h2 className="text-3xl font-bold text-white mb-4 animate-pulse">Cargando Obra</h2></div></div>;
@@ -154,6 +154,8 @@ export default function Gestionar() {
           estadosPedido={estadosPedido}
           rolesPedido={rolesPedido}
           estadosRegistro={estadosRegistro}
+          onEliminarPresupuesto={handleEliminarPresupuesto}
+        
         />
       )}
     </>

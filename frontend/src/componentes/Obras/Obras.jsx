@@ -8,6 +8,8 @@ import { useObras } from "../hooks/useObras.jsx";
 import { DeleteObra } from "../api/obras.js";
 import { fixMojibake } from "../utils/text";
 import { formatearFecha, generarPdfPanelObras } from "./ObrasPdf";
+import EditFechaVistoModal from "./EditFechaVistoModal.jsx";
+
 
 // Panel de Obras inspirado en el panel de Empleados
 export default function Obras() {
@@ -16,6 +18,8 @@ export default function Obras() {
 	const [modalComentarios, setModalComentarios] = useState({ isOpen: false, obra: null });
 	const { data: obrasData = [], isLoading: isLoadingObras } = useObras();
 	const queryClient = useQueryClient();
+	const [modalFechaVisto, setModalFechaVisto] = useState({ isOpen: false, obra: null });
+
 	
 	const deleteMutation = useMutation({
 		mutationFn: (id) => DeleteObra(id),
@@ -134,9 +138,19 @@ export default function Obras() {
 	const cerrarModalComentarios = () => {
 		setModalComentarios({ isOpen: false, obra: null });
 	};
-
+	const esFechaHoy = (fecha) => {
+		if (!fecha) return false;
+		const hoy = new Date();
+		const hoyStr = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, "0")}-${String(hoy.getDate()).padStart(2, "0")}`;
+		return String(fecha).slice(0, 10) === hoyStr;
+	};
 	return (
 		<>
+		<EditFechaVistoModal
+    		isOpen={modalFechaVisto.isOpen}
+			onClose={() => setModalFechaVisto({ isOpen: false, obra: null })}
+			obra={modalFechaVisto.obra}
+		/>
 			<ComentariosModal
 				isOpen={modalComentarios.isOpen}
 				onClose={cerrarModalComentarios}
@@ -217,7 +231,12 @@ export default function Obras() {
 												)}
 											</div>
 										</td>
-										<td className="text-lg font-bold px-6 py-4 whitespace-nowrap">
+										<td
+											className="text-lg font-bold px-6 py-4 whitespace-nowrap cursor-pointer hover:opacity-80"
+											style={esFechaHoy(obra.fecha_visto) ? { backgroundColor: "#B4A7D6" } : {}}
+											onClick={() => setModalFechaVisto({ isOpen: true, obra })}
+											title="Click para editar fecha visto"
+										>
 											{formatearFecha(obra.fecha_visto)}
 										</td>
 										<td className="px-6 py-4">
