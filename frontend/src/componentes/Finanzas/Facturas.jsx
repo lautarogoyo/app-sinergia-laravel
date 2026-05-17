@@ -11,8 +11,8 @@ import ObraSelect from "../shared/ObrasSelect";
 
 const base = import.meta.env.VITE_API_URL;
 
-const thClass = "px-4 py-3 text-center text-sm font-bold text-gray-100 border-b border-gray-500";
-const tdClass = "px-4 py-3 text-center text-sm text-gray-800";
+const thClass = "px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500";
+const tdClass = "px-6 py-4 text-center text-lg text-gray-800";
 
 export default function Facturas() {
   const [obraSeleccionada, setObraSeleccionada] = useState("");
@@ -144,9 +144,9 @@ export default function Facturas() {
       ) : loadingFacturas ? (
         <div className="text-center text-gray-400 mt-20 text-sm animate-pulse">Cargando facturas...</div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-[#2c4d81]">
+        <div className="shadow-2xl rounded-xl border border-gray-300 bg-white overflow-hidden">
+          <table className="w-full">
+            <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
               <tr>
                 <th className={thClass}>Nro. Factura</th>
                 <th className={thClass}>Fecha</th>
@@ -158,7 +158,7 @@ export default function Facturas() {
                 <th className={thClass}>Acciones</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="bg-gray-50 divide-y divide-gray-200">
               {facturasFiltradas.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="text-center py-8 text-gray-400">
@@ -182,7 +182,20 @@ export default function Facturas() {
                       </span>
                     </td>
                     <td className={tdClass}>
-                      {f.proveedor?.nombre_apellido ?? f.grupo?.nombre_apellido ?? "-"}
+                      {f.proveedor ? (
+                        <div className="text-left space-y-0.5">
+                          <div className="font-semibold">{f.proveedor.nombre_apellido}</div>
+                          {f.proveedor.cuit  && <div className="text-xs text-gray-500">CUIT: {f.proveedor.cuit}</div>}
+                          {f.proveedor.cbu   && <div className="text-xs text-gray-500">CBU: {f.proveedor.cbu}</div>}
+                          {f.proveedor.alias && <div className="text-xs text-gray-500">Alias: {f.proveedor.alias}</div>}
+                        </div>
+                      ) : f.grupo ? (
+                        <div className="text-left space-y-0.5">
+                          <div className="font-semibold">{f.grupo.nombre_apellido}</div>
+                          {f.grupo.cbu   && <div className="text-xs text-gray-500">CBU: {f.grupo.cbu}</div>}
+                          {f.grupo.alias && <div className="text-xs text-gray-500">Alias: {f.grupo.alias}</div>}
+                        </div>
+                      ) : "-"}
                     </td>
                     <td className={`${tdClass} font-semibold`}>
                       ${Number(f.importe_total).toLocaleString("es-AR", { minimumFractionDigits: 2 })}
