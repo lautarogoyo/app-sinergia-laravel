@@ -40,6 +40,8 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
       nombre_apellido: grupo?.nombre_apellido ?? "",
       tipo_facturacion_id: grupo?.tipo_facturacion_id ?? "",
       estado_grupo_id: grupo?.estado_grupo_id ?? "",
+      cbu:   grupo?.cbu   ?? "",
+      alias: grupo?.alias ?? "",
       telefono: grupo?.telefono ?? "",
       email: grupo?.email ?? "",
       ciudad: grupo?.ciudad ?? "",
@@ -110,6 +112,8 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
                   </span>
                 </div>
                 <Row label="Tipo de Facturación" value={grupo?.tipo_facturacion?.tipo_facturacion_id == 1 ? "Monotributista" : "Responsable Inscripto"} />
+                <Row label="CBU"   value={grupo?.cbu} />
+                <Row label="Alias" value={grupo?.alias} />
                 <Row label="Teléfono" value={grupo?.telefono} />
                 <Row label="Email" value={grupo?.email} />
                 <Row label="Ciudad" value={grupo?.ciudad} />
@@ -209,6 +213,31 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
                   {errors.estado_grupo_id && <p className="text-red-600 text-xs mt-1">{errors.estado_grupo_id.message}</p>}
                 </div>
 
+
+                <div className="flex flex-col">
+                  <label className={labelCls}>CBU</label>
+                  <input
+                    type="text"
+                    {...register("cbu", {
+                      minLength: { value: 22, message: "El CBU tiene 22 dígitos" },
+                      maxLength: { value: 22, message: "El CBU tiene 22 dígitos" },
+                      pattern:   { value: /^\d+$/, message: "Solo números" }
+                    })}
+                    className={inputCls}
+                    placeholder="0000000000000000000000"
+                  />
+                  {errors.cbu && <p className="text-red-600 text-xs mt-1">{errors.cbu.message}</p>}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className={labelCls}>Alias</label>
+                  <input
+                    type="text"
+                    {...register("alias")}
+                    className={inputCls}
+                    placeholder="mi.alias.bancario"
+                  />
+                </div>
                 <div className="flex flex-col">
                   <label className={labelCls}>Teléfono</label>
                   <input type="text" {...register("telefono")} className={inputCls} placeholder="+54 11 1234-5678" />

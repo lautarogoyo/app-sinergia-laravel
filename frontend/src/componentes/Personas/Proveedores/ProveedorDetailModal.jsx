@@ -42,6 +42,9 @@ export default function ProveedorDetailModal({ proveedor, initialMode, onClose }
     defaultValues: {
       nombre_apellido:     proveedor?.nombre_apellido     ?? "",
       tipo_facturacion_id: proveedor?.tipo_facturacion_id ?? "",
+      cuit:                proveedor?.cuit                ?? "",
+      cbu:                 proveedor?.cbu                 ?? "",
+      alias:               proveedor?.alias               ?? "",
       telefono:            proveedor?.telefono            ?? "",
       email:               proveedor?.email               ?? "",
       direccion:           proveedor?.direccion           ?? "",
@@ -114,6 +117,9 @@ export default function ProveedorDetailModal({ proveedor, initialMode, onClose }
                   label="Tipo de Facturación"
                   value={proveedor?.tipo_facturacion?.tipo_facturacion_id == 1 ? "Monotributista" : "Responsable Inscripto"}
                 />
+                <Row label="CUIT"         value={proveedor?.cuit} />
+                <Row label="CBU"          value={proveedor?.cbu} />
+                <Row label="Alias"        value={proveedor?.alias} />
                 <Row label="Teléfono"     value={proveedor?.telefono} />
                 <Row label="Email"        value={proveedor?.email} />
                 <Row label="Dirección"    value={proveedor?.direccion} />
@@ -222,6 +228,48 @@ export default function ProveedorDetailModal({ proveedor, initialMode, onClose }
                       {errors.tipo_facturacion_id.message}
                     </p>
                   )}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className={labelCls}>CUIT</label>
+                  <input
+                    type="text"
+                    {...register("cuit", {
+                      pattern: { value: /^\d{2}-\d{8}-\d{1}$/, message: "Formato: XX-XXXXXXXX-X" },
+                    })}
+                    className={inputCls}
+                    placeholder="20-12345678-9"
+                  />
+                  {errors.cuit && (
+                    <p className="text-red-600 text-xs mt-1">{errors.cuit.message}</p>
+                  )}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className={labelCls}>CBU</label>
+                  <input
+                    type="text"
+                    {...register("cbu", {
+                      minLength: { value: 22, message: "El CBU tiene 22 dígitos" },
+                      maxLength: { value: 22, message: "El CBU tiene 22 dígitos" },
+                      pattern:   { value: /^\d+$/, message: "Solo números" },
+                    })}
+                    className={inputCls}
+                    placeholder="0000000000000000000000"
+                  />
+                  {errors.cbu && (
+                    <p className="text-red-600 text-xs mt-1">{errors.cbu.message}</p>
+                  )}
+                </div>
+
+                <div className="flex flex-col">
+                  <label className={labelCls}>Alias</label>
+                  <input
+                    type="text"
+                    {...register("alias")}
+                    className={inputCls}
+                    placeholder="mi.alias.bancario"
+                  />
                 </div>
 
                 <div className="flex flex-col">
