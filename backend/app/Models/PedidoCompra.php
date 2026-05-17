@@ -63,29 +63,24 @@ class PedidoCompra extends SinergiaModel
             ->where('nro_obra', $this->nro_obra);
     }
 
-    public function rubros(): BelongsToMany
+        public function rubros(): BelongsToMany
     {
         return $this->belongsToMany(
             Rubro::class,
             'Compra_Rubro',
             'pedido_compra_id',
-            'rubro_id',
-            'pedido_compra_id',
             'rubro_id'
-        )->withPivot('nro_obra')
-            ->wherePivot('nro_obra', $this->nro_obra);
+        );
     }
+
     public function grupos(): BelongsToMany
     {
         return $this->belongsToMany(
             Grupo::class,
             'Compra_Grupo',
             'pedido_compra_id',
-            'grupo_id',
-            'pedido_compra_id',
             'grupo_id'
-        )->withPivot('nro_obra')
-            ->wherePivot('nro_obra', $this->nro_obra);
+        );
     }
 
     public function proveedores(): BelongsToMany
@@ -94,10 +89,7 @@ class PedidoCompra extends SinergiaModel
             Proveedor::class,
             'Compra_Proveedor',
             'pedido_compra_id',
-            'proveedor_id',
-            'pedido_compra_id',
             'proveedor_id'
-        )->withPivot('nro_obra')
-            ->wherePivot('nro_obra', $this->nro_obra);
+        );
     }
     }

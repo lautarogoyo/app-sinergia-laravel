@@ -22,6 +22,7 @@ class ObraController extends Controller
             'comentarios',
             'pedidoCompra.grupos',
             'pedidoCompra.rubros',
+            'pedidoCompra.proveedores',
         ])->get();
 
         return response()->json(['obras' => $obras, 'status' => 200]);
@@ -72,6 +73,7 @@ class ObraController extends Controller
                 'ordenCompra',
                 'pedidoCompra.grupos',
                 'pedidoCompra.rubros',
+                'pedidoCompra.proveedores',
             ]),
             'status' => 200,
         ]);
@@ -117,6 +119,8 @@ class ObraController extends Controller
                 'ordenCompra',
                 'pedidoCompra.grupos',
                 'pedidoCompra.rubros',
+                'pedidoCompra.proveedores',
+
             ]),
             'status' => 200,
         ]);
