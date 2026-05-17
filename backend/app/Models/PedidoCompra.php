@@ -10,6 +10,9 @@ class PedidoCompra extends SinergiaModel
 {
     protected $table = 'Pedido_Compra';
     protected $primaryKey = 'pedido_compra_id';
+    public $incrementing = true;
+    protected $keyType = 'int';
+
 
     protected $fillable = [
         'nro_obra',
@@ -32,6 +35,10 @@ class PedidoCompra extends SinergiaModel
         'archivado_at' => 'date',
     ];
 
+    public function resolveRouteBinding($value, $field = null): ?self
+    {
+        return $this->where('pedido_compra_id', $value)->firstOrFail();
+    }
     public function obra(): BelongsTo
     {
         return $this->belongsTo(Obra::class, 'nro_obra', 'nro_obra');
