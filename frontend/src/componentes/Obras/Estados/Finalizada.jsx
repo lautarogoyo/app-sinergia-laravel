@@ -44,7 +44,7 @@ export default function Finalizada({ obraData, register }) {
 								key={grupo.id}
 								className="px-4 py-2 bg-blue-100 text-blue-800 rounded-lg font-semibold text-sm border-2 border-blue-300"
 							>
-								{grupo.denominacion}
+								{grupo.nombre_apellido}
 							</div>
 						))
 					) : (
