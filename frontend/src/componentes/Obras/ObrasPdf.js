@@ -349,7 +349,8 @@ export const generarPdfPanelObras = async (obrasOrdenadas) => {
 	});
 
 	if (result.isConfirmed) {
-		const obrasEnCurso = obrasOrdenadas.filter((o) => (o.estado || "").toLowerCase().replaceAll("_", "") === "encurso");
+		const obrasEnCurso = obrasOrdenadas.filter((o) => (o.estado_obra?.descripcion || "").toLowerCase().replaceAll("_", "") === "encurso"
+		);
 		if (!obrasEnCurso.length) {
 			await Swal.fire({ icon: "info", title: "Sin datos", text: "No hay obras en curso para exportar." });
 			return;
@@ -359,7 +360,8 @@ export const generarPdfPanelObras = async (obrasOrdenadas) => {
 	}
 
 	if (result.isDenied) {
-		const obrasPedida = obrasOrdenadas.filter((o) => (o.estado || "").toLowerCase() === "pedida");
+		const obrasPedida = obrasOrdenadas.filter((o) => (o.estado_obra?.descripcion || "").toLowerCase() === "pedida"
+		);
 		if (!obrasPedida.length) {
 			await Swal.fire({ icon: "info", title: "Sin datos", text: "No hay obras en pedido de cotizacion para exportar." });
 			return;
