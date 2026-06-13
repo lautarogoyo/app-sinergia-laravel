@@ -169,7 +169,9 @@ export default function Facturas() {
                 facturasFiltradas.map((f, i) => (
                   <tr key={f.nro_factura} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                     <td className={`${tdClass} font-semibold`}>{f.nro_factura}</td>
-                    <td className={tdClass}>{f.fecha?.split("T")[0] ?? f.fecha}</td>
+                    <td className={tdClass}>
+                      {f.fecha ? new Date(f.fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "2-digit", timeZone: "America/Argentina/Buenos_Aires" }) : "-"}
+                    </td>
                     <td className={tdClass}>
                       <span className="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded font-bold text-xs">
                         {f.tipo_factura}
@@ -201,18 +203,18 @@ export default function Facturas() {
                       ${Number(f.importe_total).toLocaleString("es-AR", { minimumFractionDigits: 2 })}
                     </td>
                     <td className={tdClass}>
-                      <div className="flex justify-center gap-2">
+                      <div className="flex gap-2 justify-center">
                         <button
+                          className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
                           onClick={() => setModal({ mode: "edit", data: f })}
-                          className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1 px-3 rounded shadow cursor-pointer"
                         >
-                          Editar
+                          <Icon name="pencil" className="h-6 w-6 text-white group-hover:text-blue-200 transition-colors" />
                         </button>
                         <button
+                          className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
                           onClick={() => handleEliminar(f)}
-                          className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-1 px-3 rounded shadow cursor-pointer"
                         >
-                          Eliminar
+                          <Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
                         </button>
                       </div>
                     </td>
