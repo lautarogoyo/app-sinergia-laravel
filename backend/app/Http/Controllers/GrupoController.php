@@ -24,6 +24,7 @@ class GrupoController extends Controller
             'usuario_id'          => 'nullable|exists:Usuario,usuario_id',
             'tipo_facturacion_id' => 'required|exists:Tipo_Facturacion,tipo_facturacion_id',
             'estado_grupo_id'     => 'required|exists:Estado_Grupo,estado_grupo_id',
+            'cuit'  => 'nullable|string|max:13',
             'cbu'                 => 'nullable|string|max:22',
             'alias'               => 'nullable|string|max:100',
             'telefono'            => 'nullable|string|max:50',
