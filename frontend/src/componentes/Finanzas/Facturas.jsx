@@ -7,6 +7,8 @@ import { fetchFacturasByObra, createFactura, updateFactura, deleteFactura } from
 import FacturaModal from "./FacturasModal";
 import axios from "axios";
 import ObraSelect from "../shared/ObrasSelect";
+import ReporteMensualModal from "./ReporteMensualModal";
+
 
 
 const base = import.meta.env.VITE_API_URL;
@@ -19,6 +21,8 @@ export default function Facturas() {
   const [busqueda, setBusqueda] = useState("");
   const [modal, setModal] = useState(null);
   const queryClient = useQueryClient();
+  const [modalReporte, setModalReporte] = useState(false);
+
 
   const { data: obras = [] } = useQuery({
     queryKey: ["obras"],
@@ -137,6 +141,12 @@ export default function Facturas() {
         >
           + Nueva factura
         </button>
+        <button
+        onClick={() => setModalReporte(true)}
+        className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-4 py-2 rounded-lg border border-gray-300 shadow-sm transition cursor-pointer flex items-center gap-2"
+      >
+        🖨️ Imprimir mes
+      </button>
       </div>
 
       {!obraSeleccionada ? (
@@ -245,6 +255,10 @@ export default function Facturas() {
           isPending={createMutation.isPending || updateMutation.isPending}
         />
       )}
+      {modalReporte && (
+        <ReporteMensualModal onClose={() => setModalReporte(false)} accentColor="emerald" />
+      )}
     </div>
+    
   );
 }

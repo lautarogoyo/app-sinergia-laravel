@@ -68,6 +68,28 @@ export default function FacturaModal({ mode, factura, proveedores, grupos, obras
       grupo_id:      data.grupo_id      || null,
     });
   };
+  // Reemplazá el Controller de nro_oc
+  <Controller
+    name="nro_oc"
+    control={control}
+    render={({ field }) => (
+      <OcSelect
+        ordenes={ordenesCompra}
+        value={field.value}
+        onChange={(val) => {
+          field.onChange(val);
+          const oc = ordenesCompra.find(o => o.nro_oc === val);
+          if (oc) {
+            setValue("proveedor_id", oc.proveedor_id ?? "");
+            setValue("grupo_id",     oc.grupo_id     ?? "");
+          } else {
+            setValue("proveedor_id", factura?.proveedor_id ?? "");
+            setValue("grupo_id",     factura?.grupo_id     ?? "");
+          }
+        }}
+      />
+    )}
+  />
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -174,40 +196,44 @@ export default function FacturaModal({ mode, factura, proveedores, grupos, obras
             )}
 
             {/* Proveedor */}
-            <div>
-              <label className={labelClass}>Proveedor</label>
-              <select
-                {...register("proveedor_id")}
-                className={inputClass}
-                onChange={(e) => {
-                  setValue("proveedor_id", e.target.value);
-                  if (e.target.value) setValue("grupo_id", "");
-                }}
-              >
-                <option value="">-- Ninguno --</option>
-                {proveedores.map((p) => (
-                  <option key={p.proveedor_id} value={p.proveedor_id}>{p.nombre_apellido}</option>
-                ))}
-              </select>
-            </div>
+            {!nroOcSeleccionada && (
+              <div>
+                <label className={labelClass}>Proveedor</label>
+                <select
+                  {...register("proveedor_id")}
+                  className={inputClass}
+                  onChange={(e) => {
+                    setValue("proveedor_id", e.target.value);
+                    if (e.target.value) setValue("grupo_id", "");
+                  }}
+                >
+                  <option value="">-- Ninguno --</option>
+                  {proveedores.map((p) => (
+                    <option key={p.proveedor_id} value={p.proveedor_id}>{p.nombre_apellido}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {/* Grupo */}
-            <div>
-              <label className={labelClass}>Grupo</label>
-              <select
-                {...register("grupo_id")}
-                className={inputClass}
-                onChange={(e) => {
-                  setValue("grupo_id", e.target.value);
-                  if (e.target.value) setValue("proveedor_id", "");
-                }}
-              >
-                <option value="">-- Ninguno --</option>
-                {grupos.map((g) => (
-                  <option key={g.grupo_id} value={g.grupo_id}>{g.nombre_apellido}</option>
-                ))}
-              </select>
-            </div>
+            {!!nroOcSeleccionada && (
+              <div>
+                <label className={labelClass}>Grupo</label>
+                <select
+                  {...register("grupo_id")}
+                  className={inputClass}
+                  onChange={(e) => {
+                    setValue("grupo_id", e.target.value);
+                    if (e.target.value) setValue("proveedor_id", "");
+                  }}
+                >
+                  <option value="">-- Ninguno --</option>
+                  {grupos.map((g) => (
+                    <option key={g.grupo_id} value={g.grupo_id}>{g.nombre_apellido}</option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {/* Importe */}
             <div className="col-span-2">

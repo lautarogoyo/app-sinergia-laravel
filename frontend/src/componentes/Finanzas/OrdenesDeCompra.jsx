@@ -120,7 +120,7 @@ export default function OrdenesDeCompra() {
 
         <button
           onClick={() => setModal({ mode: "create" })}
-          className="ml-auto bg-amber-600 hover:bg-amber-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition cursor-pointer"
+          className="ml-auto bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition cursor-pointer"
         >
           + Nueva OC
         </button>
@@ -162,15 +162,15 @@ export default function OrdenesDeCompra() {
                       <div className="flex justify-center gap-2">
                         <button
                           onClick={() => setModal({ mode: "edit", data: o })}
-                          className="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1 px-3 rounded shadow cursor-pointer"
+                          className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
                         >
-                          Editar
+                          <Icon name="pencil" className="h-6 w-6 text-white group-hover:text-blue-200 transition-colors" />
                         </button>
                         <button
                           onClick={() => handleEliminar(o)}
-                          className="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-1 px-3 rounded shadow cursor-pointer"
+                          className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
                         >
-                          Eliminar
+                          <Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
                         </button>
                       </div>
                     </td>

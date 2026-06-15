@@ -20,3 +20,8 @@ export const deleteFactura = async (nroObra, nroFactura) => {
   const { data } = await axios.delete(`${base}/api/obras/${nroObra}/facturas/${nroFactura}`);
   return data;
 };
+
+export const fetchFacturasReporteMensual = async (params) => {
+  const { data } = await axios.get(`${base}/api/facturas/reporte-mensual`, { params });
+  return data;
+};
