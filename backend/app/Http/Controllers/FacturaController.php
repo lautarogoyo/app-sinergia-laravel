@@ -23,8 +23,8 @@ class FacturaController extends Controller
             'nro_factura'   => 'required|string|max:50|unique:Factura,nro_factura',
             'nro_oc'        => [
                 'nullable',
-                'string',
-                'max:50',
+                'numeric',
+                'min:0',
                 Rule::exists('Orden_Compra', 'nro_oc')->where(fn ($query) => $query->where('nro_obra', $obra->nro_obra)),
             ],
             'proveedor_id'  => 'nullable|exists:Proveedor,proveedor_id',
@@ -83,8 +83,8 @@ class FacturaController extends Controller
         $validated = $request->validate([
             'nro_oc'        => [
                 'nullable',
-                'string',
-                'max:50',
+                'numeric',
+                'min:0',
                 Rule::exists('Orden_Compra', 'nro_oc')->where(fn ($query) => $query->where('nro_obra', $obra->nro_obra)),
             ],
             'proveedor_id'  => 'nullable|exists:Proveedor,proveedor_id',
@@ -154,5 +154,37 @@ class FacturaController extends Controller
         if (($sumaActual + $importeNuevo) > $oc->importe) {
             abort(422, "El importe excede el saldo disponible de la OC. Disponible: $" . number_format($oc->importe - $sumaActual, 2));
         }
+    }
+
+    // En FacturaController.php, agregar este método:
+
+    public function reporteMensual(Request $request)
+    {
+        $request->validate([
+            'mes'          => 'required|integer|between:1,12',
+            'anio'         => 'required|integer|min:2000',
+            'tipo_factura' => 'nullable|in:A,C',
+            'empresa'      => 'nullable|in:GOYOAGA,PROTECDUR,SINERGIA',
+        ]);
+
+        $query = Factura::with(['proveedor', 'grupo', 'obra'])
+            ->whereMonth('fecha', $request->mes)
+            ->whereYear('fecha', $request->anio);
+
+        if ($request->filled('tipo_factura')) {
+            $query->where('tipo_factura', $request->tipo_factura);
+        }
+
+        if ($request->filled('empresa')) {
+            $query->where('empresa', $request->empresa);
+        }
+
+        $facturas = $query->orderBy('fecha')->get();
+
+        return response()->json([
+            'facturas' => $facturas,
+            'total'    => $facturas->sum('importe_total'),
+            'status'   => 200,
+        ]);
     }
 }

@@ -19,7 +19,7 @@ class OrdenCompraController extends Controller
     public function store(Request $request, Obra $obra)
     {
         $validated = $request->validate([
-            'nro_oc'   => 'required|string|max:50',
+            'nro_oc'   => 'required|numeric|min:0',
             'grupo_id' => 'required|exists:Grupo,grupo_id',
             'detalle'  => 'required|string',
             'importe'  => 'required|numeric|min:0',
@@ -58,7 +58,7 @@ class OrdenCompraController extends Controller
         }
 
         $validated = $request->validate([
-            'nro_oc'   => 'sometimes|required|string|max:50',
+            'nro_oc'   => 'sometimes|required|numeric|min:0',
             'grupo_id' => 'sometimes|required|exists:Grupo,grupo_id',
             'detalle'  => 'sometimes|required|string',
             'importe'  => 'sometimes|required|numeric|min:0',
