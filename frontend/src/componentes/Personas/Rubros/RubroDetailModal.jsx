@@ -74,7 +74,6 @@ export default function RubroDetailModal({ rubro, initialMode, onClose }) {
           {mode === "read" && (
             <>
               <div className="mb-6 space-y-4">
-                <Row label="ID"          value={rubro?.rubro_id} />
                 <Row label="Descripción" value={rubro?.descripcion} />
               </div>
               <div className="flex gap-3 justify-end">

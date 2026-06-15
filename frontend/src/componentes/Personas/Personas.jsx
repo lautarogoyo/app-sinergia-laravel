@@ -1,10 +1,12 @@
 import { useMemo, useState } from "react";
-import { useGrupos } from "../hooks/useGrupos";
-import { useProveedores } from "../hooks/useProveedores";
-import { useRubros } from "../hooks/useRubros";
+import { useGrupos,useDeleteGrupo } from "../hooks/useGrupos";
+import { useProveedores,useDeleteProveedor } from "../hooks/useProveedores";
+import { useRubros,useDeleteRubro} from "../hooks/useRubros";
 import ProveedorDetailModal from "./Proveedores/ProveedorDetailModal.jsx";
 import GrupoDetailModal from "./Grupos/GrupoDetailModal.jsx";
 import RubroDetailModal from "./Rubros/RubroDetailModal.jsx";
+import Swal from "sweetalert2";
+
 
 const thClass = "px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500";
 const tdClass = "text-lg text-gray-800 px-4 py-3 text-center";
@@ -33,9 +35,14 @@ function TableEmpty({ cols, mensaje }) {
   );
 }
 
+
+
 export default function Personas() {
   const [seccion, setSeccion] = useState("proveedores");
   const [busqueda, setBusqueda] = useState("");
+  const { mutate: eliminarProveedor } = useDeleteProveedor();
+  const { mutate: eliminarGrupo }     = useDeleteGrupo();
+  const { mutate: eliminarRubro }     = useDeleteRubro();
 
   const [proveedorModal, setProveedorModal] = useState(null); // { proveedor, mode }
   const [grupoModal,     setGrupoModal]     = useState(null); // { grupo, mode }
@@ -47,7 +54,50 @@ export default function Personas() {
   const { data: rubros      = [], isLoading: loadingRubros                               } = useRubros();
 
   const filtro = busqueda.trim().toLowerCase();
+  const handleEliminarProveedor = async (p) => {
+  const result = await Swal.fire({
+    icon: "warning",
+    title: "Eliminar proveedor",
+    text: `¿Estás seguro de eliminar a ${p.nombre_apellido}?`,
+    showCancelButton: true,
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar",
+    });
+    if (!result.isConfirmed) return;
+    eliminarProveedor(p.proveedor_id, {
+      onError: () => Swal.fire("Error", "No se pudo eliminar el proveedor", "error"),
+    });
+  };
 
+  const handleEliminarGrupo = async (g) => {
+    const result = await Swal.fire({
+      icon: "warning",
+      title: "Eliminar grupo",
+      text: `¿Estás seguro de eliminar a ${g.nombre_apellido}?`,
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+    if (!result.isConfirmed) return;
+    eliminarGrupo(g.grupo_id ?? g.id, {
+      onError: () => Swal.fire("Error", "No se pudo eliminar el grupo", "error"),
+    });
+  };
+
+  const handleEliminarRubro = async (r) => {
+    const result = await Swal.fire({
+      icon: "warning",
+      title: "Eliminar rubro",
+      text: `¿Estás seguro de eliminar el rubro ${r.descripcion}?`,
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+    });
+    if (!result.isConfirmed) return;
+    eliminarRubro(r.rubro_id, {
+      onError: () => Swal.fire("Error", "No se pudo eliminar el rubro", "error"),
+    });
+  };
   const proveedoresFiltrados = useMemo(() => {
     let lista = proveedores;
 
@@ -217,7 +267,7 @@ export default function Personas() {
                     <td className="px-6 py-4">
                       <div className="flex gap-2 justify-center flex-wrap">
                         <button type="button" onClick={() => setProveedorModal({ proveedor: p, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
-                        <button type="button" onClick={() => setProveedorModal({ proveedor: p, mode: "delete" })} className={btnRed}>Eliminar</button>
+                        <button type="button" onClick={() => handleEliminarProveedor(p)} className={btnRed}>Eliminar</button>
                       </div>
                     </td>
                   </tr>
@@ -278,7 +328,7 @@ export default function Personas() {
                         <td className="px-6 py-4">
                           <div className="flex gap-2 justify-center flex-wrap">
                             <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
-                            <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "delete" })} className={btnRed}>Eliminar</button>
+                            <button type="button" onClick={() => handleEliminarGrupo(g)} className={btnRed}>Eliminar</button>
                           </div>
                         </td>
                       </tr>
@@ -339,7 +389,7 @@ export default function Personas() {
                         <td className="px-6 py-4">
                           <div className="flex gap-2 justify-center flex-wrap">
                             <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
-                            <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "delete" })} className={btnRed}>Eliminar</button>
+                            <button type="button" onClick={() => handleEliminarGrupo(g)} className={btnRed}>Eliminar</button>
                           </div>
                         </td>
                       </tr>
@@ -359,7 +409,7 @@ export default function Personas() {
           <table className="min-w-full">
             <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
               <tr>
-                {["ID", "Descripción", "Acciones"].map((h) => (
+                {["Descripción", "Acciones"].map((h) => (
                   <th key={h} className={thClass}>{h}</th>
                 ))}
               </tr>
@@ -372,12 +422,11 @@ export default function Personas() {
               ) : (
                 rubrosFiltrados.map((r) => (
                   <tr key={r.rubro_id} className="hover:bg-gray-200 transition-colors duration-150">
-                    <td className={tdClass}>{r.rubro_id}</td>
                     <td className={tdClass}>{r.descripcion ?? "Sin descripción"}</td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2 justify-center flex-wrap">
                         <button type="button" onClick={() => setRubroModal({ rubro: r, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
-                        <button type="button" onClick={() => setRubroModal({ rubro: r, mode: "delete" })} className={btnRed}>Eliminar</button>
+                        <button type="button" onClick={() => handleEliminarRubro(r)} className={btnRed}>Eliminar</button>
                       </div>
                     </td>
                   </tr>
