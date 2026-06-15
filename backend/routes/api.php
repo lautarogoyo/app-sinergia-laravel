@@ -104,6 +104,10 @@ Route::get('estado_grupos', [EstadoGrupoController::class, 'index']);
 
 // Facturas de obra
 Route::apiResource('obras/{obra}/facturas', FacturaController::class)->parameters(['facturas' => 'factura']);
+// Agregar junto a las rutas de facturas:
+Route::get('facturas/reporte-mensual', [FacturaController::class, 'reporteMensual']);
+
+
 
 // TODO: GastoController         → obras/{obra}/gastos
 // TODO: ProveedorRubroController → proveedores/{proveedor}/rubros
