@@ -23,6 +23,7 @@ use App\Http\Controllers\EstadoEmpleadoController;
 use App\Http\Controllers\EstadoObraController;
 use App\Http\Controllers\EstadoCotizacionController;
 use App\Http\Controllers\EstadoComparativaController;
+use App\Http\Controllers\FacturaImpuestosController;
 
 // Auth
 Route::post('/auth/login', [AuthController::class, 'login']);
@@ -106,7 +107,9 @@ Route::get('estado_grupos', [EstadoGrupoController::class, 'index']);
 Route::apiResource('obras/{obra}/facturas', FacturaController::class)->parameters(['facturas' => 'factura']);
 // Agregar junto a las rutas de facturas:
 Route::get('facturas/reporte-mensual', [FacturaController::class, 'reporteMensual']);
-
+// Agregar junto a las rutas de facturas:
+Route::get('obras/{obra}/facturas/{factura}/impuestos', [FacturaImpuestosController::class, 'show']);
+Route::put('obras/{obra}/facturas/{factura}/impuestos', [FacturaImpuestosController::class, 'upsert']);
 
 
 // TODO: GastoController         → obras/{obra}/gastos

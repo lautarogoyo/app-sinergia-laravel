@@ -40,6 +40,7 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
       nombre_apellido: grupo?.nombre_apellido ?? "",
       tipo_facturacion_id: grupo?.tipo_facturacion_id ?? "",
       estado_grupo_id: grupo?.estado_grupo_id ?? "",
+      cuit:  grupo?.cuit   ?? "",
       cbu:   grupo?.cbu   ?? "",
       alias: grupo?.alias ?? "",
       telefono: grupo?.telefono ?? "",
@@ -113,6 +114,7 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
                 </div>
                 <Row label="Tipo de Facturación" value={grupo?.tipo_facturacion?.tipo_facturacion_id == 1 ? "Monotributista" : "Responsable Inscripto"} />
                 <Row label="CBU"   value={grupo?.cbu} />
+                <Row label="CUIT" value={grupo?.cuit} />
                 <Row label="Alias" value={grupo?.alias} />
                 <Row label="Teléfono" value={grupo?.telefono} />
                 <Row label="Email" value={grupo?.email} />
@@ -213,6 +215,20 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
                   {errors.estado_grupo_id && <p className="text-red-600 text-xs mt-1">{errors.estado_grupo_id.message}</p>}
                 </div>
 
+                <div className="flex flex-col">
+                  <label className={labelCls}>CUIT</label>
+                  <input
+                    type="text"
+                    {...register("cuit", {
+                      pattern: { value: /^\d{2}-\d{8}-\d{1}$/, message: "Formato: XX-XXXXXXXX-X" },
+                    })}
+                    className={inputCls}
+                    placeholder="20-12345678-9"
+                  />
+                  {errors.cuit && (
+                    <p className="text-red-600 text-xs mt-1">{errors.cuit.message}</p>
+                  )}
+                </div>
 
                 <div className="flex flex-col">
                   <label className={labelCls}>CBU</label>

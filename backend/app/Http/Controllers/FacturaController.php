@@ -12,8 +12,11 @@ class FacturaController extends Controller
     public function index(Obra $obra)
     {
         return response()->json([
-            'facturas' => $obra->facturas()->with(['proveedor', 'grupo'])->get(),
-            'status'   => 200,
+            'facturas' => $obra->facturas()
+                ->with(['proveedor', 'grupo','impuestos'])
+                ->withExists('impuestos as tiene_impuestos')
+                ->get(),
+            'status' => 200,
         ], 200);
     }
 
@@ -167,7 +170,7 @@ class FacturaController extends Controller
             'empresa'      => 'nullable|in:GOYOAGA,PROTECDUR,SINERGIA',
         ]);
 
-        $query = Factura::with(['proveedor', 'grupo', 'obra'])
+        $query = Factura::with(['proveedor', 'grupo', 'obra', 'impuestos'])
             ->whereMonth('fecha', $request->mes)
             ->whereYear('fecha', $request->anio);
 

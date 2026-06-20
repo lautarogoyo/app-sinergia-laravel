@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Factura extends SinergiaModel
 {
@@ -58,4 +59,8 @@ class Factura extends SinergiaModel
             ->where('nro_obra', $this->nro_obra)
             ->first();
     }
+    public function impuestos(): HasOne
+{
+    return $this->hasOne(FacturaImpuestos::class, 'nro_factura', 'nro_factura');
+}
 }

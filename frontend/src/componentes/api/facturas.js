@@ -25,3 +25,13 @@ export const fetchFacturasReporteMensual = async (params) => {
   const { data } = await axios.get(`${base}/api/facturas/reporte-mensual`, { params });
   return data;
 };
+
+export const fetchImpuestos = async (nroObra, nroFactura) => {
+    const { data } = await axios.get(`${base}/api/obras/${nroObra}/facturas/${nroFactura}/impuestos`);
+    return data.impuestos;
+};
+
+export const upsertImpuestos = async (nroObra, nroFactura, payload) => {
+    const { data } = await axios.put(`${base}/api/obras/${nroObra}/facturas/${nroFactura}/impuestos`, payload);
+    return data.impuestos;
+};

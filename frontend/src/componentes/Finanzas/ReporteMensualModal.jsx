@@ -53,7 +53,7 @@ export default function ReporteMensualModal({ onClose, accentColor = "emerald" }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6">
+     <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-8">
         <div className="flex items-center justify-between mb-5">
           <h3 className="text-lg font-bold text-gray-800">Imprimir facturas del mes</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl font-bold leading-none cursor-pointer">×</button>
@@ -79,26 +79,25 @@ export default function ReporteMensualModal({ onClose, accentColor = "emerald" }
               />
             </div>
           </div>
+            <div className="flex-1">
+              <label className={labelCls}>Tipo de factura</label>
+              <select value={tipo_factura} onChange={(e) => setTipo(e.target.value)} className={inputCls}>
+                <option value="" disabled>— Seleccionar —</option>
+                <option value="A">A</option>
+                <option value="C">C</option>
+              </select>
+            </div>
 
-          <div>
-            <label className={labelCls}>Tipo de factura</label>
-            <select value={tipo_factura} onChange={(e) => setTipo(e.target.value)} className={inputCls}>
-              <option value="">— Todos —</option>
-              <option value="A">A</option>
-              <option value="C">C</option>
-            </select>
+            <div className="flex-1">
+              <label className={labelCls}>Empresa</label>
+              <select value={empresa} onChange={(e) => setEmpresa(e.target.value)} className={inputCls}>
+                <option value="" disabled>— Seleccionar —</option>
+                <option value="GOYOAGA">Goyoaga</option>
+                <option value="PROTECDUR">Protecdur</option>
+                <option value="SINERGIA">Sinergia</option>
+              </select>
+            </div>
           </div>
-
-          <div>
-            <label className={labelCls}>Empresa</label>
-            <select value={empresa} onChange={(e) => setEmpresa(e.target.value)} className={inputCls}>
-              <option value="">— Todas —</option>
-              <option value="GOYOAGA">Goyoaga</option>
-              <option value="PROTECDUR">Protecdur</option>
-              <option value="SINERGIA">Sinergia</option>
-            </select>
-          </div>
-        </div>
 
         <div className="flex justify-end gap-3 mt-6">
           <button
