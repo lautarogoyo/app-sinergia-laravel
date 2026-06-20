@@ -7,6 +7,8 @@ import { fetchObras } from "../api/obras";
 import ObraSelect from "../shared/ObrasSelect";
 import { fetchOrdenesByObra, createOrden, updateOrden, deleteOrden } from "../api/ordenesCompra";
 import axios from "axios";
+import PaginationControls from "../shared/PaginationControls.jsx";
+import { usePagination } from "../shared/usePagination.jsx";
 
 const base = import.meta.env.VITE_API_URL;
 
@@ -18,7 +20,18 @@ export default function OrdenesDeCompra() {
   const [busqueda, setBusqueda] = useState("");
   const [modal, setModal] = useState(null);
   const queryClient = useQueryClient();
+  const [sortConfig, setSortConfig] = useState({ key: null, dir: "asc" });
 
+  const handleSort = (key) => {
+    setSortConfig((prev) =>
+      prev.key === key ? { key, dir: prev.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" }
+    );
+  };
+
+  const SortIcon = ({ col }) => {
+    if (sortConfig.key !== col) return <span className="ml-1 text-gray-400 text-xs">⇅</span>;
+    return <span className="ml-1 text-xs">{sortConfig.dir === "asc" ? "↑" : "↓"}</span>;
+  };
   const { data: obras = [] } = useQuery({
     queryKey: ["obras"],
     queryFn: fetchObras,
@@ -79,14 +92,36 @@ export default function OrdenesDeCompra() {
 
   const ordenesFiltradas = useMemo(() => {
     const val = busqueda.trim().toLowerCase();
-    if (!val) return ordenes;
-    return ordenes.filter(
+    let result = ordenes.filter(
       (o) =>
+        !val ||
         o.nro_oc?.toLowerCase().includes(val) ||
         o.grupo?.nombre_apellido?.toLowerCase().includes(val) ||
         o.detalle?.toLowerCase().includes(val)
     );
-  }, [ordenes, busqueda]);
+
+    if (sortConfig.key) {
+      result = [...result].sort((a, b) => {
+        let aVal, bVal;
+        if (sortConfig.key === "grupo") {
+          aVal = (a.grupo?.nombre_apellido ?? "").toLowerCase();
+          bVal = (b.grupo?.nombre_apellido ?? "").toLowerCase();
+        } else if (sortConfig.key === "importe") {
+          aVal = Number(a.importe);
+          bVal = Number(b.importe);
+        } else {
+          aVal = (a[sortConfig.key] ?? "").toString().toLowerCase();
+          bVal = (b[sortConfig.key] ?? "").toString().toLowerCase();
+        }
+        if (aVal < bVal) return sortConfig.dir === "asc" ? -1 : 1;
+        if (aVal > bVal) return sortConfig.dir === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return result;
+  }, [ordenes, busqueda, sortConfig]);
+  const ordenesPage = usePagination(ordenesFiltradas, 8);
 
   return (
     <div className="flex-1 min-h-screen bg-gray-50 p-6">
@@ -132,25 +167,36 @@ export default function OrdenesDeCompra() {
         <div className="text-center text-gray-400 mt-20 text-sm animate-pulse">Cargando órdenes...</div>
       ) : (
         <div className="shadow-2xl rounded-xl border border-gray-300 bg-white overflow-hidden">
-          <table className="w-full">
+          <div className="overflow-x-auto">
+          <table className="min-w-max w-full">
             <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
               <tr>
-                <th className={thClass}>Nro. OC</th>
-                <th className={thClass}>Grupo</th>
-                <th className={thClass}>Detalle</th>
-                <th className={thClass}>Importe</th>
+                {[
+                  { label: "Nro. OC", key: "nro_oc" },
+                  { label: "Grupo", key: "grupo" },
+                  { label: "Detalle", key: "detalle" },
+                  { label: "Importe", key: "importe" },
+                ].map(({ label, key }) => (
+                  <th
+                    key={key}
+                    onClick={() => handleSort(key)}
+                    className={`${thClass} cursor-pointer select-none hover:bg-gray-600 transition`}
+                  >
+                    {label}<SortIcon col={key} />
+                  </th>
+                ))}
                 <th className={thClass}>Acciones</th>
               </tr>
             </thead>
             <tbody className="bg-gray-50 divide-y divide-gray-200">
-              {ordenesFiltradas.length === 0 ? (
+              {ordenesPage.paginatedItems.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="text-center py-8 text-gray-400">
                     No hay órdenes de compra para esta obra.
                   </td>
                 </tr>
               ) : (
-                ordenesFiltradas.map((o, i) => (
+                ordenesPage.paginatedItems.map((o, i) => (
                   <tr key={o.nro_oc} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                     <td className={`${tdClass} font-semibold`}>{o.nro_oc}</td>
                     <td className={tdClass}>{o.grupo?.nombre_apellido ?? "-"}</td>
@@ -179,6 +225,20 @@ export default function OrdenesDeCompra() {
               )}
             </tbody>
           </table>
+          </div>
+          <PaginationControls
+            currentPage={ordenesPage.currentPage}
+            totalPages={ordenesPage.totalPages}
+            totalItems={ordenesPage.totalItems}
+            startItem={ordenesPage.startItem}
+            endItem={ordenesPage.endItem}
+            pageSize={ordenesPage.pageSize}
+            onPageSizeChange={ordenesPage.setPageSize}
+            hasPrevious={ordenesPage.hasPrevious}
+            hasNext={ordenesPage.hasNext}
+            onPrevious={() => ordenesPage.setCurrentPage((page) => Math.max(1, page - 1))}
+            onNext={() => ordenesPage.setCurrentPage((page) => Math.min(ordenesPage.totalPages, page + 1))}
+          />
         </div>
       )}
 

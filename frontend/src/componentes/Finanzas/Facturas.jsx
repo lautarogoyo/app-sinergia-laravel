@@ -8,6 +8,9 @@ import FacturaModal from "./FacturasModal";
 import axios from "axios";
 import ObraSelect from "../shared/ObrasSelect";
 import ReporteMensualModal from "./ReporteMensualModal";
+import FacturaImpuestosModal from "./FacturaImpuestosModal";
+import PaginationControls from "../shared/PaginationControls.jsx";
+import { usePagination } from "../shared/usePagination.jsx";
 
 
 
@@ -22,6 +25,8 @@ export default function Facturas() {
   const [modal, setModal] = useState(null);
   const queryClient = useQueryClient();
   const [modalReporte, setModalReporte] = useState(false);
+  const [modalImpuestos, setModalImpuestos] = useState(null); // factura seleccionada
+  const [sortConfig, setSortConfig] = useState({ key: null, dir: "asc" });
 
 
   const { data: obras = [] } = useQuery({
@@ -90,19 +95,53 @@ export default function Facturas() {
     });
     if (res.isConfirmed) deleteMutation.mutate({ obraId: f.nro_obra, nroFactura: f.nro_factura });
   };
+  
+  const handleSort = (key) => {
+  setSortConfig((prev) =>
+    prev.key === key ? { key, dir: prev.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" }
+  );
+  };
+
+  const SortIcon = ({ col }) => {
+    if (sortConfig.key !== col) return <span className="ml-1 text-gray-400 text-xs">⇅</span>;
+    return <span className="ml-1 text-xs">{sortConfig.dir === "asc" ? "↑" : "↓"}</span>;
+  };
 
   const facturasFiltradas = useMemo(() => {
     const val = busqueda.trim().toLowerCase();
-    if (!val) return facturas;
-    return facturas.filter(
+    let result = facturas.filter(
       (f) =>
+        !val ||
         f.nro_factura?.toLowerCase().includes(val) ||
         f.empresa?.toLowerCase().includes(val) ||
         f.proveedor?.nombre_apellido?.toLowerCase().includes(val) ||
         f.grupo?.nombre_apellido?.toLowerCase().includes(val)
     );
-  }, [facturas, busqueda]);
 
+    if (sortConfig.key) {
+      result = [...result].sort((a, b) => {
+        let aVal, bVal;
+        if (sortConfig.key === "entidad") {
+          aVal = (a.proveedor?.nombre_apellido || a.grupo?.nombre_apellido || "").toLowerCase();
+          bVal = (b.proveedor?.nombre_apellido || b.grupo?.nombre_apellido || "").toLowerCase();
+        } else if (sortConfig.key === "importe_total") {
+          aVal = Number(a.importe_total);
+          bVal = Number(b.importe_total);
+        } else {
+          aVal = (a[sortConfig.key] ?? "").toString().toLowerCase();
+          bVal = (b[sortConfig.key] ?? "").toString().toLowerCase();
+        }
+        if (aVal < bVal) return sortConfig.dir === "asc" ? -1 : 1;
+        if (aVal > bVal) return sortConfig.dir === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return result;
+  }, [facturas, busqueda, sortConfig]);
+  const facturasPage = usePagination(facturasFiltradas, 8);
+
+  
   return (
     <div className="flex-1 min-h-screen bg-gray-50 p-6">
       <div className="flex items-center gap-3 mb-6">
@@ -155,28 +194,39 @@ export default function Facturas() {
         <div className="text-center text-gray-400 mt-20 text-sm animate-pulse">Cargando facturas...</div>
       ) : (
         <div className="shadow-2xl rounded-xl border border-gray-300 bg-white overflow-hidden">
-          <table className="w-full">
+          <div className="overflow-x-auto">
+          <table className="min-w-max w-full">
             <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
-              <tr>
-                <th className={thClass}>Nro. Factura</th>
-                <th className={thClass}>Fecha</th>
-                <th className={thClass}>Tipo</th>
-                <th className={thClass}>Empresa</th>
-                <th className={thClass}>Forma Pago</th>
-                <th className={thClass}>Proveedor / Grupo</th>
-                <th className={thClass}>Importe</th>
-                <th className={thClass}>Acciones</th>
-              </tr>
-            </thead>
+            <tr>
+              {[
+                { label: "Nro. Factura",      key: "nro_factura"   },
+                { label: "Fecha",             key: "fecha"         },
+                { label: "Tipo",              key: "tipo_factura"  },
+                { label: "Empresa",           key: "empresa"       },
+                { label: "Forma Pago",        key: "forma_pago"    },
+                { label: "Proveedor / Grupo", key: "entidad"       },
+                { label: "Importe",           key: "importe_total" },
+              ].map(({ label, key }) => (
+                <th
+                  key={key}
+                  onClick={() => handleSort(key)}
+                  className={`${thClass} cursor-pointer select-none hover:bg-gray-600 transition`}
+                >
+                  {label}<SortIcon col={key} />
+                </th>
+              ))}
+              <th className={thClass}>Acciones</th>
+            </tr>
+          </thead>
             <tbody className="bg-gray-50 divide-y divide-gray-200">
-              {facturasFiltradas.length === 0 ? (
+              {facturasPage.paginatedItems.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="text-center py-8 text-gray-400">
                     No hay facturas para esta obra.
                   </td>
                 </tr>
               ) : (
-                facturasFiltradas.map((f, i) => (
+                facturasPage.paginatedItems.map((f, i) => (
                   <tr key={f.nro_factura} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                     <td className={`${tdClass} font-semibold`}>{f.nro_factura}</td>
                     <td className={tdClass}>
@@ -214,6 +264,19 @@ export default function Facturas() {
                     </td>
                     <td className={tdClass}>
                       <div className="flex gap-2 justify-center">
+                        {f.tipo_factura !== "C" && (
+                          <button
+                            onClick={() => setModalImpuestos(f)}
+                            title="Datos fiscales"
+                            className={`p-1.5 rounded text-xs font-bold ${
+                                f.tiene_impuestos
+                                    ? "bg-emerald-100 text-emerald-700"
+                                  : "bg-yellow-100 text-yellow-700"
+                          }`}
+                      >
+                          {f.tiene_impuestos ? "$ ✓" : "$ ?"}
+                      </button>
+                      )}
                         <button
                           className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
                           onClick={() => setModal({ mode: "edit", data: f })}
@@ -233,6 +296,20 @@ export default function Facturas() {
               )}
             </tbody>
           </table>
+          </div>
+          <PaginationControls
+            currentPage={facturasPage.currentPage}
+            totalPages={facturasPage.totalPages}
+            totalItems={facturasPage.totalItems}
+            startItem={facturasPage.startItem}
+            endItem={facturasPage.endItem}
+            pageSize={facturasPage.pageSize}
+            onPageSizeChange={facturasPage.setPageSize}
+            hasPrevious={facturasPage.hasPrevious}
+            hasNext={facturasPage.hasNext}
+            onPrevious={() => facturasPage.setCurrentPage((page) => Math.max(1, page - 1))}
+            onNext={() => facturasPage.setCurrentPage((page) => Math.min(facturasPage.totalPages, page + 1))}
+          />
         </div>
       )}
 
@@ -257,6 +334,13 @@ export default function Facturas() {
       )}
       {modalReporte && (
         <ReporteMensualModal onClose={() => setModalReporte(false)} accentColor="emerald" />
+      )}
+      {modalImpuestos && (
+        <FacturaImpuestosModal
+            factura={modalImpuestos}
+            obraId={obraSeleccionada}
+            onClose={() => setModalImpuestos(null)}
+        />
       )}
     </div>
     

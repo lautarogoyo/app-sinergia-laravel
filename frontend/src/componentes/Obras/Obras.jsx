@@ -9,6 +9,8 @@ import { DeleteObra } from "../api/obras.js";
 import { fixMojibake } from "../utils/text";
 import { formatearFecha, generarPdfPanelObras } from "./ObrasPdf";
 import EditFechaVistoModal from "./EditFechaVistoModal.jsx";
+import PaginationControls from "../shared/PaginationControls.jsx";
+import { usePagination } from "../shared/usePagination.jsx";
 
 
 // Panel de Obras inspirado en el panel de Empleados
@@ -19,8 +21,19 @@ export default function Obras() {
 	const { data: obrasData = [], isLoading: isLoadingObras } = useObras();
 	const queryClient = useQueryClient();
 	const [modalFechaVisto, setModalFechaVisto] = useState({ isOpen: false, obra: null });
+	const [sortConfig, setSortConfig] = useState({ key: null, dir: "asc" });
 
-	
+	const handleSort = (key) => {
+		setSortConfig((prev) =>
+			prev.key === key ? { key, dir: prev.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" }
+		);
+	};
+
+	const SortIcon = ({ col }) => {
+		if (sortConfig.key !== col) return <span className="ml-1 text-gray-400 text-xs">⇅</span>;
+		return <span className="ml-1 text-xs">{sortConfig.dir === "asc" ? "↑" : "↓"}</span>;
+	};
+
 	const deleteMutation = useMutation({
 		mutationFn: (id) => DeleteObra(id),
 		onSuccess: () => {
@@ -50,26 +63,6 @@ export default function Obras() {
 			deleteMutation.mutate(obra.nro_obra);
 		}
 	};
-
-	if (isLoadingObras) {
-		return (
-			<div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
-				<div className="relative">
-					<div className="mt-8 text-center">
-						<h2 className="text-3xl font-bold text-white mb-4 animate-pulse">Cargando Obras</h2>
-						<div className="w-80 h-3 bg-gray-700 rounded-full overflow-hidden shadow-lg">
-							<div className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-full animate-loading-bar"></div>
-						</div>
-						<div className="mt-4 flex justify-center gap-2">
-							<span className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></span>
-							<span className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></span>
-							<span className="w-3 h-3 bg-blue-300 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></span>
-						</div>
-					</div>
-				</div>
-			</div>
-		);
-	}
 
 	const getEstado = (obra) => obra.estado_obra?.descripcion;
 
@@ -105,10 +98,54 @@ export default function Obras() {
 	};
 
 	const obrasOrdenadas = [...obrasFiltradas].sort((a, b) => {
+		if (sortConfig.key) {
+			let aVal, bVal;
+			if (sortConfig.key === "nro_obra") {
+				aVal = Number(a.nro_obra);
+				bVal = Number(b.nro_obra);
+				return sortConfig.dir === "asc" ? aVal - bVal : bVal - aVal;
+			}
+			if (sortConfig.key === "estado") {
+				aVal = getEstado(a)?.toLowerCase() ?? "";
+				bVal = getEstado(b)?.toLowerCase() ?? "";
+			} else if (sortConfig.key === "fecha_visto") {
+				aVal = a.fecha_visto ?? "";
+				bVal = b.fecha_visto ?? "";
+			} else {
+				aVal = (a[sortConfig.key] ?? "").toString().toLowerCase();
+				bVal = (b[sortConfig.key] ?? "").toString().toLowerCase();
+			}
+			if (aVal < bVal) return sortConfig.dir === "asc" ? -1 : 1;
+			if (aVal > bVal) return sortConfig.dir === "asc" ? 1 : -1;
+			return 0;
+		}
+		// orden por defecto
 		const prioridad = prioridadEstado(getEstado(a)) - prioridadEstado(getEstado(b));
 		if (prioridad !== 0) return prioridad;
 		return ordenarNroObraAsc(a, b);
 	});
+
+	const obrasPage = usePagination(obrasOrdenadas, 8);
+
+	if (isLoadingObras) {
+		return (
+			<div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
+				<div className="relative">
+					<div className="mt-8 text-center">
+						<h2 className="text-3xl font-bold text-white mb-4 animate-pulse">Cargando Obras</h2>
+						<div className="w-80 h-3 bg-gray-700 rounded-full overflow-hidden shadow-lg">
+							<div className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-full animate-loading-bar"></div>
+						</div>
+						<div className="mt-4 flex justify-center gap-2">
+							<span className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></span>
+							<span className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></span>
+							<span className="w-3 h-3 bg-blue-300 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
 
 	const labelEstado = (estado) => {
 		if (!estado) return "-";
@@ -146,17 +183,17 @@ export default function Obras() {
 	};
 	return (
 		<>
-		<EditFechaVistoModal
-    		isOpen={modalFechaVisto.isOpen}
-			onClose={() => setModalFechaVisto({ isOpen: false, obra: null })}
-			obra={modalFechaVisto.obra}
-		/>
+			<EditFechaVistoModal
+				isOpen={modalFechaVisto.isOpen}
+				onClose={() => setModalFechaVisto({ isOpen: false, obra: null })}
+				obra={modalFechaVisto.obra}
+			/>
 			<ComentariosModal
 				isOpen={modalComentarios.isOpen}
 				onClose={cerrarModalComentarios}
 				obra={modalComentarios.obra}
 			/>
-			<div className="p-8 bg-gray-100 lg:w-full flex flex-col">
+			<div className="flex-1 min-w-0 w-full p-8 bg-gray-100 flex flex-col">
 				<h2 className="text-3xl font-extrabold mb-6 text-gray-800 tracking-wide">Panel de Obras</h2>
 
 				<div className="mb-6 w-full max-w-2xl flex flex-col">
@@ -193,104 +230,125 @@ export default function Obras() {
 					</div>
 				</div>
 
-				<div className="shadow-2xl rounded-xl border border-gray-300 bg-white flex flex-col">
-					<table className="">
-						<thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
-							<tr>
-								<th className="px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500">Nro. Obra</th>
-								<th className="px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500">Detalle</th>
-								<th className="px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500">Estado</th>
-								<th className="px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500">Grupos</th>
-								<th className="px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500">Fecha Visto</th>
-								<th className="px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500">Acciones</th>
-							</tr>
-						</thead>
-						<tbody className="bg-gray-50 divide-y divide-gray-200 text-center">
-							{obrasOrdenadas.length > 0 ? (
-								obrasOrdenadas.map((obra) => (
-									<tr key={obra.nro_obra} className="hover:bg-gray-200 transition-colors duration-150">
-										<td className="whitespace-nowrap text-lg text-gray-800 px-6 py-4">{obra.nro_obra ?? "-"}</td>
-										<td className="text-left text-lg text-gray-800 px-6 py-4 max-w-xl break-words">
-											{fixMojibake(obra.detalle ?? "Sin detalle")}
-										</td>
-										<td className="whitespace-nowrap px-6 py-4">
-											<span className={`px-3 py-1 rounded text-sm font-bold ${statusClass(getEstado(obra))}`}>
-												{labelEstado(getEstado(obra)).toUpperCase()}
-											</span>
-										</td>
-										<td className="px-6 py-4">
-											<div className="flex flex-wrap gap-2 justify-center">
+				<div className="shadow-2xl rounded-xl border border-gray-300 bg-white flex flex-col overflow-hidden">
+					<div className="overflow-x-auto">
+						<table className="min-w-max w-full">
+							<thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
+								<tr>
+									{[
+										{ label: "Nro. Obra", key: "nro_obra" },
+										{ label: "Detalle", key: "detalle" },
+										{ label: "Estado", key: "estado" },
+										{ label: "Grupos", key: "grupos" },
+										{ label: "Fecha Visto", key: "fecha_visto" },
+									].map(({ label, key }) => (
+										<th
+											key={key}
+											onClick={() => handleSort(key)}
+											className="px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500 cursor-pointer select-none hover:bg-gray-600 transition"
+										>
+											{label}<SortIcon col={key} />
+										</th>
+									))}
+									<th className="px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500">Acciones</th>
+								</tr>
+							</thead>
+							<tbody className="bg-gray-50 divide-y divide-gray-200 text-center">
+								{obrasPage.paginatedItems.length > 0 ? (
+									obrasPage.paginatedItems.map((obra) => (
+										<tr key={obra.nro_obra} className="hover:bg-gray-200 transition-colors duration-150">
+											<td className="whitespace-nowrap text-lg text-gray-800 px-6 py-4">{obra.nro_obra ?? "-"}</td>
+											<td className="text-left text-lg text-gray-800 px-6 py-4 max-w-xl break-words">
+												{fixMojibake(obra.detalle ?? "Sin detalle")}
+											</td>
+											<td className="whitespace-nowrap px-6 py-4">
+												<span className={`px-3 py-1 rounded text-sm font-bold ${statusClass(getEstado(obra))}`}>
+													{labelEstado(getEstado(obra)).toUpperCase()}
+												</span>
+											</td>
+											<td className="px-6 py-4 max-w-xs">
 												{obra.grupos && obra.grupos.length > 0 ? (
-													obra.grupos.map((grupo) => (
-														<span key={grupo.id} className="px-3 py-1 border-1 text-lg font-semibold ">
-															{grupo.nombre_apellido}
-														</span>
-													))
+													<span className="text-lg font-semibold break-words whitespace-normal">
+														{obra.grupos.map((g) => g.nombre_apellido).join(", ")}
+													</span>
 												) : (
 													<span className="text-gray-500">-</span>
 												)}
-											</div>
-										</td>
-										<td
-											className="text-lg font-bold px-6 py-4 whitespace-nowrap cursor-pointer hover:opacity-80"
-											style={esFechaHoy(obra.fecha_visto) ? { backgroundColor: "#B4A7D6" } : {}}
-											onClick={() => setModalFechaVisto({ isOpen: true, obra })}
-											title="Click para editar fecha visto"
-										>
-											{formatearFecha(obra.fecha_visto)}
-										</td>
-										<td className="px-6 py-4">
-											<div className="flex flex-col gap-2 items-center">
-												{/* Grupo principal: Gestionar, Gastos, Comentarios */}
-												<div className="flex gap-2 justify-center flex-wrap">
-													<button
-														className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-														onClick={() => navigate(`/obra/${obra.nro_obra}/gestionar`)}
-													>
-														Gestionar
-													</button>
-													<button
-														className="bg-green-700 hover:bg-green-900 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-														onClick={() => navigate(`/obra/${obra.nro_obra}/gestionar`)}
-													>
-														Gastos
-													</button>
-													<button
-														className="border-2 border-black hover:bg-gray-300 py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-														onClick={() => abrirModalComentarios(obra)}
-													>
-														<Icon name="message" className="w-5 h-5" />
-													</button>
+											</td>
+											<td
+												className="text-lg font-bold px-6 py-4 whitespace-nowrap cursor-pointer hover:opacity-80"
+												style={esFechaHoy(obra.fecha_visto) ? { backgroundColor: "#B4A7D6" } : {}}
+												onClick={() => setModalFechaVisto({ isOpen: true, obra })}
+												title="Click para editar fecha visto"
+											>
+												{formatearFecha(obra.fecha_visto)}
+											</td>
+											<td className="px-6 py-4">
+												<div className="flex flex-col gap-2 items-center">
+													{/* Grupo principal: Gestionar, Gastos, Comentarios */}
+													<div className="flex gap-2 justify-center flex-wrap">
+														<button
+															className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
+															onClick={() => navigate(`/obra/${obra.nro_obra}/gestionar`)}
+														>
+															Gestionar
+														</button>
+														<button
+															className="bg-green-700 hover:bg-green-900 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
+															onClick={() => navigate(`/obra/${obra.nro_obra}/gestionar`)}
+														>
+															Gastos
+														</button>
+														<button
+															className="border-2 border-black hover:bg-gray-300 py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
+															onClick={() => abrirModalComentarios(obra)}
+														>
+															<Icon name="message" className="w-5 h-5" />
+														</button>
+													</div>
+													{/* Grupo secundario: Editar, Eliminar */}
+													<div className="flex gap-2 justify-center">
+														<button
+															className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
+															onClick={() => navigate(`/editarobra/${obra.nro_obra}`)}
+														>
+															<Icon name="pencil" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
+														</button>
+														<button
+															className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center disabled:opacity-50"
+															onClick={() => handleEliminarObra(obra)}
+															disabled={deleteMutation.isPending}
+														>
+															<Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
+														</button>
+													</div>
 												</div>
-												{/* Grupo secundario: Editar, Eliminar */}
-												<div className="flex gap-2 justify-center">
-													<button
-														className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
-														onClick={() => navigate(`/editarobra/${obra.nro_obra}`)}
-													>
-														<Icon name="pencil" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
-													</button>
-													<button
-														className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center disabled:opacity-50"
-														onClick={() => handleEliminarObra(obra)}
-														disabled={deleteMutation.isPending}
-													>
-														<Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
-													</button>
-												</div>
-											</div>
+											</td>
+										</tr>
+									))
+								) : (
+									<tr>
+										<td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+											No hay obras
 										</td>
 									</tr>
-								))
-							) : (
-								<tr>
-									<td colSpan="6" className="px-6 py-4 text-center text-gray-500">
-										No hay obras
-									</td>
-								</tr>
-							)}
-						</tbody>
-					</table>
+								)}
+							</tbody>
+						</table>
+					</div>
+					<PaginationControls
+						currentPage={obrasPage.currentPage}
+						totalPages={obrasPage.totalPages}
+						totalItems={obrasPage.totalItems}
+						startItem={obrasPage.startItem}
+						endItem={obrasPage.endItem}
+						pageSize={obrasPage.pageSize}
+						onPageSizeChange={obrasPage.setPageSize}
+						hasPrevious={obrasPage.hasPrevious}
+						hasNext={obrasPage.hasNext}
+						onPrevious={() => obrasPage.setCurrentPage((page) => Math.max(1, page - 1))}
+						onNext={() => obrasPage.setCurrentPage((page) => Math.min(obrasPage.totalPages, page + 1))}
+					/>
 				</div>
 			</div>
 		</>
