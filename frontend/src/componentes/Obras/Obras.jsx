@@ -150,7 +150,7 @@ export default function Obras() {
 	const labelEstado = (estado) => {
 		if (!estado) return "-";
 		const mapa = {
-			pedida: "Pedido de Cotizacion",
+			pedida: "Pedida para cotizar",
 			cotizada: "Cotizada",
 			en_curso: "En Curso",
 			finalizada: "Finalizada",

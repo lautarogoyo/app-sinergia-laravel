@@ -22,13 +22,13 @@ export default function PedidoCard({ pedido, onEditar, onArchivar, onEliminar, o
             {pedido.archivado_at ? "archivado" : (pedido.estadoPedido?.descripcion ?? pedido.estado_pedido ?? "pendiente")}
           </span>
           <button type="button" onClick={(e) => { e.stopPropagation(); onEditar?.(pedido); }} className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded" title="Editar">
-            <Icon name="pencil" className="w-4 h-4" />
+            <Icon name="pencil" className="w-6 h-6" />
           </button>
           <button type="button" onClick={(e) => { e.stopPropagation(); onArchivar?.(pedido); }} className="p-1 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded" title="Archivar">
-            <Icon name="archive" className="w-4 h-4" />
+            <Icon name="archive" className="w-6 h-6" />
           </button>
           <button type="button" onClick={(e) => { e.stopPropagation(); onEliminar?.(pedido.pedido_compra_id); }} className="p-1 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded" title="Eliminar">
-            <Icon name="trash" className="w-4 h-4" />
+            <Icon name="trash" className="w-6 h-6" />
           </button>
         </div>
       </div>

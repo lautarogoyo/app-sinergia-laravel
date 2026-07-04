@@ -2,9 +2,16 @@ import React from "react";
 import Icon from "../../Icons/Icons";
 
 export default function GestionarHeader({ obraData, estadoObraIdActual, estadosObraDisponibles, pedidosActivosCount, pedidosArchivadosCount, onEstadoChange, onVolver }) {
+  const ETIQUETAS_ESTADO = {
+    pedida: "Pedida para cotizar",
+    cotizada: "Cotizada",
+    en_curso: "En Curso",
+    finalizada: "Finalizada",
+  };
+
   const normalizeEstadoDescription = (description) => {
     if (!description) return "Sin definir";
-    return description.replace(/_/g, " ").toUpperCase();
+    return ETIQUETAS_ESTADO[description.toLowerCase()] || description.replace(/_/g, " ").toUpperCase();
   };
 
   return (
@@ -33,7 +40,7 @@ export default function GestionarHeader({ obraData, estadoObraIdActual, estadosO
           <div className="flex items-center gap-2">
             <label className="text-sm font-medium text-gray-700 mr-2">Estado:</label>
             <select value={estadoObraIdActual || ""} onChange={onEstadoChange} className="px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-[220px]">
-              <option value="">Selecciona un estado</option>
+              <option value="">(seleccionar)</option>
               {estadosObraDisponibles.map((estado) => (
                 <option key={estado.estado_obra_id} value={estado.estado_obra_id}>
                   {normalizeEstadoDescription(estado.descripcion)}

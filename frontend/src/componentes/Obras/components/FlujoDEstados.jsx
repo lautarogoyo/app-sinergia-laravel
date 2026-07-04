@@ -1,7 +1,14 @@
 import React from "react";
 
 export default function FlujoDEstados({ estadosObraDisponibles = [], estadoObraIdActual }) {
-  const normalize = (d) => (d ? d.replace(/_/g, " ").toUpperCase() : "Sin definir");
+  const ETIQUETAS_ESTADO = {
+    pedida: "Pedida para cotizar",
+    cotizada: "Cotizada",
+    en_curso: "En Curso",
+    finalizada: "Finalizada",
+  };
+
+  const normalize = (d) => (d ? ETIQUETAS_ESTADO[d.toLowerCase()] || d.replace(/_/g, " ").toUpperCase() : "Sin definir");
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm lg:sticky lg:top-28">
