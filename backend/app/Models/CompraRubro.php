@@ -12,14 +12,14 @@ class CompraRubro extends SinergiaModel
     use HasCompositePrimaryKey;
 
     protected $table = 'Compra_Rubro';
-    protected $primaryKey = ['nro_obra', 'pedido_compra_id', 'rubro_id'];
+    protected $primaryKey = ['obra_id', 'pedido_compra_id', 'rubro_id'];
     public $incrementing = false;
     protected $keyType = 'array';
 
     public function pedidoCompra(): BelongsTo
     {
         return $this->belongsTo(PedidoCompra::class, 'pedido_compra_id', 'pedido_compra_id')
-            ->where('Pedido_Compra.nro_obra', $this->nro_obra);
+            ->where('Pedido_Compra.obra_id', $this->obra_id);
     }
 
     public function rubro(): BelongsTo

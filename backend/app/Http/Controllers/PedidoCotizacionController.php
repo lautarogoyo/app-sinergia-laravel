@@ -61,7 +61,7 @@ class PedidoCotizacionController extends Controller
      */
     public function show(Obra $obra, PedidoCotizacion $pedido)
     {
-        if ($pedido->nro_obra !== $obra->nro_obra) {
+        if ($pedido->obra_id !== $obra->obra_id) {
             return response()->json([
                 'message' => 'Este pedido no pertenece a la obra',
                 'status' => 403
@@ -83,7 +83,7 @@ class PedidoCotizacionController extends Controller
     Obra $obra,
     PedidoCotizacion $pedido
     ) {
-        if ($pedido->nro_obra !== $obra->nro_obra) {
+        if ($pedido->obra_id !== $obra->obra_id) {
             return response()->json([
                 'message' => 'Este pedido no pertenece a la obra',
                 'status' => 403
@@ -128,7 +128,7 @@ class PedidoCotizacionController extends Controller
      */
    public function destroy(Obra $obra, PedidoCotizacion $pedido)
     {
-        if ($pedido->nro_obra !== $obra->nro_obra) {
+        if ($pedido->obra_id !== $obra->obra_id) {
             return response()->json([
                 'message' => 'Este pedido no pertenece a la obra',
                 'status' => 403

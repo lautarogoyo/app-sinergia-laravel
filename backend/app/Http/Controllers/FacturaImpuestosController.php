@@ -10,7 +10,7 @@ class FacturaImpuestosController extends Controller
 {
     public function show(Obra $obra, Factura $factura)
     {
-        if ($factura->nro_obra !== $obra->nro_obra) {
+        if ($factura->obra_id !== $obra->obra_id) {
             return response()->json(['message' => 'Acceso denegado'], 403);
         }
 
@@ -19,7 +19,7 @@ class FacturaImpuestosController extends Controller
 
     public function upsert(Request $request, Obra $obra, Factura $factura)
     {
-        if ($factura->nro_obra !== $obra->nro_obra) {
+        if ($factura->obra_id !== $obra->obra_id) {
             return response()->json(['message' => 'Acceso denegado'], 403);
         }
 

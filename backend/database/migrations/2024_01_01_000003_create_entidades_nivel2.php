@@ -40,26 +40,26 @@ return new class extends Migration
         // Comentarios libres sobre una obra.
         Schema::create('Comentario', function (Blueprint $table) {
             $table->unsignedInteger('comentario_id')->autoIncrement();
-            $table->string('nro_obra', 50);
+            $table->unsignedInteger('obra_id');
             $table->text('detalle');
 
-            $table->foreign('nro_obra')
-                  ->references('nro_obra')->on('Obra');
+            $table->foreign('obra_id')
+                  ->references('obra_id')->on('Obra');
         });
 
         // ── Pedido_Cotizacion ─────────────────────────────────────────────────
         // Solicitud de cotización asociada a una obra.
         Schema::create('Pedido_Cotizacion', function (Blueprint $table) {
             $table->unsignedInteger('pedido_cotizacion_id')->autoIncrement();
-            $table->string('nro_obra', 50);
+            $table->unsignedInteger('obra_id');
             $table->string('path_archivo')->nullable();
             $table->string('path_archivo_mano_obra')->nullable();
             $table->date('fecha_cierre_cotizacion')->nullable();
             $table->unsignedInteger('estado_cotizacion_id');
             $table->unsignedInteger('estado_comparativa_id');
 
-            $table->foreign('nro_obra')
-                  ->references('nro_obra')->on('Obra');
+            $table->foreign('obra_id')
+                  ->references('obra_id')->on('Obra');
             $table->foreign('estado_cotizacion_id')
                   ->references('estado_cotizacion_id')->on('Estado_Cotizacion');
             $table->foreign('estado_comparativa_id')
@@ -71,15 +71,15 @@ return new class extends Migration
         // Restricción de negocio: la suma de facturas no debe superar el importe.
         Schema::create('Orden_Compra', function (Blueprint $table) {
             $table->string('nro_oc', 50);
-            $table->string('nro_obra', 50);
+            $table->unsignedInteger('obra_id');
             $table->unsignedInteger('grupo_id');
             $table->text('detalle');
             $table->decimal('importe', 15, 2);
 
-            $table->primary(['nro_oc', 'nro_obra']);
+            $table->primary(['nro_oc', 'obra_id']);
 
-            $table->foreign('nro_obra')
-                  ->references('nro_obra')->on('Obra');
+            $table->foreign('obra_id')
+                  ->references('obra_id')->on('Obra');
             $table->foreign('grupo_id')
                   ->references('grupo_id')->on('Grupo');
         });
@@ -89,7 +89,7 @@ return new class extends Migration
         // Incluye estados: contratista, pedido, registro y rol del pedido.
         Schema::create('Pedido_Compra', function (Blueprint $table) {
             $table->unsignedInteger('pedido_compra_id')->autoIncrement();
-            $table->string('nro_obra', 50);
+            $table->unsignedInteger('obra_id');
             $table->unsignedInteger('rol_pedido_id');
             $table->string('path_presupuesto')->nullable();
             $table->string('path_material')->nullable();
@@ -100,8 +100,8 @@ return new class extends Migration
             $table->unsignedInteger('estado_registro_id');
             $table->string('observaciones')->nullable();
 
-            $table->foreign('nro_obra')
-                  ->references('nro_obra')->on('Obra');
+            $table->foreign('obra_id')
+                  ->references('obra_id')->on('Obra');
             $table->foreign('rol_pedido_id')
                   ->references('rol_id')->on('Rol_Pedido');
             $table->foreign('estado_contratista_id')
@@ -129,15 +129,15 @@ return new class extends Migration
         // ── Obra_Grupo ────────────────────────────────────────────────────────
         // Grupos (contratistas) asignados a una obra (many-to-many).
         Schema::create('Obra_Grupo', function (Blueprint $table) {
-            $table->unsignedInteger('id_grupo');
-            $table->string('nro_obra', 50);
+            $table->unsignedInteger('grupo_id');
+            $table->unsignedInteger('obra_id');
 
-            $table->primary(['id_grupo', 'nro_obra']);
+            $table->primary(['grupo_id', 'obra_id']);
 
-            $table->foreign('id_grupo')
+            $table->foreign('grupo_id')
                   ->references('grupo_id')->on('Grupo');
-            $table->foreign('nro_obra')
-                  ->references('nro_obra')->on('Obra');
+            $table->foreign('obra_id')
+                  ->references('obra_id')->on('Obra');
         });
     }
 

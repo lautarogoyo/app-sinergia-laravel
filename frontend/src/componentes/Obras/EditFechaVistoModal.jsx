@@ -16,7 +16,7 @@ export default function EditFechaVistoModal({ isOpen, onClose, obra }) {
     }, [obra, reset]);
 
     const { mutate, isPending } = useMutation({
-        mutationFn: (data) => UpdateObra(obra.nro_obra, { fecha_visto: data.fecha_visto }),
+        mutationFn: (data) => UpdateObra(obra.obra_id, { fecha_visto: data.fecha_visto }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["obras"] });
             onClose();

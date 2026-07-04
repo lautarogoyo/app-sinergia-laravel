@@ -11,13 +11,13 @@ class OrdenCompra extends SinergiaModel
     use HasCompositePrimaryKey;
 
     protected $table = 'Orden_Compra';
-    protected $primaryKey = ['nro_oc', 'nro_obra'];
+    protected $primaryKey = ['nro_oc', 'obra_id'];
     public $incrementing = false;
     protected $keyType = 'array';
 
     protected $fillable = [
         'nro_oc',
-        'nro_obra',
+        'obra_id',
         'grupo_id',
         'detalle',
         'importe',
@@ -29,7 +29,7 @@ class OrdenCompra extends SinergiaModel
 
     public function obra(): BelongsTo
     {
-        return $this->belongsTo(Obra::class, 'nro_obra', 'nro_obra');
+        return $this->belongsTo(Obra::class, 'obra_id', 'obra_id');
     }
 
     public function grupo(): BelongsTo
@@ -40,6 +40,6 @@ class OrdenCompra extends SinergiaModel
     public function facturas(): HasMany
     {
         return $this->hasMany(Factura::class, 'nro_oc', 'nro_oc')
-            ->where('nro_obra', $this->nro_obra);
+            ->where('obra_id', $this->obra_id);
     }
 }

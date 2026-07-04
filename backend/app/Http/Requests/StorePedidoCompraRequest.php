@@ -14,7 +14,7 @@ class StorePedidoCompraRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nro_obra'               => 'required|exists:Obra,nro_obra',
+            'obra_id'                => 'required|exists:Obra,obra_id',
             'rol_pedido_id'          => 'required|exists:Rol_Pedido,rol_id',
             'archivos_presupuesto' => 'nullable|array',
             'archivos_presupuesto.*' => 'file|mimes:pdf,jpg,png|max:10240',

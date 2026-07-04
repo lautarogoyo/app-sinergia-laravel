@@ -21,16 +21,16 @@ return new class extends Migration
         // Asigna un proveedor a un rubro dentro de un pedido de compra.
         // Extiende la PK de Compra_Rubro añadiendo proveedor_id.
         Schema::create('Compra_Rubro_Proveedor', function (Blueprint $table) {
-            $table->string('nro_obra', 50);
+            $table->unsignedInteger('obra_id');
             $table->unsignedInteger('pedido_compra_id');
             $table->unsignedInteger('rubro_id');
             $table->unsignedInteger('proveedor_id');
 
-            $table->primary(['nro_obra', 'pedido_compra_id', 'rubro_id', 'proveedor_id']);
+            $table->primary(['obra_id', 'pedido_compra_id', 'rubro_id', 'proveedor_id']);
 
             // FK hacia la triple PK de Compra_Rubro (nombre corto — límite MySQL 64 chars)
-            $table->foreign(['nro_obra', 'pedido_compra_id', 'rubro_id'], 'fk_crp_compra_rubro')
-                  ->references(['nro_obra', 'pedido_compra_id', 'rubro_id'])
+            $table->foreign(['obra_id', 'pedido_compra_id', 'rubro_id'], 'fk_crp_compra_rubro')
+                  ->references(['obra_id', 'pedido_compra_id', 'rubro_id'])
                   ->on('Compra_Rubro');
 
             $table->foreign('proveedor_id', 'fk_crp_proveedor')
@@ -41,16 +41,16 @@ return new class extends Migration
         // Asigna un grupo (contratista) a un rubro dentro de un pedido de compra.
         // Extiende la PK de Compra_Rubro añadiendo grupo_id.
         Schema::create('Compra_Rubro_Grupo', function (Blueprint $table) {
-            $table->string('nro_obra', 50);
+            $table->unsignedInteger('obra_id');
             $table->unsignedInteger('pedido_compra_id');
             $table->unsignedInteger('rubro_id');
             $table->unsignedInteger('grupo_id');
 
-            $table->primary(['nro_obra', 'pedido_compra_id', 'rubro_id', 'grupo_id']);
+            $table->primary(['obra_id', 'pedido_compra_id', 'rubro_id', 'grupo_id']);
 
             // FK hacia la triple PK de Compra_Rubro (nombre corto — límite MySQL 64 chars)
-            $table->foreign(['nro_obra', 'pedido_compra_id', 'rubro_id'], 'fk_crg_compra_rubro')
-                  ->references(['nro_obra', 'pedido_compra_id', 'rubro_id'])
+            $table->foreign(['obra_id', 'pedido_compra_id', 'rubro_id'], 'fk_crg_compra_rubro')
+                  ->references(['obra_id', 'pedido_compra_id', 'rubro_id'])
                   ->on('Compra_Rubro');
 
             $table->foreign('grupo_id', 'fk_crg_grupo')

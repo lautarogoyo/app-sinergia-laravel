@@ -16,6 +16,6 @@ class Gasto extends SinergiaModel
 
     public function obra(): BelongsTo
     {
-        return $this->belongsTo(Obra::class, 'nro_obra', 'nro_obra');
+        return $this->belongsTo(Obra::class, 'obra_id', 'obra_id');
     }
 }

@@ -5,7 +5,7 @@ export default function ObraSelect({ obras, value, onChange, disabled = false })
   const [busqueda, setBusqueda] = useState("");
   const ref = useRef(null);
 
-  const obraActual = obras.find(o => o.nro_obra === value);
+  const obraActual = obras.find(o => o.obra_id === value);
 
   const filtradas = obras.filter(o =>
     `#${o.nro_obra} ${o.detalle}`.toLowerCase().includes(busqueda.toLowerCase())
@@ -18,8 +18,8 @@ export default function ObraSelect({ obras, value, onChange, disabled = false })
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const handleSelect = (nroObra) => {
-    onChange(nroObra);
+  const handleSelect = (obraId) => {
+    onChange(obraId);
     setOpen(false);
     setBusqueda("");
   };
@@ -71,9 +71,9 @@ export default function ObraSelect({ obras, value, onChange, disabled = false })
             ) : (
               filtradas.map(o => (
                 <li
-                  key={o.nro_obra}
-                  onClick={() => handleSelect(o.nro_obra)}
-                  className={`px-3 py-2 text-sm cursor-pointer hover:bg-emerald-50 hover:text-emerald-800 ${value === o.nro_obra ? "bg-emerald-50 font-semibold text-emerald-700" : "text-gray-800"}`}
+                  key={o.obra_id}
+                  onClick={() => handleSelect(o.obra_id)}
+                  className={`px-3 py-2 text-sm cursor-pointer hover:bg-emerald-50 hover:text-emerald-800 ${value === o.obra_id ? "bg-emerald-50 font-semibold text-emerald-700" : "text-gray-800"}`}
                 >
                   #{o.nro_obra} — {o.detalle}
                 </li>

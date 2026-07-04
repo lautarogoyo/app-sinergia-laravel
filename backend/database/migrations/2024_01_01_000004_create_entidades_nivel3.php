@@ -46,7 +46,7 @@ return new class extends Migration
         // cantidad_dias y email se habilitan solo si forma_pago = ECHEQ
         Schema::create('Factura', function (Blueprint $table) {
             $table->string('nro_factura', 50)->primary();
-            $table->string('nro_obra', 50);
+            $table->unsignedInteger('obra_id');
             $table->string('nro_oc', 50)->nullable();          // FK a Orden_Compra.nro_oc
             $table->unsignedInteger('proveedor_id')->nullable();
             $table->unsignedInteger('grupo_id')->nullable();
@@ -59,13 +59,13 @@ return new class extends Migration
             $table->decimal('importe_total', 15, 2);
 
             // FK Obra
-            $table->foreign('nro_obra')
-                  ->references('nro_obra')->on('Obra');
+            $table->foreign('obra_id')
+                  ->references('obra_id')->on('Obra');
 
-            // FK Orden_Compra (referencia solo nro_oc; nro_obra ya está en esta tabla)
-            // Se usa nro_oc + nro_obra para apuntar a la PK compuesta de Orden_Compra
-            $table->foreign(['nro_oc', 'nro_obra'], 'fk_factura_orden_compra')
-                  ->references(['nro_oc', 'nro_obra'])->on('Orden_Compra');
+            // FK Orden_Compra (referencia solo nro_oc; obra_id ya está en esta tabla)
+            // Se usa nro_oc + obra_id para apuntar a la PK compuesta de Orden_Compra
+            $table->foreign(['nro_oc', 'obra_id'], 'fk_factura_orden_compra')
+                  ->references(['nro_oc', 'obra_id'])->on('Orden_Compra');
 
             // FK Proveedor (nullable — la factura puede ser de proveedor o grupo)
             $table->foreign('proveedor_id')
@@ -81,26 +81,26 @@ return new class extends Migration
         // importe_real se deriva de la suma de facturas de la obra (regla de negocio).
         Schema::create('Gasto', function (Blueprint $table) {
             $table->unsignedInteger('gasto_id')->autoIncrement();
-            $table->string('nro_obra', 50);
+            $table->unsignedInteger('obra_id');
             $table->decimal('importe_real', 15, 2);
             $table->decimal('importe_proyeccion', 15, 2);
 
-            $table->foreign('nro_obra')
-                  ->references('nro_obra')->on('Obra');
+            $table->foreign('obra_id')
+                  ->references('obra_id')->on('Obra');
         });
 
         // ── Compra_Rubro ───────────────────────────────────────────────────────
         // Rubros incluidos en un pedido de compra (PK triple).
         // Referencia Pedido_Compra (L2), Obra (L1), Rubro (L0).
         Schema::create('Compra_Rubro', function (Blueprint $table) {
-            $table->string('nro_obra', 50);
+            $table->unsignedInteger('obra_id');
             $table->unsignedInteger('pedido_compra_id');
             $table->unsignedInteger('rubro_id');
 
-            $table->primary(['nro_obra', 'pedido_compra_id', 'rubro_id']);
+            $table->primary(['obra_id', 'pedido_compra_id', 'rubro_id']);
 
-            $table->foreign('nro_obra')
-                  ->references('nro_obra')->on('Obra');
+            $table->foreign('obra_id')
+                  ->references('obra_id')->on('Obra');
             $table->foreign('pedido_compra_id')
                   ->references('pedido_compra_id')->on('Pedido_Compra');
             $table->foreign('rubro_id')

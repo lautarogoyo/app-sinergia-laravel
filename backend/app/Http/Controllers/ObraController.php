@@ -133,7 +133,7 @@ class ObraController extends Controller
         try {
             DB::transaction(function () use ($obra) {
                 $obra->pedidosCotizacion()
-                    ->get(['nro_obra', 'pedido_cotizacion_id', 'path_archivo', 'path_archivo_mano_obra'])
+                    ->get(['obra_id', 'pedido_cotizacion_id', 'path_archivo', 'path_archivo_mano_obra'])
                     ->each(function ($pedido) {
                         if ($pedido->path_archivo) {
                             Storage::disk('public')->delete($pedido->path_archivo);

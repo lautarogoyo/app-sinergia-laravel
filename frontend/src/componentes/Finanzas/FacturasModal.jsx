@@ -12,7 +12,7 @@ const inputClass = "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm f
 const labelClass = "block text-xs font-semibold text-gray-600 mb-1";
 
 export default function FacturaModal({ mode, factura, proveedores, grupos, obras, obraIdInicial, onClose, onSubmit, isPending }) {
-  const [obraIdLocal, setObraIdLocal] = useState(factura?.nro_obra ?? obraIdInicial ?? "");
+  const [obraIdLocal, setObraIdLocal] = useState(factura?.obra_id ?? obraIdInicial ?? "");
 
   const { data: ordenesCompra = [] } = useQuery({
     queryKey: ["ordenes_compra", obraIdLocal],

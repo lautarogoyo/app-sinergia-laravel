@@ -15,7 +15,7 @@ class Factura extends SinergiaModel
     protected $fillable = [
         'nro_factura',
         'nro_oc',
-        'nro_obra',
+        'obra_id',
         'proveedor_id',
         'grupo_id',
         'fecha',
@@ -34,7 +34,7 @@ class Factura extends SinergiaModel
 
     public function obra(): BelongsTo
     {
-        return $this->belongsTo(Obra::class, 'nro_obra', 'nro_obra');
+        return $this->belongsTo(Obra::class, 'obra_id', 'obra_id');
     }
 
     public function proveedor(): BelongsTo
@@ -47,7 +47,7 @@ class Factura extends SinergiaModel
         return $this->belongsTo(Grupo::class, 'grupo_id', 'grupo_id');
     }
 
-    // La FK compuesta a Orden_Compra (nro_oc + nro_obra) no tiene soporte nativo
+    // La FK compuesta a Orden_Compra (nro_oc + obra_id) no tiene soporte nativo
     // en Eloquent BelongsTo; se accede via ordenCompra() con query manual si se necesita.
     public function ordenCompra(): ?OrdenCompra
     {
@@ -56,7 +56,7 @@ class Factura extends SinergiaModel
         }
 
         return OrdenCompra::where('nro_oc', $this->nro_oc)
-            ->where('nro_obra', $this->nro_obra)
+            ->where('obra_id', $this->obra_id)
             ->first();
     }
     public function impuestos(): HasOne

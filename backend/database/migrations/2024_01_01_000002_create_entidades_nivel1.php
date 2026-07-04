@@ -29,7 +29,8 @@ return new class extends Migration
         // ── Obra ─────────────────────────────────────────────────────────────
         // Entidad central del sistema. Solo referencia Estado_Obra (L0).
         Schema::create('Obra', function (Blueprint $table) {
-            $table->string('nro_obra', 50)->primary();
+            $table->unsignedInteger('obra_id')->autoIncrement();
+            $table->string('nro_obra', 50)->unique();
             $table->unsignedInteger('estado_obra_id');
             $table->string('detalle');
             $table->date('fecha_visto');

@@ -13,7 +13,7 @@ class Presupuesto extends Model
 
     protected $fillable = [
         'pedido_compra_id',
-        'nro_obra',
+        'obra_id',
         'path_archivo',
         'nombre_archivo',
     ];

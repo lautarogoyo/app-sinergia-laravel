@@ -35,7 +35,7 @@ class OrdenCompraController extends Controller
 
     public function show(Obra $obra, OrdenCompra $ordenCompra)
     {
-        if ($ordenCompra->nro_obra !== $obra->nro_obra) {
+        if ($ordenCompra->obra_id !== $obra->obra_id) {
             return response()->json([
                 'message' => 'Esta orden no pertenece a la obra',
                 'status'  => 403,
@@ -50,7 +50,7 @@ class OrdenCompraController extends Controller
 
     public function update(Request $request, Obra $obra, OrdenCompra $ordenesCompra)
     {
-        if ($ordenesCompra->nro_obra !== $obra->nro_obra) {
+        if ($ordenesCompra->obra_id !== $obra->obra_id) {
             return response()->json([
                 'message' => 'Esta orden de compra no pertenece a esta obra',
                 'status'  => 403,
@@ -75,7 +75,7 @@ class OrdenCompraController extends Controller
 
     public function destroy(Obra $obra, OrdenCompra $ordenesCompra)
     {
-        if ($ordenesCompra->nro_obra !== $obra->nro_obra) {
+        if ($ordenesCompra->obra_id !== $obra->obra_id) {
             return response()->json([
                 'message' => 'Orden no encontrada',
                 'status'  => 404,

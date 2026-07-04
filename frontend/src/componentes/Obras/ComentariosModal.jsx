@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
 
 export default function ComentariosModal({ isOpen, onClose, obra }) {
   const queryClient = useQueryClient();
-  const { data: comentarios = [], isLoading } = useComentariosByObra(obra?.nro_obra);
+  const { data: comentarios = [], isLoading } = useComentariosByObra(obra?.obra_id);
   const {
     register,
     handleSubmit,
@@ -22,7 +22,7 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
   const createMutation = useMutation({
     mutationFn: createComentario,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comentarios", obra.nro_obra] });
+      queryClient.invalidateQueries({ queryKey: ["comentarios", obra.obra_id] });
       reset();
     },
   });
@@ -30,14 +30,14 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
   const deleteMutation = useMutation({
     mutationFn: deleteComentario,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comentarios", obra.nro_obra] });
+      queryClient.invalidateQueries({ queryKey: ["comentarios", obra.obra_id] });
     },
   });
 
   const updateMutation = useMutation({
     mutationFn: updateComentario,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["comentarios", obra.nro_obra] });
+      queryClient.invalidateQueries({ queryKey: ["comentarios", obra.obra_id] });
       setEditingId(null);
       setEditingText("");
     },
@@ -45,7 +45,7 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
 
   const onSubmit = (formData) => {
     if (!formData.detalle.trim()) return;
-    createMutation.mutate({ obraId: obra.nro_obra, detalle: formData.detalle });
+    createMutation.mutate({ obraId: obra.obra_id, detalle: formData.detalle });
   };
 
   const handleEliminar = async (comentario_id) => {
@@ -58,7 +58,7 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
       cancelButtonText: "Cancelar",
     });
     if (result.isConfirmed) {
-      deleteMutation.mutate({ obraId: obra.nro_obra, comentarioId: comentario_id });
+      deleteMutation.mutate({ obraId: obra.obra_id, comentarioId: comentario_id });
     }
   };
 
@@ -77,7 +77,7 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
     if (!text) return;
 
     updateMutation.mutate({
-      obraId: obra.nro_obra,
+      obraId: obra.obra_id,
       comentarioId: comentario_id,
       detalle: text,
     });

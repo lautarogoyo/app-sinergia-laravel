@@ -17,7 +17,7 @@ class PedidoCompra extends SinergiaModel
     protected $keyType = 'int';
 
     protected $fillable = [
-        'nro_obra',
+        'obra_id',
         'rol_pedido_id',
         'path_material',
         'fecha_pedido',
@@ -42,7 +42,7 @@ class PedidoCompra extends SinergiaModel
 
     public function obra(): BelongsTo
     {
-        return $this->belongsTo(Obra::class, 'nro_obra', 'nro_obra');
+        return $this->belongsTo(Obra::class, 'obra_id', 'obra_id');
     }
 
     public function rolPedido(): BelongsTo
@@ -68,7 +68,7 @@ class PedidoCompra extends SinergiaModel
     public function compraRubros(): HasMany
     {
         return $this->hasMany(CompraRubro::class, 'pedido_compra_id', 'pedido_compra_id')
-            ->where('nro_obra', $this->nro_obra);
+            ->where('obra_id', $this->obra_id);
     }
 
     public function rubros(): BelongsToMany

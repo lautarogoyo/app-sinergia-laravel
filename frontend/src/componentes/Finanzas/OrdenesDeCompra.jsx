@@ -265,7 +265,7 @@ export default function OrdenesDeCompra() {
 }
 
 function OrdenModal({ mode, orden, grupos, obras, obraIdInicial, onClose, onSubmit, isPending }) {
-  const [obraIdLocal, setObraIdLocal] = useState(orden?.nro_obra ?? obraIdInicial ?? "");
+  const [obraIdLocal, setObraIdLocal] = useState(orden?.obra_id ?? obraIdInicial ?? "");
 
   const { register, handleSubmit } = useForm({
     defaultValues: {
@@ -311,7 +311,7 @@ function OrdenModal({ mode, orden, grupos, obras, obraIdInicial, onClose, onSubm
             >
               <option value="">— Seleccionar obra —</option>
               {obras.map((o) => (
-                <option key={o.nro_obra} value={o.nro_obra}>
+                <option key={o.obra_id} value={o.obra_id}>
                   #{o.nro_obra} — {o.detalle}
                 </option>
               ))}

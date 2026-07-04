@@ -30,13 +30,13 @@ class PedidoCompraController extends Controller
     private function syncRubros(PedidoCompra $pedido, array $rubrosIds): void
     {
         DB::table('Compra_Rubro')
-            ->where('nro_obra', $pedido->nro_obra)
+            ->where('obra_id', $pedido->obra_id)
             ->where('pedido_compra_id', $pedido->pedido_compra_id)
             ->delete();
 
         foreach ($rubrosIds as $rubroId) {
             DB::table('Compra_Rubro')->insert([
-                'nro_obra'         => $pedido->nro_obra,
+                'obra_id'         => $pedido->obra_id,
                 'pedido_compra_id' => $pedido->pedido_compra_id,
                 'rubro_id'         => $rubroId,
             ]);
@@ -46,13 +46,13 @@ class PedidoCompraController extends Controller
     private function syncGrupos(PedidoCompra $pedido, array $gruposIds): void
     {
         DB::table('Compra_Grupo')
-            ->where('nro_obra', $pedido->nro_obra)
+            ->where('obra_id', $pedido->obra_id)
             ->where('pedido_compra_id', $pedido->pedido_compra_id)
             ->delete();
 
         foreach ($gruposIds as $grupoId) {
             DB::table('Compra_Grupo')->insert([
-                'nro_obra'         => $pedido->nro_obra,
+                'obra_id'         => $pedido->obra_id,
                 'pedido_compra_id' => $pedido->pedido_compra_id,
                 'grupo_id'         => $grupoId,
             ]);
@@ -62,13 +62,13 @@ class PedidoCompraController extends Controller
     private function syncProveedores(PedidoCompra $pedido, array $proveedoresIds): void
     {
         DB::table('Compra_Proveedor')
-            ->where('nro_obra', $pedido->nro_obra)
+            ->where('obra_id', $pedido->obra_id)
             ->where('pedido_compra_id', $pedido->pedido_compra_id)
             ->delete();
 
         foreach ($proveedoresIds as $proveedorId) {
             DB::table('Compra_Proveedor')->insert([
-                'nro_obra'         => $pedido->nro_obra,
+                'obra_id'         => $pedido->obra_id,
                 'pedido_compra_id' => $pedido->pedido_compra_id,
                 'proveedor_id'     => $proveedorId,
             ]);
@@ -81,7 +81,7 @@ class PedidoCompraController extends Controller
             $path = $file->storeAs('presupuestos', $file->getClientOriginalName(), 'public');
             Presupuesto::create([
                 'pedido_compra_id' => $pedido->pedido_compra_id,
-                'nro_obra'         => $pedido->nro_obra,
+                'obra_id'         => $pedido->obra_id,
                 'path_archivo'     => $path,
                 'nombre_archivo'   => $file->getClientOriginalName(),
             ]);
@@ -182,7 +182,7 @@ class PedidoCompraController extends Controller
         if ($pedido->path_material) Storage::disk('public')->delete($pedido->path_material);
 
         $presupuestos = Presupuesto::where('pedido_compra_id', $pedido->pedido_compra_id)
-            ->where('nro_obra', $pedido->nro_obra)
+            ->where('obra_id', $pedido->obra_id)
             ->get();
 
         foreach ($presupuestos as $presupuesto) {
@@ -190,9 +190,9 @@ class PedidoCompraController extends Controller
             $presupuesto->delete();
         }
 
-        DB::table('Compra_Grupo')->where('nro_obra', $pedido->nro_obra)->where('pedido_compra_id', $pedido->pedido_compra_id)->delete();
-        DB::table('Compra_Proveedor')->where('nro_obra', $pedido->nro_obra)->where('pedido_compra_id', $pedido->pedido_compra_id)->delete();
-        DB::table('Compra_Rubro')->where('nro_obra', $pedido->nro_obra)->where('pedido_compra_id', $pedido->pedido_compra_id)->delete();
+        DB::table('Compra_Grupo')->where('obra_id', $pedido->obra_id)->where('pedido_compra_id', $pedido->pedido_compra_id)->delete();
+        DB::table('Compra_Proveedor')->where('obra_id', $pedido->obra_id)->where('pedido_compra_id', $pedido->pedido_compra_id)->delete();
+        DB::table('Compra_Rubro')->where('obra_id', $pedido->obra_id)->where('pedido_compra_id', $pedido->pedido_compra_id)->delete();
 
         $pedido->delete();
 

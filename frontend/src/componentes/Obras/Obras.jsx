@@ -60,7 +60,7 @@ export default function Obras() {
 			cancelButtonText: "Cancelar",
 		});
 		if (result.isConfirmed) {
-			deleteMutation.mutate(obra.nro_obra);
+			deleteMutation.mutate(obra.obra_id);
 		}
 	};
 
@@ -256,24 +256,24 @@ export default function Obras() {
 							<tbody className="bg-gray-50 divide-y divide-gray-200 text-center">
 								{obrasPage.paginatedItems.length > 0 ? (
 									obrasPage.paginatedItems.map((obra) => (
-										<tr key={obra.nro_obra} className="hover:bg-gray-200 transition-colors duration-150">
+										<tr key={obra.obra_id} className="hover:bg-gray-200 transition-colors duration-150">
 											<td className="px-6 py-4">
 												<div className="flex flex-row gap-2 items-center">
 													{/* Grupo principal: Gestionar, Gastos, Comentarios */}
 													<div className="relative inline-block">
 														<button
 															className="border-2 border-black hover:bg-gray-300 p-2 rounded shadow transition duration-150 cursor-pointer"
-															onClick={() => setMenuAbierto(menuAbierto === obra.nro_obra ? null : obra.nro_obra)}
+															onClick={() => setMenuAbierto(menuAbierto === obra.obra_id ? null : obra.obra_id)}
 														>
 															<Icon name="menu" className="w-5 h-5" />
 														</button>
 
-														{menuAbierto === obra.nro_obra && (
+														{menuAbierto === obra.obra_id && (
 															<div className="absolute left-0 mt-2 w-44 bg-white border border-gray-200 rounded shadow-lg z-10">
 																<button
 																	className="flex items-center gap-2 w-full text-left px-4 py-2 text-lg hover:bg-gray-100"
 																	onClick={() => {
-																		navigate(`/obra/${obra.nro_obra}/gestionar`);
+																		navigate(`/obra/${obra.obra_id}/gestionar`);
 																		setMenuAbierto(null);
 																	}}
 																>
@@ -283,7 +283,7 @@ export default function Obras() {
 																<button
 																	className="flex items-center gap-2 w-full text-left px-4 py-2 text-lg hover:bg-gray-100"
 																	onClick={() => {
-																		navigate(`/obra/${obra.nro_obra}/gestionar`);
+																		navigate(`/obra/${obra.obra_id}/gestionar`);
 																		setMenuAbierto(null);
 																	}}
 																>
@@ -307,7 +307,7 @@ export default function Obras() {
 													<div className="flex gap-2 justify-center">
 														<button
 															className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
-															onClick={() => navigate(`/editarobra/${obra.nro_obra}`)}
+															onClick={() => navigate(`/editarobra/${obra.obra_id}`)}
 														>
 															<Icon name="pencil" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
 														</button>

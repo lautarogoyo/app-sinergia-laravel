@@ -30,7 +30,7 @@ class ComentarioController extends Controller
 
     public function show(Obra $obra, Comentario $comentario)
     {
-        if ($comentario->nro_obra !== $obra->nro_obra) {
+        if ($comentario->obra_id !== $obra->obra_id) {
             return response()->json([
                 'message' => 'Comentario no encontrado',
                 'status' => 404
@@ -45,7 +45,7 @@ class ComentarioController extends Controller
 
     public function update(Request $request, Obra $obra, Comentario $comentario)
     {
-        if ($comentario->nro_obra !== $obra->nro_obra) {
+        if ($comentario->obra_id !== $obra->obra_id) {
             return response()->json([
                 'message' => 'Este comentario no pertenece a la obra indicada',
                 'status' => 403
@@ -67,7 +67,7 @@ class ComentarioController extends Controller
 
     public function destroy(Obra $obra, Comentario $comentario)
     {
-        if ($comentario->nro_obra !== $obra->nro_obra) {
+        if ($comentario->obra_id !== $obra->obra_id) {
             return response()->json([
                 'message' => 'Este comentario no pertenece a la obra indicada',
                 'status' => 403

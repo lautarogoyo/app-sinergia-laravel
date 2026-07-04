@@ -10,7 +10,7 @@ class PedidoCotizacion extends SinergiaModel
     protected $primaryKey = 'pedido_cotizacion_id';
 
     protected $fillable = [
-        'nro_obra',
+        'obra_id',
         'path_archivo',
         'path_archivo_mano_obra',
         'fecha_cierre_cotizacion',
@@ -24,7 +24,7 @@ class PedidoCotizacion extends SinergiaModel
 
     public function obra(): BelongsTo
     {
-        return $this->belongsTo(Obra::class, 'nro_obra', 'nro_obra');
+        return $this->belongsTo(Obra::class, 'obra_id', 'obra_id');
     }
 
     public function estadoCotizacion(): BelongsTo

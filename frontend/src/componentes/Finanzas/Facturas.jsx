@@ -93,7 +93,7 @@ export default function Facturas() {
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
     });
-    if (res.isConfirmed) deleteMutation.mutate({ obraId: f.nro_obra, nroFactura: f.nro_factura });
+    if (res.isConfirmed) deleteMutation.mutate({ obraId: f.obra_id, nroFactura: f.nro_factura });
   };
   
   const handleSort = (key) => {

@@ -56,7 +56,7 @@ class Grupo extends SinergiaModel
 
     public function obraGrupos(): HasMany
     {
-        return $this->hasMany(ObraGrupo::class, 'id_grupo', 'grupo_id');
+        return $this->hasMany(ObraGrupo::class, 'grupo_id', 'grupo_id');
     }
 
     public function obras(): BelongsToMany
@@ -64,10 +64,10 @@ class Grupo extends SinergiaModel
         return $this->belongsToMany(
             Obra::class,
             'Obra_Grupo',
-            'id_grupo',
-            'nro_obra',
             'grupo_id',
-            'nro_obra'
+            'obra_id',
+            'grupo_id',
+            'obra_id'
         );
     }
 

@@ -322,7 +322,7 @@ export default function useGestionarObra() {
       if (pedidoEditando) {
         await updatePedidoCompraMutation.mutateAsync({ pedidoId: pedidoEditando.pedido_compra_id, formData });
       } else {
-        formData.append("nro_obra", id);
+        formData.append("obra_id", id);
         await createPedidoCompraMutation.mutateAsync(formData);
       }
       setMostrarModalPedido(false);

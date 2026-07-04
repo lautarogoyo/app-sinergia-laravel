@@ -28,7 +28,7 @@ class FacturaController extends Controller
                 'nullable',
                 'numeric',
                 'min:0',
-                Rule::exists('Orden_Compra', 'nro_oc')->where(fn ($query) => $query->where('nro_obra', $obra->nro_obra)),
+                Rule::exists('Orden_Compra', 'nro_oc')->where(fn ($query) => $query->where('obra_id', $obra->obra_id)),
             ],
             'proveedor_id'  => 'nullable|exists:Proveedor,proveedor_id',
             'grupo_id'      => 'nullable|exists:Grupo,grupo_id',
@@ -50,7 +50,7 @@ class FacturaController extends Controller
             $this->validarMontoOC($obra, $validated['nro_oc'], (float) $validated['importe_total']);
         }
 
-        $validated['nro_obra'] = $obra->nro_obra;
+        $validated['obra_id'] = $obra->obra_id;
         $factura = Factura::create($validated);
 
         return response()->json([
@@ -61,7 +61,7 @@ class FacturaController extends Controller
 
     public function show(Obra $obra, Factura $factura)
     {
-        if ($factura->nro_obra !== $obra->nro_obra) {
+        if ($factura->obra_id !== $obra->obra_id) {
             return response()->json([
                 'message' => 'Esta factura no pertenece a la obra',
                 'status'  => 403,
@@ -76,7 +76,7 @@ class FacturaController extends Controller
 
     public function update(Request $request, Obra $obra, Factura $factura)
     {
-        if ($factura->nro_obra !== $obra->nro_obra) {
+        if ($factura->obra_id !== $obra->obra_id) {
             return response()->json([
                 'message' => 'Esta factura no pertenece a esta obra',
                 'status'  => 403,
@@ -88,7 +88,7 @@ class FacturaController extends Controller
                 'nullable',
                 'numeric',
                 'min:0',
-                Rule::exists('Orden_Compra', 'nro_oc')->where(fn ($query) => $query->where('nro_obra', $obra->nro_obra)),
+                Rule::exists('Orden_Compra', 'nro_oc')->where(fn ($query) => $query->where('obra_id', $obra->obra_id)),
             ],
             'proveedor_id'  => 'nullable|exists:Proveedor,proveedor_id',
             'grupo_id'      => 'nullable|exists:Grupo,grupo_id',
@@ -125,7 +125,7 @@ class FacturaController extends Controller
 
     public function destroy(Obra $obra, Factura $factura)
     {
-        if ($factura->nro_obra !== $obra->nro_obra) {
+        if ($factura->obra_id !== $obra->obra_id) {
             return response()->json([
                 'message' => 'Factura no encontrada',
                 'status'  => 404,
@@ -142,11 +142,11 @@ class FacturaController extends Controller
     private function validarMontoOC(Obra $obra, string $nroOc, float $importeNuevo, ?string $nroFacturaExcluir = null): void
     {
         $oc = \App\Models\OrdenCompra::where('nro_oc', $nroOc)
-            ->where('nro_obra', $obra->nro_obra)
+            ->where('obra_id', $obra->obra_id)
             ->firstOrFail();
 
         $query = \App\Models\Factura::where('nro_oc', $nroOc)
-            ->where('nro_obra', $obra->nro_obra);
+            ->where('obra_id', $obra->obra_id);
 
         if ($nroFacturaExcluir) {
             $query->where('nro_factura', '!=', $nroFacturaExcluir);

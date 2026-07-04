@@ -10,9 +10,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Obra extends SinergiaModel
 {
     protected $table = 'Obra';
-    protected $primaryKey = 'nro_obra';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    protected $primaryKey = 'obra_id';
+    public $incrementing = true;
+    protected $keyType = 'int';
 
     protected $fillable = [
         'nro_obra',
@@ -45,42 +45,42 @@ class Obra extends SinergiaModel
 
     public function pedidoCompra(): HasMany
     {
-        return $this->hasMany(PedidoCompra::class, 'nro_obra', 'nro_obra');
+        return $this->hasMany(PedidoCompra::class, 'obra_id', 'obra_id');
     }
 
     public function pedidosCotizacion(): HasMany
     {
-        return $this->hasMany(PedidoCotizacion::class, 'nro_obra', 'nro_obra');
+        return $this->hasMany(PedidoCotizacion::class, 'obra_id', 'obra_id');
     }
 
     public function comentarios(): HasMany
     {
-        return $this->hasMany(Comentario::class, 'nro_obra', 'nro_obra');
+        return $this->hasMany(Comentario::class, 'obra_id', 'obra_id');
     }
 
     public function ordenCompra(): HasOne
     {
-        return $this->hasOne(OrdenCompra::class, 'nro_obra', 'nro_obra');
+        return $this->hasOne(OrdenCompra::class, 'obra_id', 'obra_id');
     }
 
     public function ordenesCompra(): HasMany
     {
-        return $this->hasMany(OrdenCompra::class, 'nro_obra', 'nro_obra');
+        return $this->hasMany(OrdenCompra::class, 'obra_id', 'obra_id');
     }
 
     public function facturas(): HasMany
     {
-        return $this->hasMany(Factura::class, 'nro_obra', 'nro_obra');
+        return $this->hasMany(Factura::class, 'obra_id', 'obra_id');
     }
 
     public function gastos(): HasMany
     {
-        return $this->hasMany(Gasto::class, 'nro_obra', 'nro_obra');
+        return $this->hasMany(Gasto::class, 'obra_id', 'obra_id');
     }
 
     public function obraGrupos(): HasMany
     {
-        return $this->hasMany(ObraGrupo::class, 'nro_obra', 'nro_obra');
+        return $this->hasMany(ObraGrupo::class, 'obra_id', 'obra_id');
     }
 
     public function grupos(): BelongsToMany
@@ -88,9 +88,9 @@ class Obra extends SinergiaModel
         return $this->belongsToMany(
             Grupo::class,
             'Obra_Grupo',
-            'nro_obra',
+            'obra_id',
             'grupo_id',
-            'nro_obra',
+            'obra_id',
             'grupo_id'
         );
     }

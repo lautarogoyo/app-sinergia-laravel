@@ -24,7 +24,7 @@ return new class extends Migration
             $table->dropForeign('fk_crp_compra_rubro');
             $table->dropColumn('rubro_id');
             $table->dropPrimary();
-            $table->primary(['nro_obra', 'pedido_compra_id', 'proveedor_id']);
+            $table->primary(['obra_id', 'pedido_compra_id', 'proveedor_id']);
         });
 
         // Modificar estructura de Compra_Grupo
@@ -32,7 +32,7 @@ return new class extends Migration
             $table->dropForeign('fk_crg_compra_rubro');
             $table->dropColumn('rubro_id');
             $table->dropPrimary();
-            $table->primary(['nro_obra', 'pedido_compra_id', 'grupo_id']);
+            $table->primary(['obra_id', 'pedido_compra_id', 'grupo_id']);
         });
     }
 
