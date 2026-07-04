@@ -139,7 +139,7 @@ export default function Empleados() {
   if (isError) return <div className="text-center text-xl py-8 text-red-500">Error: {isError.message}</div>;
 
   return (
-    <div className="p-8 bg-gray-100  lg:w-full flex flex-col ">
+    <div className="p-8 bg-gray-100 lg:w-full flex flex-col flex-1 min-h-0 overflow-hidden">
       <h2 className="text-3xl font-extrabold mb-6 text-gray-800 tracking-wide">Panel de Empleados</h2>
       <div className="mb-6 w-full max-w-2xl flex flex-col ">
         <label htmlFor="filtro" className="mb-2 text-lg font-medium text-gray-700">Filtrar:</label>

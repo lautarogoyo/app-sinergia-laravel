@@ -191,7 +191,7 @@ export default function Personas() {
   );
 
   return (
-    <div className="p-8 bg-gray-100 lg:w-full flex flex-col">
+    <div className="p-8 bg-gray-100 lg:w-full flex flex-col flex-1 min-h-0 overflow-hidden">
       <h2 className="text-3xl font-extrabold mb-6 text-gray-800 tracking-wide">Panel de Personas</h2>
 
       {/* ── CONTROLES SUPERIORES ── */}

@@ -14,7 +14,7 @@ export default function Header({ onLogout }) {
     navigate('/', { replace: true });
   };
   
-  const headerAnimation = `min-h-screen transition-all duration-300 ease-in-out 
+  const headerAnimation = `transition-all duration-300 ease-in-out
     bg-gradient-to-b from-white to-gray-50 shadow-lg overflow-hidden ${visible ? 'w-72' : 'w-16'}`;
     
   const navLinkBase = `flex items-center justify-center ${visible ? 'justify-start gap-4 p-4 mx-3 my-1' : 'p-3 my-1'} rounded-xl transition-all duration-300 
@@ -25,7 +25,7 @@ export default function Header({ onLogout }) {
   return (
     <>
       <div className={headerAnimation}>
-        <nav className="min-h-screen py-4 flex flex-col relative items-center">
+        <nav className="h-full py-4 flex flex-col relative items-center">
           <div className="mb-6 flex justify-between items-center">
             <div className={`flex items-center ${visible ? 'gap-3 px-4' : 'px-2'} py-6 w-full justify-center`}>
               <Icon name="logo" className="w-10 h-10" />
@@ -95,7 +95,7 @@ export default function Header({ onLogout }) {
             </NavLink>
           </div>
 
-          <div className="mt-auto px-3 mb-6">
+          <div className="mt-2 px-3 mb-6">
             <button
               type="button"
               onClick={handleLogout}

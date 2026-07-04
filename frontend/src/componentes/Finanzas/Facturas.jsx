@@ -143,7 +143,7 @@ export default function Facturas() {
 
   
   return (
-    <div className="flex-1 min-h-screen bg-gray-50 p-6">
+    <div className="flex-1 min-h-0 bg-gray-50 p-6 flex flex-col overflow-hidden">
       <div className="flex items-center gap-3 mb-6">
         <Icon name="invoice" className="w-8 h-8 text-emerald-600" />
         <div>

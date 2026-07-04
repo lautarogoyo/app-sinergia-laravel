@@ -193,7 +193,7 @@ export default function Obras() {
 				onClose={cerrarModalComentarios}
 				obra={modalComentarios.obra}
 			/>
-			<div className="flex-1 min-w-0 w-full p-8 bg-gray-100 flex flex-col">
+			<div className="flex-1 min-w-0 w-full p-8 bg-gray-100 flex flex-col min-h-0 overflow-hidden">
 				<h2 className="text-3xl font-extrabold mb-6 text-gray-800 tracking-wide">Panel de Obras</h2>
 
 				<div className="mb-6 w-full max-w-2xl flex flex-col">
