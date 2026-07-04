@@ -90,7 +90,7 @@ class PedidoCompraController extends Controller
 
     public function index()
     {
-        $pedidos = PedidoCompra::with([
+        $pedidos = PedidoCompra::whereNull('deleted_at')->with([
             'rubros',
             'grupos',
             'proveedores',
@@ -177,7 +177,7 @@ class PedidoCompraController extends Controller
         ]);
     }
 
-    public function destroy(PedidoCompra $pedido)
+    /* public function destroy(PedidoCompra $pedido)
     {
         if ($pedido->path_material) Storage::disk('public')->delete($pedido->path_material);
 
@@ -197,7 +197,14 @@ class PedidoCompraController extends Controller
         $pedido->delete();
 
         return response()->json(['message' => 'Pedido eliminado', 'status' => 200]);
-    }
+    } */
+   public function destroy(PedidoCompra $pedido)
+{
+    $pedido->deleted_at = now();
+    $pedido->save();
+
+    return response()->json(['message' => 'Pedido eliminado', 'status' => 200]);
+}
 
     public function destroyPresupuesto(int $presupuestoId)
     {

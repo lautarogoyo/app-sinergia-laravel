@@ -12,7 +12,7 @@ class ObraController extends Controller
 {
     public function index()
     {
-        $obras = Obra::with([
+        $obras = Obra::whereNull('deleted_at')->with([
             'estadoObra',
             'grupos.estadoGrupo',
             'pedidosCotizacion.estadoCotizacion',
@@ -20,8 +20,9 @@ class ObraController extends Controller
             // CORRECCIÓN: ordenCompra (hasOne) y pedidoCompra (hasMany) consistentes
             'ordenCompra',
             'comentarios',
+            'pedidoCompra' => fn($q) => $q->whereNull('deleted_at'),
             'pedidoCompra.grupos',
-            'pedidoCompra.rubros',
+            'pedidoCompra.rubros',  
             'pedidoCompra.proveedores',
             'pedidoCompra.presupuestos',
         ])->get();
@@ -72,6 +73,7 @@ class ObraController extends Controller
                 'pedidosCotizacion.estadoComparativa',
                 'comentarios',
                 'ordenCompra',
+                'pedidoCompra' => fn($q) => $q->whereNull('deleted_at'),
                 'pedidoCompra.grupos',
                 'pedidoCompra.rubros',
                 'pedidoCompra.proveedores',
@@ -119,6 +121,7 @@ class ObraController extends Controller
                 'pedidosCotizacion',
                 'comentarios',
                 'ordenCompra',
+                'pedidoCompra' => fn($q) => $q->whereNull('deleted_at'),
                 'pedidoCompra.grupos',
                 'pedidoCompra.rubros',
                 'pedidoCompra.proveedores',
@@ -128,7 +131,7 @@ class ObraController extends Controller
         ]);
     }
 
-    public function destroy(Obra $obra)
+    /* public function destroy(Obra $obra)
     {
         try {
             DB::transaction(function () use ($obra) {
@@ -171,5 +174,15 @@ class ObraController extends Controller
                 'status'  => 409,
             ], 409);
         }
-    }
+    } */
+   public function destroy(Obra $obra)
+{
+    $obra->deleted_at = now();
+    $obra->save();
+
+    return response()->json([
+        'message' => 'Obra eliminada exitosamente',
+        'status'  => 200,
+    ]);
+}
 }
