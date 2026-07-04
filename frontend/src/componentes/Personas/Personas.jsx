@@ -11,8 +11,8 @@ import Swal from "sweetalert2";
 import Icon from "../Icons/Icons.jsx";
 
 
-const thClass = "px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500";
-const tdClass = "text-lg text-gray-800 px-4 py-3 text-center max-w-xs";
+const thClass = "px-6 py-3 text-left text-xl font-bold text-gray-100 border-b border-gray-500";
+const tdClass = "text-lg text-gray-800 px-4 py-3 text-left max-w-xs";
 const btnBlue = "bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer";
 const btnRed = "bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer";
 
@@ -195,73 +195,72 @@ export default function Personas() {
       <h2 className="text-3xl font-extrabold mb-6 text-gray-800 tracking-wide">Panel de Personas</h2>
 
       {/* ── CONTROLES SUPERIORES ── */}
-      <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-end">
-        <div className="flex flex-col gap-1">
-          <label htmlFor="seccion" className="text-lg font-medium text-gray-700">Ver sección:</label>
-          <select
-            id="seccion"
-            value={seccion}
-            onChange={(e) => { setSeccion(e.target.value); setBusqueda(""); }}
-            className="px-4 py-2 rounded border border-gray-300 text-lg bg-white focus:outline-none focus:ring focus:border-blue-400 cursor-pointer"
-          >
-            <option value="proveedores">Proveedores</option>
-            <option value="grupos">Grupos</option>
-            <option value="rubros">Rubros</option>
-            <option value="profesionales">Profesionales</option>
-
-          </select>
-        </div>
-
-        <div className="flex flex-col gap-1 flex-1 max-w-xl">
-          <label htmlFor="filtro" className="text-lg font-medium text-gray-700">Filtrar:</label>
-          <input
-            id="filtro"
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-            placeholder="Buscar..."
-            className="w-full px-4 py-2 rounded border border-gray-300 text-lg focus:outline-none focus:ring focus:border-blue-400"
-          />
-        </div>
-        {(seccion === "proveedores" || seccion === "grupos" || seccion === "profesionales") && (
+      <div className="mb-6 flex flex-col gap-4">
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
           <div className="flex flex-col gap-1">
-            <label className="text-lg font-medium text-gray-700">Rubro:</label>
+            <label htmlFor="seccion" className="text-lg font-medium text-gray-700">Ver sección:</label>
+            <select
+              id="seccion"
+              value={seccion}
+              onChange={(e) => { setSeccion(e.target.value); setBusqueda(""); }}
+              className="px-4 py-2 rounded border border-gray-300 text-lg bg-white focus:outline-none focus:ring focus:border-blue-400 cursor-pointer"
+            >
+              <option value="proveedores">Proveedores</option>
+              <option value="grupos">Grupos</option>
+              <option value="rubros">Rubros</option>
+              <option value="profesionales">Profesionales</option>
+            </select>
+          </div>
+
+          <div className="flex flex-col gap-1 flex-1 max-w-xl">
+            <label htmlFor="filtro" className="text-lg font-medium text-gray-700">Filtrar:</label>
             <input
-              value={rubroFiltro}
-              onChange={(e) => setRubroFiltro(e.target.value)}
-              placeholder="Buscar por rubro..."
-              className="px-4 py-2 rounded border border-gray-300 text-lg bg-white focus:outline-none focus:ring focus:border-blue-400"
+              id="filtro"
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              placeholder="Buscar..."
+              className="w-full px-4 py-2 rounded border border-gray-300 text-lg focus:outline-none focus:ring focus:border-blue-400"
             />
           </div>
-        )}
 
-        <div className="flex gap-2 pb-0.5">
-          {seccion === "proveedores" && (
-            <button type="button" onClick={() => setProveedorModal({ proveedor: null, mode: "create" })} className={btnBlue}>
-              Nuevo Proveedor
-            </button>
-          )}
-          {seccion === "grupos" && (
-            <button type="button" onClick={() => setGrupoModal({ grupo: null, mode: "create" })} className={btnBlue}>
-              Nuevo Grupo
-            </button>
-          )}
-          {seccion === "rubros" && (
-            <button type="button" onClick={() => setRubroModal({ rubro: null, mode: "create" })} className={btnBlue}>
-              Nuevo Rubro
-            </button>
+          {(seccion === "proveedores" || seccion === "grupos" || seccion === "profesionales") && (
+            <div className="flex flex-col gap-1">
+              <label className="text-lg font-medium text-gray-700">Rubro:</label>
+              <input
+                value={rubroFiltro}
+                onChange={(e) => setRubroFiltro(e.target.value)}
+                placeholder="Buscar por rubro..."
+                className="px-4 py-2 rounded border border-gray-300 text-lg bg-white focus:outline-none focus:ring focus:border-blue-400"
+              />
+            </div>
           )}
         </div>
+
+        {seccion !== "profesionales" && (
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                if (seccion === "proveedores") setProveedorModal({ proveedor: null, mode: "create" });
+                if (seccion === "grupos") setGrupoModal({ grupo: null, mode: "create" });
+                if (seccion === "rubros") setRubroModal({ rubro: null, mode: "create" });
+              }}
+              className={btnBlue}
+            >
+              Agregar
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ── PROVEEDORES ── */}
       {seccion === "proveedores" && (
         <div className="table-card">
-          <h3 className="text-2xl font-bold p-4 text-gray-800">Proveedores</h3>
           <div className="table-card__viewport overflow-x-auto">
             <table className="min-w-max w-full">
               <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
                 <tr>
-                  <th className={thClass}>Acciones</th>
+                  <th className={thClass}></th>
                   {[["Proveedor", "nombre_apellido"], ["Teléfono", "telefono"], ["Email", "email"]].map(([label, key]) => (
                     <th key={key} onClick={() => makeSort(setSortProv)(key)} className={`${thClass} cursor-pointer select-none hover:bg-gray-600 transition`}>
                       {label}<SortIcon config={sortProv} col={key} />
@@ -330,13 +329,12 @@ export default function Personas() {
           </div>
         ) : (
           <div className="table-card">
-            <h3 className="text-2xl font-bold p-4 text-gray-800">Grupos</h3>
             <div className="table-card__viewport overflow-x-auto">
               <table className="min-w-max w-full">
                 <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
                   <tr>
-                    <th className={thClass}>Acciones</th>
-                    {[["Nombre", "nombre_apellido"], ["Teléfono", "telefono"], ["Email", "email"], ["Estado", "estado"]].map(([label, key]) => (
+                    <th className={thClass}></th>
+                    {[["Nombre", "nombre_apellido"], ["Teléfono", "telefono"], ["Email", "email"]].map(([label, key]) => (
                       <th key={key} onClick={() => makeSort(setSortGrup)(key)} className={`${thClass} cursor-pointer select-none hover:bg-gray-600 transition`}>
                         {label}<SortIcon config={sortGrup} col={key} />
                       </th>
@@ -352,23 +350,26 @@ export default function Personas() {
                   ) : (
                     gruposPage.paginatedItems.map((g) => {
                       const grupoId = g.grupo_id ?? g.id;
-                      const estadoNombre = g.estado_grupo?.descripcion ?? "SIN ESTADO";
+                      /* const estadoNombre = g.estado_grupo?.descripcion ?? "SIN ESTADO"; */
                       return (
                         <tr key={grupoId} className="hover:bg-gray-200 transition-colors duration-150">
                           <td className="px-6 py-4">
                             <div className="flex gap-2 justify-center flex-wrap">
                               <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
-                              <button type="button" onClick={() => handleEliminarGrupo(g)} className={btnRed}>Eliminar</button>
+                              <button type="button" onClick={() => handleEliminarGrupo(g)} className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center">
+                                <Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
+                                <span className="sr-only">Eliminar</span>
+                              </button>
                             </div>
                           </td>
                           <td className={tdClass}>{g.nombre_apellido || "-"}</td>
                           <td className={tdClass}>{g.telefono || "-"}</td>
                           <td className={tdClass}>{g.email || "-"}</td>
-                          <td className="px-6 py-4 text-center">
+                          {/* <td className="px-6 py-4 text-center">
                             <span className={`rounded px-3 py-1 text-sm font-bold uppercase border ${estadoBadge[estadoNombre.toLowerCase()] ?? estadoBadge.pendiente}`}>
                               {estadoNombre.toUpperCase()}
                             </span>
-                          </td>
+                          </td> */}
                           <td className={tdClass}>
                             {(g.rubros ?? []).length > 0
                               ? <span className="text-sm font-semibold break-words whitespace-normal">
@@ -408,13 +409,12 @@ export default function Personas() {
           </div>
         ) : (
           <div className="table-card">
-            <h3 className="text-2xl font-bold p-4 text-gray-800">Profesionales</h3>
             <div className="table-card__viewport overflow-x-auto">
               <table className="min-w-max w-full">
                 <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
                   <tr>
-                    <th className={thClass}>Acciones</th>
-                    {[["Nombre", "nombre_apellido"], ["Teléfono", "telefono"], ["Email", "email"], ["Especialidad", "especialidad"], ["Estado", "estado"]].map(([label, key]) => (
+                    <th className={thClass}></th>
+                    {[["Nombre", "nombre_apellido"], ["Teléfono", "telefono"], ["Email", "email"], ["Especialidad", "especialidad"]].map(([label, key]) => (
                       <th key={key} onClick={() => makeSort(setSortProf)(key)} className={`${thClass} cursor-pointer select-none hover:bg-gray-600 transition`}>
                         {label}<SortIcon config={sortProf} col={key} />
                       </th>
@@ -430,24 +430,27 @@ export default function Personas() {
                   ) : (
                     profesionalesPage.paginatedItems.map((g) => {
                       const grupoId = g.grupo_id ?? g.id;
-                      const estadoNombre = g.estado_grupo?.descripcion ?? "SIN ESTADO";
+                      /* const estadoNombre = g.estado_grupo?.descripcion ?? "SIN ESTADO"; */
                       return (
                         <tr key={grupoId} className="hover:bg-gray-200 transition-colors duration-150">
                           <td className="px-6 py-4">
                             <div className="flex gap-2 justify-center flex-wrap">
                               <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
-                              <button type="button" onClick={() => handleEliminarGrupo(g)} className={btnRed}>Eliminar</button>
+                              <button type="button" onClick={() => handleEliminarGrupo(g)} className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center">
+                                <Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
+                                <span className="sr-only">Eliminar</span>
+                              </button>
                             </div>
                           </td>
                           <td className={tdClass}>{g.nombre_apellido || "-"}</td>
                           <td className={tdClass}>{g.telefono || "-"}</td>
                           <td className={tdClass}>{g.email || "-"}</td>
                           <td className={tdClass}>{g.especialidad || "-"}</td>
-                          <td className="px-6 py-4 text-center">
+                          {/* <td className="px-6 py-4 text-center">
                             <span className={`rounded px-3 py-1 text-sm font-bold uppercase border ${estadoBadge[estadoNombre.toLowerCase()] ?? estadoBadge.pendiente}`}>
                               {estadoNombre.toUpperCase()}
                             </span>
-                          </td>
+                          </td> */}
                           <td className={tdClass}>
                             {(g.rubros ?? []).length > 0
                               ? <span className="text-sm font-semibold break-words whitespace-normal">
@@ -484,12 +487,11 @@ export default function Personas() {
       {/* ── RUBROS ── */}
       {seccion === "rubros" && (
         <div className="table-card">
-          <h3 className="text-2xl font-bold p-4 text-gray-800">Rubros</h3>
           <div className="table-card__viewport overflow-x-auto">
             <table className="min-w-max w-full">
               <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
                 <tr>
-                  <th className={thClass}>Acciones</th>
+                  <th className={thClass}></th>
 
                   <th onClick={() => makeSort(setSortRubr)("descripcion")} className={`${thClass} cursor-pointer select-none hover:bg-gray-600 transition`}>
                     Descripción<SortIcon config={sortRubr} col="descripcion" />
@@ -507,7 +509,10 @@ export default function Personas() {
                       <td className="px-6 py-4">
                         <div className="flex gap-2 justify-center flex-wrap">
                           <button type="button" onClick={() => setRubroModal({ rubro: r, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
-                          <button type="button" onClick={() => handleEliminarRubro(r)} className={btnRed}>Eliminar</button>
+                          <button type="button" onClick={() => handleEliminarRubro(r)} className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center">
+                            <Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
+                            <span className="sr-only">Eliminar</span>
+                          </button>
                         </div>
                       </td>
                       <td className={tdClass}>{r.descripcion ?? "Sin descripción"}</td>

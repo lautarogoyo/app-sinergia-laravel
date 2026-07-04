@@ -181,7 +181,7 @@ export default function Empleados() {
         <table className="min-w-max table-auto w-full">
           <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
             <tr>
-              <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Acciones</th>
+              <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}></th>
               <th onClick={() => handleSort("nombre")} className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500 cursor-pointer select-none hover:bg-gray-600 transition`}>
                 Nombre<SortIcon col="nombre" />
               </th>
@@ -192,7 +192,7 @@ export default function Empleados() {
                 Grupo<SortIcon col="grupo" />
               </th>
               <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Teléfono</th>
-              <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Datos Bancarios</th>
+              {/* <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Datos Bancarios</th> */}
               <th onClick={() => handleSort("estado")} className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500 cursor-pointer select-none hover:bg-gray-600 transition`}>
                 Estado<SortIcon col="estado" />
               </th>
@@ -239,10 +239,10 @@ export default function Empleados() {
                   <td className={`${textContent} text-gray-800 px-4 py-3 break-words max-w-[180px]`}>{empleado.apellido}</td>
                   <td className={`${textContent} text-gray-800 px-4 py-3 break-words max-w-[200px]`}>{empleado.grupo?.nombre_apellido}</td>
                   <td className={`${textContent} text-gray-800 px-4 py-3 break-words max-w-[170px]`}>{empleado.telefono}</td>
-                  <td className={`text-[18px] text-gray-800 px-4 py-3 max-w-[260px] break-words`}>
+                 {/*  <td className={`text-[18px] text-gray-800 px-4 py-3 max-w-[260px] break-words`}>
                     <div className="truncate">{empleado.cbu}</div>
                     <div className="text-sm text-gray-600 break-words">{empleado.alias}</div>
-                  </td>
+                  </td> */}
                   <td className={`px-4 py-3 text-center`}>
                     <span className={`inline-block px-3 py-1 font-bold text-white rounded ${empleado.estado_empleado?.descripcion?.toLowerCase() === 'activo' ? 'bg-green-500' : 'bg-red-500'}`}>
                       {empleado.estado_empleado?.descripcion?.toUpperCase() ?? '-'}

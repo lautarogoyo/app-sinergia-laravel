@@ -198,7 +198,7 @@ export default function Facturas() {
           <table className="min-w-max w-full">
             <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
             <tr>
-              <th className={thClass}>Acciones</th>
+              <th className={thClass}></th>
               {[
                 { label: "Nro. Factura",      key: "nro_factura"   },
                 { label: "Fecha",             key: "fecha"         },

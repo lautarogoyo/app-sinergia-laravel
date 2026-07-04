@@ -59,7 +59,25 @@ export default function Gestionar() {
     handleEliminarPresupuesto
   } = hook;
 
-  if (isLoading) return <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50"><div className="relative"><h2 className="text-3xl font-bold text-white mb-4 animate-pulse">Cargando Obra</h2></div></div>;
+  if (isLoading) {
+		return (
+			<div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
+				<div className="relative">
+					<div className="mt-8 text-center">
+						<h2 className="text-3xl font-bold text-white mb-4 animate-pulse">Cargando Obras</h2>
+						<div className="w-80 h-3 bg-gray-700 rounded-full overflow-hidden shadow-lg">
+							<div className="h-full bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 rounded-full animate-loading-bar"></div>
+						</div>
+						<div className="mt-4 flex justify-center gap-2">
+							<span className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></span>
+							<span className="w-3 h-3 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></span>
+							<span className="w-3 h-3 bg-blue-300 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></span>
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
   if (isError || !obraData) return <div className="min-h-screen flex items-center justify-center"><div className="text-red-500 text-lg">Error al cargar la obra</div></div>;
 
   const obraDataForComponents = obraData

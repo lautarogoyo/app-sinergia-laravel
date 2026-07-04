@@ -22,7 +22,7 @@ export default function Obras() {
 	const queryClient = useQueryClient();
 	const [modalFechaVisto, setModalFechaVisto] = useState({ isOpen: false, obra: null });
 	const [sortConfig, setSortConfig] = useState({ key: null, dir: "asc" });
-
+	const [menuAbierto, setMenuAbierto] = useState(null);
 	const handleSort = (key) => {
 		setSortConfig((prev) =>
 			prev.key === key ? { key, dir: prev.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" }
@@ -235,7 +235,7 @@ export default function Obras() {
 						<table className="min-w-max w-full">
 							<thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
 								<tr>
-									<th className="px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500">Acciones</th>
+									<th className="px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500"></th>
 									{[
 										{ label: "Nro. Obra", key: "nro_obra" },
 										{ label: "Detalle", key: "detalle" },
@@ -258,27 +258,50 @@ export default function Obras() {
 									obrasPage.paginatedItems.map((obra) => (
 										<tr key={obra.nro_obra} className="hover:bg-gray-200 transition-colors duration-150">
 											<td className="px-6 py-4">
-												<div className="flex flex-col gap-2 items-center">
+												<div className="flex flex-row gap-2 items-center">
 													{/* Grupo principal: Gestionar, Gastos, Comentarios */}
-													<div className="flex gap-2 justify-center flex-wrap">
+													<div className="relative inline-block">
 														<button
-															className="bg-blue-500 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-															onClick={() => navigate(`/obra/${obra.nro_obra}/gestionar`)}
+															className="border-2 border-black hover:bg-gray-300 p-2 rounded shadow transition duration-150 cursor-pointer"
+															onClick={() => setMenuAbierto(menuAbierto === obra.nro_obra ? null : obra.nro_obra)}
 														>
-															Gestionar
+															<Icon name="menu" className="w-5 h-5" />
 														</button>
-														<button
-															className="bg-green-700 hover:bg-green-900 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-															onClick={() => navigate(`/obra/${obra.nro_obra}/gestionar`)}
-														>
-															Gastos
-														</button>
-														<button
-															className="border-2 border-black hover:bg-gray-300 py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
-															onClick={() => abrirModalComentarios(obra)}
-														>
-															<Icon name="message" className="w-5 h-5" />
-														</button>
+
+														{menuAbierto === obra.nro_obra && (
+															<div className="absolute left-0 mt-2 w-44 bg-white border border-gray-200 rounded shadow-lg z-10">
+																<button
+																	className="flex items-center gap-2 w-full text-left px-4 py-2 text-lg hover:bg-gray-100"
+																	onClick={() => {
+																		navigate(`/obra/${obra.nro_obra}/gestionar`);
+																		setMenuAbierto(null);
+																	}}
+																>
+																	<Icon name="setting" className="w-5 h-5" />
+																	Gestionar
+																</button>
+																<button
+																	className="flex items-center gap-2 w-full text-left px-4 py-2 text-lg hover:bg-gray-100"
+																	onClick={() => {
+																		navigate(`/obra/${obra.nro_obra}/gestionar`);
+																		setMenuAbierto(null);
+																	}}
+																>
+																	<Icon name="cash" className="w-5 h-5" />
+																	Gastos
+																</button>
+																<button
+																	className="flex items-center gap-2 w-full text-left px-4 py-2 text-lg hover:bg-gray-100"
+																	onClick={() => {
+																		abrirModalComentarios(obra);
+																		setMenuAbierto(null);
+																	}}
+																>
+																	<Icon name="message" className="w-5 h-5" />
+																	Comentarios
+																</button>
+															</div>
+														)}
 													</div>
 													{/* Grupo secundario: Editar, Eliminar */}
 													<div className="flex gap-2 justify-center">

@@ -171,7 +171,7 @@ export default function OrdenesDeCompra() {
           <table className="min-w-max w-full">
             <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
               <tr>
-                <th className={thClass}>Acciones</th>
+                <th className={thClass}></th>
                 {[
                   { label: "Nro. OC", key: "nro_oc" },
                   { label: "Grupo", key: "grupo" },
