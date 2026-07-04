@@ -193,11 +193,12 @@ export default function Facturas() {
       ) : loadingFacturas ? (
         <div className="text-center text-gray-400 mt-20 text-sm animate-pulse">Cargando facturas...</div>
       ) : (
-        <div className="shadow-2xl rounded-xl border border-gray-300 bg-white overflow-hidden">
-          <div className="overflow-x-auto">
+        <div className="table-card">
+          <div className="table-card__viewport overflow-x-auto">
           <table className="min-w-max w-full">
             <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
             <tr>
+              <th className={thClass}>Acciones</th>
               {[
                 { label: "Nro. Factura",      key: "nro_factura"   },
                 { label: "Fecha",             key: "fecha"         },
@@ -215,7 +216,6 @@ export default function Facturas() {
                   {label}<SortIcon col={key} />
                 </th>
               ))}
-              <th className={thClass}>Acciones</th>
             </tr>
           </thead>
             <tbody className="bg-gray-50 divide-y divide-gray-200">
@@ -228,6 +228,35 @@ export default function Facturas() {
               ) : (
                 facturasPage.paginatedItems.map((f, i) => (
                   <tr key={f.nro_factura} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                    <td className={tdClass}>
+                      <div className="flex gap-2 justify-center">
+                        {f.tipo_factura !== "C" && (
+                          <button
+                            onClick={() => setModalImpuestos(f)}
+                            title="Datos fiscales"
+                            className={`p-1.5 rounded text-xs font-bold ${
+                                f.tiene_impuestos
+                                    ? "bg-emerald-100 text-emerald-700"
+                                  : "bg-yellow-100 text-yellow-700"
+                          }`}
+                      >
+                          {f.tiene_impuestos ? "$ ✓" : "$ ?"}
+                      </button>
+                      )}
+                        <button
+                          className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
+                          onClick={() => setModal({ mode: "edit", data: f })}
+                        >
+                          <Icon name="pencil" className="h-6 w-6 text-white group-hover:text-blue-200 transition-colors" />
+                        </button>
+                        <button
+                          className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
+                          onClick={() => handleEliminar(f)}
+                        >
+                          <Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
+                        </button>
+                      </div>
+                    </td>
                     <td className={`${tdClass} font-semibold`}>{f.nro_factura}</td>
                     <td className={tdClass}>
                       {f.fecha ? new Date(f.fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "2-digit", timeZone: "America/Argentina/Buenos_Aires" }) : "-"}
@@ -261,35 +290,6 @@ export default function Facturas() {
                     </td>
                     <td className={`${tdClass} font-semibold`}>
                       ${Number(f.importe_total).toLocaleString("es-AR", { minimumFractionDigits: 2 })}
-                    </td>
-                    <td className={tdClass}>
-                      <div className="flex gap-2 justify-center">
-                        {f.tipo_factura !== "C" && (
-                          <button
-                            onClick={() => setModalImpuestos(f)}
-                            title="Datos fiscales"
-                            className={`p-1.5 rounded text-xs font-bold ${
-                                f.tiene_impuestos
-                                    ? "bg-emerald-100 text-emerald-700"
-                                  : "bg-yellow-100 text-yellow-700"
-                          }`}
-                      >
-                          {f.tiene_impuestos ? "$ ✓" : "$ ?"}
-                      </button>
-                      )}
-                        <button
-                          className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
-                          onClick={() => setModal({ mode: "edit", data: f })}
-                        >
-                          <Icon name="pencil" className="h-6 w-6 text-white group-hover:text-blue-200 transition-colors" />
-                        </button>
-                        <button
-                          className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
-                          onClick={() => handleEliminar(f)}
-                        >
-                          <Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
-                        </button>
-                      </div>
                     </td>
                   </tr>
                 ))

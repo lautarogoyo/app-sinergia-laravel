@@ -23,8 +23,8 @@ const fmtFecha = (fecha) =>
       })
     : "-";
 
-const HEAD_1_STYLE = { halign: "center", fillColor: [80, 80, 80], textColor: [255, 255, 255], fontStyle: "bold", fontSize: 8 };
-const HEAD_2_STYLE = { halign: "center", fillColor: [60, 60, 60], textColor: [255, 255, 255], fontStyle: "bold", fontSize: 7 };
+const HEAD_1_STYLE = { halign: "center", fillColor: [200, 200, 200], textColor: [0, 0, 0], fontStyle: "bold", fontSize: 8 };
+const HEAD_2_STYLE = { halign: "center", fillColor: [180, 180, 180], textColor: [0, 0, 0], fontStyle: "bold", fontSize: 7 };
 const FOOT_STYLE  = { halign: "right", fontStyle: "bold" };
 
 // ─── A / B ───────────────────────────────────────────────────────────────────
@@ -41,9 +41,7 @@ const generarPdfAB = (facturas, { mes, anio, tipo_factura, empresa }, doc) => {
   doc.setFont("helvetica", "bold");
   doc.text(titulo, 14, 16);
 
-  // rows en generarPdfAB
   const rows = facturas.map((f) => {
-     console.log("factura:", f);
     const neto = parseFloat(f.impuestos?.neto_gral)       || 0;
     const iva  = parseFloat(f.impuestos?.iva_gral_importe) || 0;
 
@@ -53,20 +51,21 @@ const generarPdfAB = (facturas, { mes, anio, tipo_factura, empresa }, doc) => {
       f.nro_factura  ?? "-",
       f.proveedor?.cuit ?? "-",
       f.proveedor?.nombre_apellido ?? f.grupo?.nombre_apellido ?? "-",
-      fmt(neto),   // Al. Gral. = total - iva
+      fmt(neto),
       "",
       "",
       f.alicuota_iva != null ? `${f.alicuota_iva}%` : "-",
-      fmt(iva),    // Importe IVA
+      fmt(iva),
     ];
   });
+
   autoTable(doc, {
     startY: 22,
     head: [
       [
-        { content: "COMPROBANTE",          colSpan: 3, styles: HEAD_1_STYLE },
-        { content: "PROVEEDOR",            colSpan: 2, styles: HEAD_1_STYLE },
-        { content: "Imp. Neto Gravado",    colSpan: 3, styles: HEAD_1_STYLE },
+        { content: "COMPROBANTE",            colSpan: 3, styles: HEAD_1_STYLE },
+        { content: "PROVEEDOR",              colSpan: 2, styles: HEAD_1_STYLE },
+        { content: "Imp. Neto Gravado",      colSpan: 3, styles: HEAD_1_STYLE },
         { content: "IVA CRÉDITO (AI. Gral)", colSpan: 2, styles: HEAD_1_STYLE },
       ],
       [
@@ -75,14 +74,14 @@ const generarPdfAB = (facturas, { mes, anio, tipo_factura, empresa }, doc) => {
         { content: "Nro. Factura", styles: HEAD_2_STYLE },
         { content: "CUIT",         styles: HEAD_2_STYLE },
         { content: "Razón Social", styles: HEAD_2_STYLE },
-        { content: "Al. Gral.", styles: { ...HEAD_2_STYLE, halign: "right" } },
+        { content: "Al. Gral.",    styles: { ...HEAD_2_STYLE, halign: "right" } },
         { content: "AI.Dif.",      styles: HEAD_2_STYLE },
         { content: "AI.S.Pub",     styles: HEAD_2_STYLE },
         { content: "Alíc.",        styles: HEAD_2_STYLE },
         { content: "Importe",      styles: { ...HEAD_2_STYLE, halign: "right" } },
       ],
     ],
-    headStyles: { lineColor: [0, 0, 0], lineWidth: 0.3 },
+    headStyles: { lineWidth: 0 },
     body: rows,
     foot: [[
       { content: "TOTAL", colSpan: 9, styles: FOOT_STYLE },
@@ -92,13 +91,13 @@ const generarPdfAB = (facturas, { mes, anio, tipo_factura, empresa }, doc) => {
       },
     ]],
     showFoot: "lastPage",
-    theme: "grid",
+    theme: "plain",
     footStyles: { fillColor: [80, 80, 80], textColor: [255, 255, 255], fontStyle: "bold" },
-    styles: { fontSize: 7.5, cellPadding: 2, lineColor: [0, 0, 0], lineWidth: 0.5 },
+    styles: { fontSize: 7.5, cellPadding: 2, textColor: [0, 0, 0] },
     columnStyles: {
       0: { cellWidth: 22, halign: "center" },
       1: { cellWidth: 12, halign: "center" },
-      2: { cellWidth: 30 },
+      2: { cellWidth: 30, halign: "right" },
       3: { cellWidth: 28, halign: "center" },
       4: { cellWidth: 52 },
       5: { cellWidth: 26, halign: "right" },
@@ -107,7 +106,6 @@ const generarPdfAB = (facturas, { mes, anio, tipo_factura, empresa }, doc) => {
       8: { cellWidth: 14, halign: "center" },
       9: { cellWidth: 26, halign: "right" },
     },
-    alternateRowStyles: { fillColor: [245, 245, 245] },
   });
 
   const mes2 = String(mes).padStart(2, "0");
@@ -135,14 +133,16 @@ const generarPdfC = (facturas, { mes, anio, empresa }, doc) => {
     fmt(f.importe_total),
   ]);
 
+  const HEAD_C_STYLE = { halign: "center", fillColor: [200, 200, 200], textColor: [0, 0, 0], fontStyle: "bold", fontSize: 7.5 };
+
   autoTable(doc, {
     startY: 22,
     head: [[
-      { content: "Fecha",        styles: HEAD_2_STYLE },
-      { content: "Razón Social", styles: HEAD_2_STYLE },
-      { content: "CUIT",         styles: HEAD_2_STYLE },
-      { content: "Nro. Factura", styles: HEAD_2_STYLE },
-      { content: "Importe",      styles: { ...HEAD_2_STYLE, halign: "right" } },
+      { content: "Fecha",        styles: HEAD_C_STYLE },
+      { content: "Razón Social", styles: HEAD_C_STYLE },
+      { content: "CUIT",         styles: HEAD_C_STYLE },
+      { content: "Nro. Factura", styles: HEAD_C_STYLE },
+      { content: "Importe",      styles: { ...HEAD_C_STYLE, halign: "right" } },
     ]],
     body: rows,
     foot: [[
@@ -153,10 +153,10 @@ const generarPdfC = (facturas, { mes, anio, empresa }, doc) => {
       },
     ]],
     showFoot: "lastPage",
-    theme: "grid",
+    theme: "plain",
+    headStyles: { lineWidth: 0 },
     footStyles: { fillColor: [80, 80, 80], textColor: [255, 255, 255], fontStyle: "bold" },
-
-    styles: { fontSize: 7.5, cellPadding: 2, lineColor: [0, 0, 0], lineWidth: 0.2 },
+    styles: { fontSize: 7.5, cellPadding: 2, textColor: [0, 0, 0] },
     columnStyles: {
       0: { cellWidth: 28, halign: "center" },
       1: { cellWidth: 70 },
@@ -164,7 +164,6 @@ const generarPdfC = (facturas, { mes, anio, empresa }, doc) => {
       3: { cellWidth: 40 },
       4: { cellWidth: 35, halign: "right" },
     },
-    alternateRowStyles: { fillColor: [245, 245, 245] },
   });
 
   const mes2 = String(mes).padStart(2, "0");

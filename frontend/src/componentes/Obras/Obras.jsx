@@ -230,11 +230,12 @@ export default function Obras() {
 					</div>
 				</div>
 
-				<div className="shadow-2xl rounded-xl border border-gray-300 bg-white flex flex-col overflow-hidden">
-					<div className="overflow-x-auto">
+				<div className="table-card">
+					<div className="table-card__viewport overflow-x-auto">
 						<table className="min-w-max w-full">
 							<thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
 								<tr>
+									<th className="px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500">Acciones</th>
 									{[
 										{ label: "Nro. Obra", key: "nro_obra" },
 										{ label: "Detalle", key: "detalle" },
@@ -250,39 +251,12 @@ export default function Obras() {
 											{label}<SortIcon col={key} />
 										</th>
 									))}
-									<th className="px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500">Acciones</th>
 								</tr>
 							</thead>
 							<tbody className="bg-gray-50 divide-y divide-gray-200 text-center">
 								{obrasPage.paginatedItems.length > 0 ? (
 									obrasPage.paginatedItems.map((obra) => (
 										<tr key={obra.nro_obra} className="hover:bg-gray-200 transition-colors duration-150">
-											<td className="whitespace-nowrap text-lg text-gray-800 px-6 py-4">{obra.nro_obra ?? "-"}</td>
-											<td className="text-left text-lg text-gray-800 px-6 py-4 max-w-xl break-words">
-												{fixMojibake(obra.detalle ?? "Sin detalle")}
-											</td>
-											<td className="whitespace-nowrap px-6 py-4">
-												<span className={`px-3 py-1 rounded text-sm font-bold ${statusClass(getEstado(obra))}`}>
-													{labelEstado(getEstado(obra)).toUpperCase()}
-												</span>
-											</td>
-											<td className="px-6 py-4 max-w-xs">
-												{obra.grupos && obra.grupos.length > 0 ? (
-													<span className="text-lg font-semibold break-words whitespace-normal">
-														{obra.grupos.map((g) => g.nombre_apellido).join(", ")}
-													</span>
-												) : (
-													<span className="text-gray-500">-</span>
-												)}
-											</td>
-											<td
-												className="text-lg font-bold px-6 py-4 whitespace-nowrap cursor-pointer hover:opacity-80"
-												style={esFechaHoy(obra.fecha_visto) ? { backgroundColor: "#B4A7D6" } : {}}
-												onClick={() => setModalFechaVisto({ isOpen: true, obra })}
-												title="Click para editar fecha visto"
-											>
-												{formatearFecha(obra.fecha_visto)}
-											</td>
 											<td className="px-6 py-4">
 												<div className="flex flex-col gap-2 items-center">
 													{/* Grupo principal: Gestionar, Gastos, Comentarios */}
@@ -323,6 +297,32 @@ export default function Obras() {
 														</button>
 													</div>
 												</div>
+											</td>
+											<td className="whitespace-nowrap text-lg text-gray-800 px-6 py-4">{obra.nro_obra ?? "-"}</td>
+											<td className="text-left text-lg text-gray-800 px-6 py-4 max-w-xl break-words">
+												{fixMojibake(obra.detalle ?? "Sin detalle")}
+											</td>
+											<td className="whitespace-nowrap px-6 py-4">
+												<span className={`px-3 py-1 rounded text-sm font-bold ${statusClass(getEstado(obra))}`}>
+													{labelEstado(getEstado(obra)).toUpperCase()}
+												</span>
+											</td>
+											<td className="px-6 py-4 max-w-xs">
+												{obra.grupos && obra.grupos.length > 0 ? (
+													<span className="text-lg font-semibold break-words whitespace-normal">
+														{obra.grupos.map((g) => g.nombre_apellido).join(", ")}
+													</span>
+												) : (
+													<span className="text-gray-500">-</span>
+												)}
+											</td>
+											<td
+												className="text-lg font-bold px-6 py-4 whitespace-nowrap cursor-pointer hover:opacity-80"
+												style={esFechaHoy(obra.fecha_visto) ? { backgroundColor: "#B4A7D6" } : {}}
+												onClick={() => setModalFechaVisto({ isOpen: true, obra })}
+												title="Click para editar fecha visto"
+											>
+												{formatearFecha(obra.fecha_visto)}
 											</td>
 										</tr>
 									))

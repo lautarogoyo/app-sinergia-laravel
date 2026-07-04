@@ -8,6 +8,7 @@ import RubroDetailModal from "./Rubros/RubroDetailModal.jsx";
 import PaginationControls from "../shared/PaginationControls.jsx";
 import { usePagination } from "../shared/usePagination.jsx";
 import Swal from "sweetalert2";
+import Icon from "../Icons/Icons.jsx";
 
 
 const thClass = "px-6 py-3 text-center text-xl font-bold text-gray-100 border-b border-gray-500";
@@ -254,19 +255,19 @@ export default function Personas() {
 
       {/* ── PROVEEDORES ── */}
       {seccion === "proveedores" && (
-        <div className="bg-white rounded-xl border border-gray-300 shadow-2xl overflow-hidden">
+        <div className="table-card">
           <h3 className="text-2xl font-bold p-4 text-gray-800">Proveedores</h3>
-          <div className="overflow-x-auto">
+          <div className="table-card__viewport overflow-x-auto">
             <table className="min-w-max w-full">
               <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
                 <tr>
+                  <th className={thClass}>Acciones</th>
                   {[["Proveedor", "nombre_apellido"], ["Teléfono", "telefono"], ["Email", "email"]].map(([label, key]) => (
                     <th key={key} onClick={() => makeSort(setSortProv)(key)} className={`${thClass} cursor-pointer select-none hover:bg-gray-600 transition`}>
                       {label}<SortIcon config={sortProv} col={key} />
                     </th>
                   ))}
                   <th className={thClass}>Rubros</th>
-                  <th className={thClass}>Acciones</th>
                 </tr>
               </thead>
               <tbody className="bg-gray-50 divide-y divide-gray-200">
@@ -277,6 +278,16 @@ export default function Personas() {
                 ) : (
                   proveedoresPage.paginatedItems.map((p) => (
                     <tr key={p.proveedor_id} className="hover:bg-gray-200 transition-colors duration-150">
+                      <td className="px-6 py-4">
+                        <div className="flex gap-2 justify-center flex-wrap">
+                          <button type="button" onClick={() => setProveedorModal({ proveedor: p, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
+                          <button type="button" onClick={() => handleEliminarProveedor(p)} className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center">
+                            <Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
+                            <span className="sr-only">Eliminar</span>
+                          </button>
+
+                        </div>
+                      </td>
                       <td className={tdClass}>{p.nombre_apellido || "-"}</td>
                       <td className={tdClass}>{p.telefono || "-"}</td>
                       <td className={tdClass}>{p.email || "-"}</td>
@@ -288,12 +299,7 @@ export default function Personas() {
                           : <span className="text-gray-400 text-sm">-</span>
                         }
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex gap-2 justify-center flex-wrap">
-                          <button type="button" onClick={() => setProveedorModal({ proveedor: p, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
-                          <button type="button" onClick={() => handleEliminarProveedor(p)} className={btnRed}>Eliminar</button>
-                        </div>
-                      </td>
+
                     </tr>
                   ))
                 )}
@@ -323,19 +329,19 @@ export default function Personas() {
             <p className="text-xl text-gray-500 animate-pulse">Cargando grupos...</p>
           </div>
         ) : (
-          <div className="bg-white rounded-xl border border-gray-300 shadow-2xl overflow-hidden">
+          <div className="table-card">
             <h3 className="text-2xl font-bold p-4 text-gray-800">Grupos</h3>
-            <div className="overflow-x-auto">
+            <div className="table-card__viewport overflow-x-auto">
               <table className="min-w-max w-full">
                 <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
                   <tr>
+                    <th className={thClass}>Acciones</th>
                     {[["Nombre", "nombre_apellido"], ["Teléfono", "telefono"], ["Email", "email"], ["Estado", "estado"]].map(([label, key]) => (
                       <th key={key} onClick={() => makeSort(setSortGrup)(key)} className={`${thClass} cursor-pointer select-none hover:bg-gray-600 transition`}>
                         {label}<SortIcon config={sortGrup} col={key} />
                       </th>
                     ))}
                     <th className={thClass}>Rubros</th>
-                    <th className={thClass}>Acciones</th>
                   </tr>
                 </thead>
                 <tbody className="bg-gray-50 divide-y divide-gray-200">
@@ -349,6 +355,12 @@ export default function Personas() {
                       const estadoNombre = g.estado_grupo?.descripcion ?? "SIN ESTADO";
                       return (
                         <tr key={grupoId} className="hover:bg-gray-200 transition-colors duration-150">
+                          <td className="px-6 py-4">
+                            <div className="flex gap-2 justify-center flex-wrap">
+                              <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
+                              <button type="button" onClick={() => handleEliminarGrupo(g)} className={btnRed}>Eliminar</button>
+                            </div>
+                          </td>
                           <td className={tdClass}>{g.nombre_apellido || "-"}</td>
                           <td className={tdClass}>{g.telefono || "-"}</td>
                           <td className={tdClass}>{g.email || "-"}</td>
@@ -365,12 +377,7 @@ export default function Personas() {
                               : <span className="text-gray-400 text-sm">-</span>
                             }
                           </td>
-                          <td className="px-6 py-4">
-                            <div className="flex gap-2 justify-center flex-wrap">
-                              <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
-                              <button type="button" onClick={() => handleEliminarGrupo(g)} className={btnRed}>Eliminar</button>
-                            </div>
-                          </td>
+
                         </tr>
                       );
                     })
@@ -400,19 +407,19 @@ export default function Personas() {
             <p className="text-xl text-gray-500 animate-pulse">Cargando profesionales...</p>
           </div>
         ) : (
-          <div className="bg-white rounded-xl border border-gray-300 shadow-2xl overflow-hidden">
+          <div className="table-card">
             <h3 className="text-2xl font-bold p-4 text-gray-800">Profesionales</h3>
-            <div className="overflow-x-auto">
+            <div className="table-card__viewport overflow-x-auto">
               <table className="min-w-max w-full">
                 <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
                   <tr>
+                    <th className={thClass}>Acciones</th>
                     {[["Nombre", "nombre_apellido"], ["Teléfono", "telefono"], ["Email", "email"], ["Especialidad", "especialidad"], ["Estado", "estado"]].map(([label, key]) => (
                       <th key={key} onClick={() => makeSort(setSortProf)(key)} className={`${thClass} cursor-pointer select-none hover:bg-gray-600 transition`}>
                         {label}<SortIcon config={sortProf} col={key} />
                       </th>
                     ))}
                     <th className={thClass}>Rubros</th>
-                    <th className={thClass}>Acciones</th>
                   </tr>
                 </thead>
                 <tbody className="bg-gray-50 divide-y divide-gray-200">
@@ -426,6 +433,12 @@ export default function Personas() {
                       const estadoNombre = g.estado_grupo?.descripcion ?? "SIN ESTADO";
                       return (
                         <tr key={grupoId} className="hover:bg-gray-200 transition-colors duration-150">
+                          <td className="px-6 py-4">
+                            <div className="flex gap-2 justify-center flex-wrap">
+                              <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
+                              <button type="button" onClick={() => handleEliminarGrupo(g)} className={btnRed}>Eliminar</button>
+                            </div>
+                          </td>
                           <td className={tdClass}>{g.nombre_apellido || "-"}</td>
                           <td className={tdClass}>{g.telefono || "-"}</td>
                           <td className={tdClass}>{g.email || "-"}</td>
@@ -443,12 +456,7 @@ export default function Personas() {
                               : <span className="text-gray-400 text-sm">-</span>
                             }
                           </td>
-                          <td className="px-6 py-4">
-                            <div className="flex gap-2 justify-center flex-wrap">
-                              <button type="button" onClick={() => setGrupoModal({ grupo: g, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
-                              <button type="button" onClick={() => handleEliminarGrupo(g)} className={btnRed}>Eliminar</button>
-                            </div>
-                          </td>
+
                         </tr>
                       );
                     })
@@ -475,16 +483,17 @@ export default function Personas() {
 
       {/* ── RUBROS ── */}
       {seccion === "rubros" && (
-        <div className="bg-white rounded-xl border border-gray-300 shadow-2xl overflow-hidden">
+        <div className="table-card">
           <h3 className="text-2xl font-bold p-4 text-gray-800">Rubros</h3>
-          <div className="overflow-x-auto">
+          <div className="table-card__viewport overflow-x-auto">
             <table className="min-w-max w-full">
               <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
                 <tr>
+                  <th className={thClass}>Acciones</th>
+
                   <th onClick={() => makeSort(setSortRubr)("descripcion")} className={`${thClass} cursor-pointer select-none hover:bg-gray-600 transition`}>
                     Descripción<SortIcon config={sortRubr} col="descripcion" />
                   </th>
-                  <th className={thClass}>Acciones</th>
                 </tr>
               </thead>
               <tbody className="bg-gray-50 divide-y divide-gray-200">
@@ -495,13 +504,14 @@ export default function Personas() {
                 ) : (
                   rubrosPage.paginatedItems.map((r) => (
                     <tr key={r.rubro_id} className="hover:bg-gray-200 transition-colors duration-150">
-                      <td className={tdClass}>{r.descripcion ?? "Sin descripción"}</td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2 justify-center flex-wrap">
                           <button type="button" onClick={() => setRubroModal({ rubro: r, mode: "read" })} className={btnBlue} title="Ver detalle"><LupaIcon /></button>
                           <button type="button" onClick={() => handleEliminarRubro(r)} className={btnRed}>Eliminar</button>
                         </div>
                       </td>
+                      <td className={tdClass}>{r.descripcion ?? "Sin descripción"}</td>
+
                     </tr>
                   ))
                 )}

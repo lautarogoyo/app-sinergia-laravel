@@ -176,11 +176,12 @@ export default function Empleados() {
         </div>
       </div>
 
-      <div className="shadow-2xl rounded-xl border border-gray-300 bg-white flex flex-col overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="table-card">
+        <div className="table-card__viewport overflow-x-auto">
         <table className="min-w-max table-auto w-full">
           <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
             <tr>
+              <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Acciones</th>
               <th onClick={() => handleSort("nombre")} className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500 cursor-pointer select-none hover:bg-gray-600 transition`}>
                 Nombre<SortIcon col="nombre" />
               </th>
@@ -196,13 +197,44 @@ export default function Empleados() {
                 Estado<SortIcon col="estado" />
               </th>
               <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Documentaciones</th>
-              <th className={`px-4 py-3 text-left ${textHeader} font-bold text-gray-100 border-b border-gray-500`}>Acciones</th>
             </tr>
           </thead>
           <tbody className="bg-gray-50 divide-y divide-gray-200">
             {empleadosPage.paginatedItems.length > 0 ? (
               empleadosPage.paginatedItems.map((empleado) => (
                 <tr key={empleado.id} className="hover:bg-gray-200 transition-colors duration-150">
+                  <td className="px-4 py-3 max-w-[260px]">
+                    <div className="">
+                      <div className="flex gap-4 w-full justify-center p-2">
+                        <button
+                          title="Cambiar Documentación"
+                          onClick={() => window.location.href = `/documentacionempleado/${empleado.empleado_id}`}
+                          className="group bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
+                        >
+                          <Icon name="filetext" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
+                          <span className="sr-only">Cambiar Documentación</span>
+                        </button>
+                        <button
+                          title="Editar"
+                          onClick={() => window.location.href = `/editarempleado/${empleado.empleado_id}`}
+                          className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
+                        >
+                          <Icon name="pencil" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
+                          <span className="sr-only">Editar</span>
+                        </button>
+                        <button
+                          title="Eliminar"
+                          onClick={() => handleEliminar(empleado)}
+                          className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
+                        >
+                          <Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
+                          <span className="sr-only">Eliminar</span>
+                        </button>
+
+                      </div>
+
+                    </div>
+                  </td>
                   <td className={`${textContent} text-gray-800 px-4 py-3 break-words max-w-[180px]`}>{empleado.nombre}</td>
                   <td className={`${textContent} text-gray-800 px-4 py-3 break-words max-w-[180px]`}>{empleado.apellido}</td>
                   <td className={`${textContent} text-gray-800 px-4 py-3 break-words max-w-[200px]`}>{empleado.grupo?.nombre_apellido}</td>
@@ -248,38 +280,6 @@ export default function Empleados() {
                     ) : (
                       <span className="text-gray-400 italic">Sin documentos</span>
                     )}
-                  </td>
-                  <td className="px-4 py-3 max-w-[260px]">
-                    <div className="">
-                      <div className="flex gap-4 w-full justify-center p-2">
-                        <button
-                          title="Cambiar Documentación"
-                          onClick={() => window.location.href = `/documentacionempleado/${empleado.empleado_id}`}
-                          className="group bg-blue-600 hover:bg-blue-700 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
-                        >
-                          <Icon name="filetext" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
-                          <span className="sr-only">Cambiar Documentación</span>
-                        </button>
-                        <button
-                          title="Editar"
-                          onClick={() => window.location.href = `/editarempleado/${empleado.empleado_id}`}
-                          className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
-                        >
-                          <Icon name="pencil" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
-                          <span className="sr-only">Editar</span>
-                        </button>
-                        <button
-                          title="Eliminar"
-                          onClick={() => handleEliminar(empleado)}
-                          className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
-                        >
-                          <Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
-                          <span className="sr-only">Eliminar</span>
-                        </button>
-
-                      </div>
-
-                    </div>
                   </td>
                 </tr>
               ))

@@ -166,11 +166,12 @@ export default function OrdenesDeCompra() {
       ) : isLoading ? (
         <div className="text-center text-gray-400 mt-20 text-sm animate-pulse">Cargando órdenes...</div>
       ) : (
-        <div className="shadow-2xl rounded-xl border border-gray-300 bg-white overflow-hidden">
-          <div className="overflow-x-auto">
+        <div className="table-card">
+          <div className="table-card__viewport overflow-x-auto">
           <table className="min-w-max w-full">
             <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
               <tr>
+                <th className={thClass}>Acciones</th>
                 {[
                   { label: "Nro. OC", key: "nro_oc" },
                   { label: "Grupo", key: "grupo" },
@@ -185,7 +186,6 @@ export default function OrdenesDeCompra() {
                     {label}<SortIcon col={key} />
                   </th>
                 ))}
-                <th className={thClass}>Acciones</th>
               </tr>
             </thead>
             <tbody className="bg-gray-50 divide-y divide-gray-200">
@@ -198,12 +198,6 @@ export default function OrdenesDeCompra() {
               ) : (
                 ordenesPage.paginatedItems.map((o, i) => (
                   <tr key={o.nro_oc} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                    <td className={`${tdClass} font-semibold`}>{o.nro_oc}</td>
-                    <td className={tdClass}>{o.grupo?.nombre_apellido ?? "-"}</td>
-                    <td className={`${tdClass} text-left max-w-xs truncate`}>{o.detalle}</td>
-                    <td className={`${tdClass} font-semibold`}>
-                      ${Number(o.importe).toLocaleString("es-AR", { minimumFractionDigits: 2 })}
-                    </td>
                     <td className={tdClass}>
                       <div className="flex justify-center gap-2">
                         <button
@@ -219,6 +213,12 @@ export default function OrdenesDeCompra() {
                           <Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
                         </button>
                       </div>
+                    </td>
+                    <td className={`${tdClass} font-semibold`}>{o.nro_oc}</td>
+                    <td className={tdClass}>{o.grupo?.nombre_apellido ?? "-"}</td>
+                    <td className={`${tdClass} text-left max-w-xs truncate`}>{o.detalle}</td>
+                    <td className={`${tdClass} font-semibold`}>
+                      ${Number(o.importe).toLocaleString("es-AR", { minimumFractionDigits: 2 })}
                     </td>
                   </tr>
                 ))
