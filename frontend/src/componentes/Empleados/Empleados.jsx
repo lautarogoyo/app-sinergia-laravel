@@ -152,7 +152,7 @@ export default function Empleados() {
         />
         <div className="mt-2 flex justify-between items-center">
           <button className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer" onClick={() => window.location.href = `/crear-empleado`}>
-            Agregar Empleado
+            Agregar
           </button>
           <div className="flex gap-2 items-end justify-end">
             <button

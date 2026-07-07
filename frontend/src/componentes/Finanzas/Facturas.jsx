@@ -95,11 +95,11 @@ export default function Facturas() {
     });
     if (res.isConfirmed) deleteMutation.mutate({ obraId: f.obra_id, nroFactura: f.nro_factura });
   };
-  
+
   const handleSort = (key) => {
-  setSortConfig((prev) =>
-    prev.key === key ? { key, dir: prev.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" }
-  );
+    setSortConfig((prev) =>
+      prev.key === key ? { key, dir: prev.dir === "asc" ? "desc" : "asc" } : { key, dir: "asc" }
+    );
   };
 
   const SortIcon = ({ col }) => {
@@ -141,7 +141,7 @@ export default function Facturas() {
   }, [facturas, busqueda, sortConfig]);
   const facturasPage = usePagination(facturasFiltradas, 8);
 
-  
+
   return (
     <div className="flex-1 min-h-0 bg-gray-50 p-6 flex flex-col overflow-hidden">
       <div className="flex items-center gap-3 mb-6">
@@ -152,40 +152,48 @@ export default function Facturas() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-6 flex flex-wrap items-center gap-4">
-        <div className="flex items-center gap-2">
-          <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">Obra:</label>
-          <div className="w-80">
-            <ObraSelect
-              obras={obras}
-              value={obraSeleccionada}
-              onChange={(val) => { setObraSeleccionada(val); setBusqueda(""); }}
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-6 flex flex-col gap-4"> 
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">Obra:</label>
+            <div className="w-full">
+              <ObraSelect
+                obras={obras}
+                value={obraSeleccionada}
+                onChange={(val) => { setObraSeleccionada(val); setBusqueda(""); }}
+              />
+            </div>
+          </div>
+
+          {obraSeleccionada && (
+            <input
+              type="text"
+              placeholder="Buscar factura..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 w-56"
             />
+          )}
+          <div className="flex items-center gap-2 ml-auto">
+            <button
+              onClick={() => setModalReporte(true)}
+              className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-lg font-semibold px-4 py-2 rounded-lg border border-gray-300 shadow-sm transition cursor-pointer flex items-center gap-2"
+            >
+              🖨️ Imprimir mes
+            </button>
           </div>
         </div>
 
-        {obraSeleccionada && (
-          <input
-            type="text"
-            placeholder="Buscar factura..."
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 w-56"
-          />
-        )}
+        <div className="flex flex-wrap items-center gap-2 justify-start">
+          <button
+            onClick={() => setModal({ mode: "create" })}
+            className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
+          >
+            Agregar
+          </button>
 
-        <button
-          onClick={() => setModal({ mode: "create" })}
-          className="ml-auto bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition cursor-pointer"
-        >
-          + Nueva factura
-        </button>
-        <button
-        onClick={() => setModalReporte(true)}
-        className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm font-semibold px-4 py-2 rounded-lg border border-gray-300 shadow-sm transition cursor-pointer flex items-center gap-2"
-      >
-        🖨️ Imprimir mes
-      </button>
+        </div>
+
       </div>
 
       {!obraSeleccionada ? (
@@ -195,107 +203,106 @@ export default function Facturas() {
       ) : (
         <div className="table-card">
           <div className="table-card__viewport overflow-x-auto">
-          <table className="min-w-max w-full">
-            <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
-            <tr>
-              <th className={thClass}></th>
-              {[
-                { label: "Nro. Factura",      key: "nro_factura"   },
-                { label: "Fecha",             key: "fecha"         },
-                { label: "Tipo",              key: "tipo_factura"  },
-                { label: "Empresa",           key: "empresa"       },
-                { label: "Forma Pago",        key: "forma_pago"    },
-                { label: "Proveedor / Grupo", key: "entidad"       },
-                { label: "Importe",           key: "importe_total" },
-              ].map(({ label, key }) => (
-                <th
-                  key={key}
-                  onClick={() => handleSort(key)}
-                  className={`${thClass} cursor-pointer select-none hover:bg-gray-600 transition`}
-                >
-                  {label}<SortIcon col={key} />
-                </th>
-              ))}
-            </tr>
-          </thead>
-            <tbody className="bg-gray-50 divide-y divide-gray-200">
-              {facturasPage.paginatedItems.length === 0 ? (
+            <table className="min-w-max w-full">
+              <thead className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-600">
                 <tr>
-                  <td colSpan={8} className="text-center py-8 text-gray-400">
-                    No hay facturas para esta obra.
-                  </td>
+                  <th className={thClass}></th>
+                  {[
+                    { label: "Nro. Factura", key: "nro_factura" },
+                    { label: "Fecha", key: "fecha" },
+                    { label: "Tipo", key: "tipo_factura" },
+                    { label: "Empresa", key: "empresa" },
+                    { label: "Forma Pago", key: "forma_pago" },
+                    { label: "Proveedor / Grupo", key: "entidad" },
+                    { label: "Importe", key: "importe_total" },
+                  ].map(({ label, key }) => (
+                    <th
+                      key={key}
+                      onClick={() => handleSort(key)}
+                      className={`${thClass} cursor-pointer select-none hover:bg-gray-600 transition`}
+                    >
+                      {label}<SortIcon col={key} />
+                    </th>
+                  ))}
                 </tr>
-              ) : (
-                facturasPage.paginatedItems.map((f, i) => (
-                  <tr key={f.nro_factura} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                    <td className={tdClass}>
-                      <div className="flex gap-2 justify-center">
-                        {f.tipo_factura !== "C" && (
-                          <button
-                            onClick={() => setModalImpuestos(f)}
-                            title="Datos fiscales"
-                            className={`p-1.5 rounded text-xs font-bold ${
-                                f.tiene_impuestos
-                                    ? "bg-emerald-100 text-emerald-700"
-                                  : "bg-yellow-100 text-yellow-700"
-                          }`}
-                      >
-                          {f.tiene_impuestos ? "$ ✓" : "$ ?"}
-                      </button>
-                      )}
-                        <button
-                          className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
-                          onClick={() => setModal({ mode: "edit", data: f })}
-                        >
-                          <Icon name="pencil" className="h-6 w-6 text-white group-hover:text-blue-200 transition-colors" />
-                        </button>
-                        <button
-                          className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
-                          onClick={() => handleEliminar(f)}
-                        >
-                          <Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
-                        </button>
-                      </div>
-                    </td>
-                    <td className={`${tdClass} font-semibold`}>{f.nro_factura}</td>
-                    <td className={tdClass}>
-                      {f.fecha ? new Date(f.fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "2-digit", timeZone: "America/Argentina/Buenos_Aires" }) : "-"}
-                    </td>
-                    <td className={tdClass}>
-                      <span className="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded font-bold text-xs">
-                        {f.tipo_factura}
-                      </span>
-                    </td>
-                    <td className={tdClass}>{f.empresa}</td>
-                    <td className={tdClass}>
-                      <span className={`px-2 py-0.5 rounded text-xs font-semibold ${f.forma_pago === "ECHEQ" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"}`}>
-                        {f.forma_pago}
-                      </span>
-                    </td>
-                    <td className={tdClass}>
-                      {f.proveedor ? (
-                        <div className="text-left space-y-0.5">
-                          <div className="font-semibold">{f.proveedor.nombre_apellido}</div>
-                          {f.proveedor.cuit  && <div className="text-xs text-gray-500">CUIT: {f.proveedor.cuit}</div>}
-                          {f.proveedor.cbu   && <div className="text-xs text-gray-500">CBU: {f.proveedor.cbu}</div>}
-                          {f.proveedor.alias && <div className="text-xs text-gray-500">Alias: {f.proveedor.alias}</div>}
-                        </div>
-                      ) : f.grupo ? (
-                        <div className="text-left space-y-0.5">
-                          <div className="font-semibold">{f.grupo.nombre_apellido}</div>
-                          {f.grupo.cbu   && <div className="text-xs text-gray-500">CBU: {f.grupo.cbu}</div>}
-                          {f.grupo.alias && <div className="text-xs text-gray-500">Alias: {f.grupo.alias}</div>}
-                        </div>
-                      ) : "-"}
-                    </td>
-                    <td className={`${tdClass} font-semibold`}>
-                      ${Number(f.importe_total).toLocaleString("es-AR", { minimumFractionDigits: 2 })}
+              </thead>
+              <tbody className="bg-gray-50 divide-y divide-gray-200">
+                {facturasPage.paginatedItems.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="text-center py-8 text-gray-400">
+                      No hay facturas para esta obra.
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  facturasPage.paginatedItems.map((f, i) => (
+                    <tr key={f.nro_factura} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                      <td className={tdClass}>
+                        <div className="flex gap-2 justify-center">
+                          {f.tipo_factura !== "C" && (
+                            <button
+                              onClick={() => setModalImpuestos(f)}
+                              title="Datos fiscales"
+                              className={`p-1.5 rounded text-xs font-bold ${f.tiene_impuestos
+                                  ? "bg-emerald-100 text-emerald-700"
+                                  : "bg-yellow-100 text-yellow-700"
+                                }`}
+                            >
+                              {f.tiene_impuestos ? "$ ✓" : "$ ?"}
+                            </button>
+                          )}
+                          <button
+                            className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
+                            onClick={() => setModal({ mode: "edit", data: f })}
+                          >
+                            <Icon name="pencil" className="h-6 w-6 text-white group-hover:text-blue-200 transition-colors" />
+                          </button>
+                          <button
+                            className="group bg-red-500 hover:bg-red-600 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
+                            onClick={() => handleEliminar(f)}
+                          >
+                            <Icon name="trash" className="h-6 w-6 text-white group-hover:text-yellow-200 transition-colors" />
+                          </button>
+                        </div>
+                      </td>
+                      <td className={`${tdClass} font-semibold`}>{f.nro_factura}</td>
+                      <td className={tdClass}>
+                        {f.fecha ? new Date(f.fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "2-digit", timeZone: "America/Argentina/Buenos_Aires" }) : "-"}
+                      </td>
+                      <td className={tdClass}>
+                        <span className="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded font-bold text-xs">
+                          {f.tipo_factura}
+                        </span>
+                      </td>
+                      <td className={tdClass}>{f.empresa}</td>
+                      <td className={tdClass}>
+                        <span className={`px-2 py-0.5 rounded text-xs font-semibold ${f.forma_pago === "ECHEQ" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"}`}>
+                          {f.forma_pago}
+                        </span>
+                      </td>
+                      <td className={tdClass}>
+                        {f.proveedor ? (
+                          <div className="text-left space-y-0.5">
+                            <div className="font-semibold">{f.proveedor.nombre_apellido}</div>
+                            {f.proveedor.cuit && <div className="text-xs text-gray-500">CUIT: {f.proveedor.cuit}</div>}
+                            {f.proveedor.cbu && <div className="text-xs text-gray-500">CBU: {f.proveedor.cbu}</div>}
+                            {f.proveedor.alias && <div className="text-xs text-gray-500">Alias: {f.proveedor.alias}</div>}
+                          </div>
+                        ) : f.grupo ? (
+                          <div className="text-left space-y-0.5">
+                            <div className="font-semibold">{f.grupo.nombre_apellido}</div>
+                            {f.grupo.cbu && <div className="text-xs text-gray-500">CBU: {f.grupo.cbu}</div>}
+                            {f.grupo.alias && <div className="text-xs text-gray-500">Alias: {f.grupo.alias}</div>}
+                          </div>
+                        ) : "-"}
+                      </td>
+                      <td className={`${tdClass} font-semibold`}>
+                        ${Number(f.importe_total).toLocaleString("es-AR", { minimumFractionDigits: 2 })}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
           <PaginationControls
             currentPage={facturasPage.currentPage}
@@ -337,12 +344,12 @@ export default function Facturas() {
       )}
       {modalImpuestos && (
         <FacturaImpuestosModal
-            factura={modalImpuestos}
-            obraId={obraSeleccionada}
-            onClose={() => setModalImpuestos(null)}
+          factura={modalImpuestos}
+          obraId={obraSeleccionada}
+          onClose={() => setModalImpuestos(null)}
         />
       )}
     </div>
-    
+
   );
 }

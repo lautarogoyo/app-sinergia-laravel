@@ -133,32 +133,38 @@ export default function OrdenesDeCompra() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-6 flex flex-wrap items-center gap-4">
-        <label className="text-sm font-semibold text-gray-700">Obra:</label>
-        <div className="w-64">
-          <ObraSelect
-            obras={obras}
-            value={obraSeleccionada}
-            onChange={(val) => { setObraSeleccionada(val); setBusqueda(""); }}
-          />
+      <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 mb-6 flex flex-col gap-4">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-semibold text-gray-700 whitespace-nowrap">Obra:</label>
+            <div className="w-full">
+              <ObraSelect
+                obras={obras}
+                value={obraSeleccionada}
+                onChange={(val) => { setObraSeleccionada(val); setBusqueda(""); }}
+              />
+            </div>
+          </div>
+
+          {obraSeleccionada && (
+            <input
+              type="text"
+              placeholder="Buscar orden..."
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 w-56"
+            />
+          )}
         </div>
 
-        {obraSeleccionada && (
-          <input
-            type="text"
-            placeholder="Buscar orden..."
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 w-56"
-          />
-        )}
-
-        <button
-          onClick={() => setModal({ mode: "create" })}
-          className="ml-auto bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow transition cursor-pointer"
-        >
-          + Nueva OC
-        </button>
+        <div className="flex flex-wrap items-center gap-2 justify-start">
+          <button
+            onClick={() => setModal({ mode: "create" })}
+            className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
+          >
+            Agregar
+          </button>
+        </div>
       </div>
 
       {!obraSeleccionada ? (

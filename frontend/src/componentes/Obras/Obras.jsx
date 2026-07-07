@@ -213,7 +213,7 @@ export default function Obras() {
 							className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
 							onClick={() => navigate("/crear-obra")}
 						>
-							Agregar Obra
+							Agregar
 						</button>
 						<button
 							className="bg-red-600 hover:bg-red-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
