@@ -10,9 +10,9 @@ export default function App() {
 
   return (
     <>
-      <div className="flex h-screen items-stretch">
+      <div className="flex min-h-screen items-stretch">
         {showHeader && <div className="shrink-0 flex"><Header /></div>}
-        <div className="flex-1 min-w-0 flex flex-col min-h-0">
+        <div className="flex-1 min-w-0 flex flex-col">
           <AppRouter />
         </div>
       </div>

@@ -1,30 +1,28 @@
 import Icon from "../../Icons/Icons";
 
-export default function PedidoCotizacion({ obraData, register, watch, tabActiva, setTabActiva }) {
+const backendUrl = import.meta.env.VITE_API_URL;
+
+export default function PedidoCotizacion({ obraData, register, watch }) {
     const ESTADOS_FIJOS = ["debe_pasar", "pasada", ""];
 	const estadoCotizacionValue = watch("estado_cotizacion");
-    const esOtro = estadoCotizacionValue === "otro" || 
+    const esOtro = estadoCotizacionValue === "otro" ||
         (estadoCotizacionValue && !ESTADOS_FIJOS.includes(estadoCotizacionValue));
+
+    const handleDescargar = (nombreArchivo, rutaArchivo) => {
+        const link = document.createElement("a");
+        link.href = rutaArchivo;
+        link.download = nombreArchivo;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const handleVerPrevia = (rutaArchivo) => {
+        window.open(rutaArchivo, "_blank");
+    };
+
 	return (
 		<>
-			{/* Tabs para Pedido de Cotización */}
-			<div className="border-b border-gray-200 mb-6">
-                <nav className="flex gap-8">
-                    <button
-                        type="button"
-                        onClick={() => setTabActiva("datos")}
-                        className={`pb-3 px-1 font-medium transition-colors ${
-                            tabActiva === "datos"
-                                ? "text-blue-600 border-b-2 border-blue-600"
-                                : "text-gray-600 hover:text-gray-900"
-                        }`}
-                    >
-                        Datos del Pedido
-                    </button>
-                </nav>
-            </div>
-
-            {tabActiva === "datos" && (
                 <div>
                     <div className="mb-8">
                         <h4 className="text-lg font-medium text-gray-800 mb-4">Grupos</h4>
@@ -48,39 +46,103 @@ export default function PedidoCotizacion({ obraData, register, watch, tabActiva,
                         <div className="grid grid-cols-2 gap-6 mb-6">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Archivo de cotización</label>
-                                <input
-                                    type="file"
-                                    {...register("archivo_cotizacion")}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                                />
-                                {obraData.pedido_cotizacion?.path_archivo && (
-                                    <a
-                                        href={`${import.meta.env.VITE_API_URL}/storage/${obraData.pedido_cotizacion.path_archivo}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 underline mt-1"
-                                    >
-                                        📄 {obraData.pedido_cotizacion.path_archivo.split('/').pop()}
-                                    </a>
-                                )}
+                                <div className="space-y-2">
+                                    {obraData.pedido_cotizacion?.path_archivo ? (
+                                        <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-md">
+                                            <div>
+                                                <p className="text-sm font-medium text-gray-900">
+                                                    {obraData.pedido_cotizacion.path_archivo.split("/").pop()}
+                                                </p>
+                                                <p className="text-xs text-gray-500">Archivo de cotizacion</p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleVerPrevia(`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo}`)}
+                                                    className="text-blue-600 hover:text-blue-800 p-1"
+                                                    title="Ver previsualizacion"
+                                                >
+                                                    <Icon name="eye" className="w-7 h-7 cursor-pointer" />
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        handleDescargar(
+                                                            obraData.pedido_cotizacion.path_archivo.split("/").pop(),
+                                                            `${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo}`
+                                                        )
+                                                    }
+                                                    className="text-blue-600 hover:text-blue-800 p-1"
+                                                    title="Descargar"
+                                                >
+                                                    <Icon name="download"  className="w-7 h-7 cursor-pointer" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="px-4 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-500 italic">
+                                            Sin archivo de cotizacion
+                                        </div>
+                                    )}
+                                    <div>
+                                        <label className="block text-xs text-gray-500 mb-1">Reemplazar archivo de cotizacion</label>
+                                        <input
+                                            type="file"
+                                            {...register("archivo_cotizacion")}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Archivo de mano de obra</label>
-                                <input
-                                    type="file"
-                                    {...register("archivo_mano_obra")}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                                />
-                                {obraData.pedido_cotizacion?.path_archivo_mano_obra && (
-                                    <a
-                                        href={`${import.meta.env.VITE_API_URL}/storage/${obraData.pedido_cotizacion.path_archivo_mano_obra}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800 underline mt-1"
-                                    >
-                                        📄 {obraData.pedido_cotizacion.path_archivo_mano_obra.split('/').pop()}
-                                    </a>
-                                )}
+                                <div className="space-y-2">
+                                    {obraData.pedido_cotizacion?.path_archivo_mano_obra ? (
+                                        <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-md">
+                                            <div>
+                                                <p className="text-sm font-medium text-gray-900">
+                                                    {obraData.pedido_cotizacion.path_archivo_mano_obra.split("/").pop()}
+                                                </p>
+                                                <p className="text-xs text-gray-500">Archivo de mano de obra</p>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleVerPrevia(`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo_mano_obra}`)}
+                                                    className="text-blue-600 hover:text-blue-800 p-1"
+                                                    title="Ver previsualizacion"
+                                                >
+                                                    <Icon name="eye" className="w-7 h-7 cursor-pointer" />
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        handleDescargar(
+                                                            obraData.pedido_cotizacion.path_archivo_mano_obra.split("/").pop(),
+                                                            `${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo_mano_obra}`
+                                                        )
+                                                    }
+                                                    className="text-blue-600 hover:text-blue-800 p-1"
+                                                    title="Descargar"
+                                                >
+                                                    <Icon name="download" className="w-7 h-7 cursor-pointer" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="px-4 py-2 bg-gray-50 rounded-md border border-gray-200 text-gray-500 italic">
+                                            Sin archivo de mano de obra
+                                        </div>
+                                    )}
+                                    <div>
+                                        <label className="block text-xs text-gray-500 mb-1">Reemplazar archivo de mano de obra</label>
+                                        <input
+                                            type="file"
+                                            {...register("archivo_mano_obra")}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                                        />
+                                    </div>
+                                </div>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">Fecha Cierre Cotizacion</label>
@@ -125,7 +187,6 @@ export default function PedidoCotizacion({ obraData, register, watch, tabActiva,
                         </div>
                     </div>
                 </div>
-			)}
 		</>
 	);
 }

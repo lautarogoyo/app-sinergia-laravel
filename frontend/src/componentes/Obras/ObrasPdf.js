@@ -118,9 +118,9 @@ const getUltimoComentario = (obra) => {
 		const ta = new Date(a.created_at || 0).getTime();
 		const tb = new Date(b.created_at || 0).getTime();
 		if (ta !== tb) return tb - ta;
-		return (b.id || 0) - (a.id || 0);
+		return (b.comentario_id || 0) - (a.comentario_id || 0);
 	});
-	return fixMojibake(String(comentarios[0].denominacion || "-"));
+	return fixMojibake(String(comentarios[0].detalle || "-"));
 };
 
 const calcularDiasAtraso = (fechaRecepcionProvisoria, fechaFinOrdenCompra) => {
@@ -153,10 +153,10 @@ const buildPdfObrasEnCurso = async (obras) => {
 		tempDoc,
 		columns,
 		{
-			nro_obra: { cellWidth: 16 },
+			nro_obra: { cellWidth: 20 },
 			detalle: { cellWidth: 80 },
 			comentario: { cellWidth: 140 },
-			grupo_cotiza: { cellWidth: 38 },
+			grupo_cotiza: { cellWidth: 50 },
 			fecha_visto: { cellWidth: 14 },
 			fecha_inicio_oc: { cellWidth: 14, fillColor: [255, 255, 0] },
 			fecha_inicio: { cellWidth: 14, fillColor: [252, 229, 205] },
@@ -187,7 +187,7 @@ const buildPdfObrasEnCurso = async (obras) => {
 			nro_obra: String(obra.nro_obra ?? "-"),
 			detalle: fixMojibake(String(obra.detalle ?? "-")),
 			comentario: getUltimoComentario(obra),
-			grupo_cotiza: obra.grupos?.length ? obra.grupos.map((g) => g.denominacion).join(", ") : "-",
+			grupo_cotiza: obra.grupos?.length ? obra.grupos.map((g) => g.nombre_apellido).join(", ") : "-",
 			fecha_visto: formatearFecha(obra.fecha_visto),
 			fecha_inicio_oc: formatearFecha(obra.orden_compra?.fecha_inicio_orden_compra),
 			fecha_inicio: formatearFecha(obra.fecha_programacion_inicio),
@@ -296,7 +296,7 @@ const buildPdfPedidoCotizacion = async (obras) => {
 		nro_obra: String(obra.nro_obra ?? "-"),
 		detalle: fixMojibake(String(obra.detalle ?? "-")),
 		comentario: getUltimoComentario(obra),
-		grupo_cotiza: obra.grupos?.length ? obra.grupos.map((g) => g.denominacion).join(", ") : "-",
+		grupo_cotiza: obra.grupos?.length ? obra.grupos.map((g) => g.nombre_apellido).join(", ") : "-",
 		fecha_visto: formatearFecha(obra.fecha_visto),
 		fecha_cierre: formatearFecha(obra.pedidos_cotizacion?.[0]?.fecha_cierre_cotizacion),
 	}));
@@ -338,7 +338,7 @@ const buildPdfPedidoCotizacion = async (obras) => {
 
 export const generarPdfPanelObras = async (obrasOrdenadas) => {
 	const result = await Swal.fire({
-		icon: "question",
+		icon: "info",
 		title: "Generar PDF",
 		text: "Seleccione el tipo de listado",
 		showCancelButton: true,
@@ -346,6 +346,13 @@ export const generarPdfPanelObras = async (obrasOrdenadas) => {
 		confirmButtonText: "Obras en curso",
 		denyButtonText: "Pedido de cotizacion",
 		cancelButtonText: "Cancelar",
+		buttonsStyling: false,
+		customClass: {
+			actions: "flex flex-row flex-wrap justify-center items-center gap-3 w-full",
+			confirmButton: "bg-blue-600 hover:bg-blue-700 text-white text-base font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer m-0",
+			denyButton: "bg-blue-600 hover:bg-blue-700 text-white text-base font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer m-0",
+			cancelButton: "bg-gray-500 hover:bg-gray-600 text-white text-base font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer m-0",
+		},
 	});
 
 	if (result.isConfirmed) {

@@ -8,7 +8,6 @@ import useGestionarObra from "./hooks/useGestionarObra";
 import GestionarHeader from "./components/GestionarHeader";
 import FlujoDEstados from "./components/FlujoDEstados";
 import PedidosCompraSection from "./components/PedidosCompraSection";
-import ModalPedidoCompra from "./components/ModalPedidoCompra";
 
 export default function Gestionar() {
     
@@ -19,15 +18,8 @@ export default function Gestionar() {
     isLoading,
     isError,
     estadosObraDisponibles,
-    gruposDisponibles,
-    rubrosDisponibles,
     estadoObraIdActual,
     handleEstadoChange,
-    abrirModalPedido,
-    editarPedido,
-    cerrarModalPedido,
-    actualizarPedidoCampo,
-    handleGuardarPedido,
     handleArchivarPedido,
     handleEliminarPedido,
     mostrarArchivados,
@@ -35,29 +27,19 @@ export default function Gestionar() {
     pedidosFiltrados,
     pedidosActivosCount,
     pedidosArchivadosCount,
-    pedidoForm,
-    pedidoEditando,
-    mostrarModalPedido,
     handleSubmit,
     onSubmit,
     guardando,
     navigate,
     tabActiva,
     setTabActiva,
-    handleCrearRubro,
-    nuevoRubroTexto,
-    setNuevoRubroTexto,
-    mostrarInputNuevoRubro,
-    setMostrarInputNuevoRubro,
-    creandoRubro,
     register,
     watch,
-    estadosContratista,
-    estadosPedido,
-    estadosRegistro,
-    rolesPedido,
-    handleEliminarPresupuesto
+    id,
   } = hook;
+
+  const abrirModalPedido = () => navigate(`/obra/${id}/gestionar/pedido/nuevo`);
+  const editarPedido = (pedido) => navigate(`/obra/${id}/gestionar/pedido/${pedido.pedido_compra_id}`);
 
   if (isLoading) {
 		return (
@@ -98,13 +80,13 @@ export default function Gestionar() {
     if (!obraDataForComponents) return null;
     const estadoDesc = estadosObraDisponibles.find((e) => e.estado_obra_id === estadoObraIdActual)?.descripcion?.toLowerCase() || "";
     if (estadoDesc.includes("pedida") || estadoDesc.includes("cotización"))
-        return <PedidoCotizacion obraData={obraDataForComponents} register={register} watch={watch} tabActiva={tabActiva} setTabActiva={setTabActiva} />;
+        return <PedidoCotizacion obraData={obraDataForComponents} register={register} watch={watch} />;
     if (estadoDesc.includes("cotizada"))
-        return <Cotizada obraData={obraDataForComponents} register={register} watch={watch} tabActiva={tabActiva} setTabActiva={setTabActiva} />;
+        return <Cotizada obraData={obraDataForComponents} register={register} watch={watch} />;
     if (estadoDesc.includes("curso"))
         return <EnCurso obraData={obraDataForComponents} register={register} />;
     if (estadoDesc.includes("finalizada"))
-        return <Finalizada obraData={obraDataForComponents} register={register} />;
+        return <Finalizada obraData={obraDataForComponents} />;
     return null;
     };
 
@@ -129,19 +111,50 @@ export default function Gestionar() {
               </div>
 
               <div className="flex-1 min-w-0 space-y-6">
-                <PedidosCompraSection
-                  pedidosFiltrados={pedidosFiltrados}
-                  mostrarArchivados={mostrarArchivados}
-                  setMostrarArchivados={setMostrarArchivados}
-                  abrirModalPedido={abrirModalPedido}
-                  pedidosActivosCount={pedidosActivosCount}
-                  pedidosArchivadosCount={pedidosArchivadosCount}
-                  onEditar={editarPedido}
-                  onArchivar={handleArchivarPedido}
-                  onEliminar={handleEliminarPedido}
-                />
+                <div className="border-b border-gray-200">
+                  <nav className="flex gap-8">
+                    <button
+                      type="button"
+                      onClick={() => setTabActiva("datos")}
+                      className={`pb-3 px-1 font-medium transition-colors ${
+                        tabActiva === "datos"
+                          ? "text-blue-600 border-b-2 border-blue-600"
+                          : "text-gray-600 hover:text-gray-900"
+                      }`}
+                    >
+                      Datos de la Obra
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setTabActiva("pedidos")}
+                      className={`pb-3 px-1 font-medium transition-colors ${
+                        tabActiva === "pedidos"
+                          ? "text-blue-600 border-b-2 border-blue-600"
+                          : "text-gray-600 hover:text-gray-900"
+                      }`}
+                    >
+                      Pedidos de Compra
+                    </button>
+                  </nav>
+                </div>
 
-                <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-5">{renderContenidoSegunEstado()}</div>
+                {tabActiva === "pedidos" && (
+                  <PedidosCompraSection
+                    pedidosFiltrados={pedidosFiltrados}
+                    mostrarArchivados={mostrarArchivados}
+                    setMostrarArchivados={setMostrarArchivados}
+                    abrirModalPedido={abrirModalPedido}
+                    pedidosActivosCount={pedidosActivosCount}
+                    pedidosArchivadosCount={pedidosArchivadosCount}
+                    onEditar={editarPedido}
+                    onArchivar={handleArchivarPedido}
+                    onEliminar={handleEliminarPedido}
+                  />
+                )}
+
+                {tabActiva === "datos" && (
+                  <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-5">{renderContenidoSegunEstado()}</div>
+                )}
 
                 <div className="flex flex-col-reverse sm:flex-row gap-3 justify-end bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-5">
                   <button type="button" onClick={() => navigate('/obras')} className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">Cancelar</button>
@@ -152,30 +165,6 @@ export default function Gestionar() {
           </div>
         </div>
       </form>
-
-      {mostrarModalPedido && (
-        <ModalPedidoCompra
-          pedidoForm={pedidoForm}
-          actualizarPedidoCampo={actualizarPedidoCampo}
-          onGuardar={handleGuardarPedido}
-          onCerrar={cerrarModalPedido}
-          gruposDisponibles={gruposDisponibles}
-          rubrosDisponibles={rubrosDisponibles}
-          pedidoEditando={pedidoEditando}
-          mostrarInputNuevoRubro={mostrarInputNuevoRubro}
-          setMostrarInputNuevoRubro={setMostrarInputNuevoRubro}
-          nuevoRubroTexto={nuevoRubroTexto}
-          setNuevoRubroTexto={setNuevoRubroTexto}
-          handleCrearRubro={handleCrearRubro}
-          creandoRubro={creandoRubro}
-          estadosContratista={estadosContratista}
-          estadosPedido={estadosPedido}
-          rolesPedido={rolesPedido}
-          estadosRegistro={estadosRegistro}
-          onEliminarPresupuesto={handleEliminarPresupuesto}
-        
-        />
-      )}
     </>
   );
 }

@@ -2,7 +2,7 @@ import Icon from "../../Icons/Icons";
 
 const backendUrl = import.meta.env.VITE_API_URL;
 
-export default function Finalizada({ obraData, register }) {
+export default function Finalizada({ obraData }) {
 	const handleDescargar = (nombreArchivo, rutaArchivo) => {
 		const link = document.createElement("a");
 		link.href = rutaArchivo;
@@ -57,18 +57,18 @@ export default function Finalizada({ obraData, register }) {
 				<div>
 					<label className="block text-sm font-medium text-gray-700 mb-2">Cotizacion</label>
 					<div className="space-y-2">
-						{obraData.pedido_cotizacion?.path_archivo_cotizacion ? (
+						{obraData.pedido_cotizacion?.path_archivo ? (
 							<div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-md">
 								<div>
 									<p className="text-sm font-medium text-gray-900">
-										{obraData.pedido_cotizacion.path_archivo_cotizacion.split("/").pop()}
+										{obraData.pedido_cotizacion.path_archivo.split("/").pop()}
 									</p>
 									<p className="text-xs text-gray-500">Archivo de cotizacion</p>
 								</div>
 								<div className="flex gap-2">
 									<button
 										type="button"
-										onClick={() => handleVerPrevia(`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo_cotizacion}`)}
+										onClick={() => handleVerPrevia(`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo}`)}
 										className="text-blue-600 hover:text-blue-800 p-1"
 										title="Ver previsualizacion"
 									>
@@ -78,8 +78,8 @@ export default function Finalizada({ obraData, register }) {
 										type="button"
 										onClick={() =>
 											handleDescargar(
-												obraData.pedido_cotizacion.path_archivo_cotizacion.split("/").pop(),
-												`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo_cotizacion}`
+												obraData.pedido_cotizacion.path_archivo.split("/").pop(),
+												`${backendUrl}/storage/${obraData.pedido_cotizacion.path_archivo}`
 											)
 										}
 										className="text-blue-600 hover:text-blue-800 p-1"
@@ -94,14 +94,14 @@ export default function Finalizada({ obraData, register }) {
 								Sin archivo de cotizacion
 							</div>
 						)}
-						<div>
+						{/* <div>
 							<label className="block text-xs text-gray-500 mb-1">Reemplazar archivo de cotizacion</label>
 							<input
 								type="file"
 								{...register("archivo_cotizacion")}
 								className="w-full px-4 py-2 border border-gray-300 rounded-md"
 							/>
-						</div>
+						</div> */}
 					</div>
 				</div>
 
@@ -145,14 +145,14 @@ export default function Finalizada({ obraData, register }) {
 								Sin archivo de mano de obra
 							</div>
 						)}
-						<div>
+						{/* <div>
 							<label className="block text-xs text-gray-500 mb-1">Reemplazar archivo de mano de obra</label>
 							<input
 								type="file"
 								{...register("archivo_mano_obra")}
 								className="w-full px-4 py-2 border border-gray-300 rounded-md"
 							/>
-						</div>
+						</div> */}
 					</div>
 				</div>
 

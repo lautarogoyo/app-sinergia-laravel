@@ -37,7 +37,7 @@ export default function DiagramaObras() {
 		() =>
 			obrasData
 				.filter((obra) => {
-					const estado = (obra.estado || "").toLowerCase().replaceAll("_", "");
+					const estado = (obra.estado_obra?.descripcion || "").toLowerCase().replaceAll("_", "");
 					return estado === "encurso";
 				})
 				.map((obra) => {
@@ -51,7 +51,7 @@ export default function DiagramaObras() {
 						fin,
 						gruposTexto:
 							obra.grupos && obra.grupos.length > 0
-								? obra.grupos.map((g) => g.denominacion).join(", ")
+								? obra.grupos.map((g) => g.nombre_apellido).join(", ")
 								: "Sin grupos",
 					};
 				})
@@ -97,9 +97,7 @@ export default function DiagramaObras() {
 				<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
 					<div>
 						<h1 className="text-3xl font-extrabold text-gray-800">Diagrama de Gantt</h1>
-						<p className="text-sm text-gray-600">
-							Gantt de obras desde fecha programacion inicio hasta fecha recepcion provisoria.
-						</p>
+						
 					</div>
 					<button
 						type="button"
