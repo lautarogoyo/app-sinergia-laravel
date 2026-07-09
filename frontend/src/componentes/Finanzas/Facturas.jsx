@@ -1,11 +1,10 @@
 import { useState, useMemo } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import Icon from '../Icons/Icons';
 import { fetchObras } from "../api/obras";
-import { fetchFacturasByObra, createFactura, updateFactura, deleteFactura } from "../api/facturas";
-import FacturaModal from "./FacturasModal";
-import axios from "axios";
+import { fetchFacturasByObra, deleteFactura } from "../api/facturas";
 import ObraSelect from "../shared/ObrasSelect";
 import ReporteMensualModal from "./ReporteMensualModal";
 import FacturaImpuestosModal from "./FacturaImpuestosModal";
@@ -14,15 +13,14 @@ import { usePagination } from "../shared/usePagination.jsx";
 
 
 
-const base = import.meta.env.VITE_API_URL;
-
 const thClass = "px-6 py-3 text-center text-lg font-bold text-gray-100 border-b border-gray-500";
 const tdClass = "px-6 py-4 text-center text-lg text-gray-800";
 
 export default function Facturas() {
-  const [obraSeleccionada, setObraSeleccionada] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [obraSeleccionada, setObraSeleccionada] = useState(location.state?.obraId ?? "");
   const [busqueda, setBusqueda] = useState("");
-  const [modal, setModal] = useState(null);
   const queryClient = useQueryClient();
   const [modalReporte, setModalReporte] = useState(false);
   const [modalImpuestos, setModalImpuestos] = useState(null); // factura seleccionada
@@ -40,42 +38,6 @@ export default function Facturas() {
     queryFn: () => fetchFacturasByObra(obraSeleccionada),
     enabled: !!obraSeleccionada,
     refetchOnWindowFocus: false,
-  });
-
-  const { data: proveedores = [] } = useQuery({
-    queryKey: ["proveedores"],
-    queryFn: async () => {
-      const { data } = await axios.get(`${base}/api/proveedores`);
-      return data.proveedores;
-    },
-    refetchOnWindowFocus: false,
-  });
-
-  const { data: grupos = [] } = useQuery({
-    queryKey: ["grupos"],
-    queryFn: async () => {
-      const { data } = await axios.get(`${base}/api/grupos`);
-      return data.grupos;
-    },
-    refetchOnWindowFocus: false,
-  });
-
-  const createMutation = useMutation({
-    mutationFn: ({ obraId, payload }) => createFactura(obraId, payload),
-    onSuccess: (_, { obraId }) => {
-      queryClient.invalidateQueries({ queryKey: ["facturas", obraId] });
-      setModal(null);
-    },
-    onError: (e) => Swal.fire({ icon: "error", title: "Error", text: e.response?.data?.message || e.message }),
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: ({ obraId, nroFactura, payload }) => updateFactura(obraId, nroFactura, payload),
-    onSuccess: (_, { obraId }) => {
-      queryClient.invalidateQueries({ queryKey: ["facturas", obraId] });
-      setModal(null);
-    },
-    onError: (e) => Swal.fire({ icon: "error", title: "Error", text: e.response?.data?.message || e.message }),
   });
 
   const deleteMutation = useMutation({
@@ -186,7 +148,7 @@ export default function Facturas() {
 
         <div className="flex flex-wrap items-center gap-2 justify-start">
           <button
-            onClick={() => setModal({ mode: "create" })}
+            onClick={() => navigate("/finanzas/facturas/nueva", { state: { obraId: obraSeleccionada } })}
             className="bg-blue-600 hover:bg-blue-700 text-white text-lg font-bold py-2 px-4 rounded shadow transition duration-150 cursor-pointer"
           >
             Agregar
@@ -252,7 +214,7 @@ export default function Facturas() {
                           )}
                           <button
                             className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
-                            onClick={() => setModal({ mode: "edit", data: f })}
+                            onClick={() => navigate(`/finanzas/facturas/${encodeURIComponent(f.nro_factura)}/editar`, { state: { obraId: f.obra_id } })}
                           >
                             <Icon name="pencil" className="h-6 w-6 text-white group-hover:text-blue-200 transition-colors" />
                           </button>
@@ -320,25 +282,6 @@ export default function Facturas() {
         </div>
       )}
 
-      {modal && (
-        <FacturaModal
-          mode={modal.mode}
-          factura={modal.data}
-          proveedores={proveedores}
-          grupos={grupos}
-          obras={obras}
-          obraIdInicial={obraSeleccionada}
-          onClose={() => setModal(null)}
-          onSubmit={(obraId, payload) => {
-            if (modal.mode === "create") {
-              createMutation.mutate({ obraId, payload });
-            } else {
-              updateMutation.mutate({ obraId, nroFactura: modal.data.nro_factura, payload });
-            }
-          }}
-          isPending={createMutation.isPending || updateMutation.isPending}
-        />
-      )}
       {modalReporte && (
         <ReporteMensualModal onClose={() => setModalReporte(false)} accentColor="emerald" />
       )}

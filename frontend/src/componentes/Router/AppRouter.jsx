@@ -8,10 +8,12 @@ import Obras from "../Obras/Obras.jsx";
 import CreateObra from "../Obras/CRUD/CreateObra.jsx";
 import EditObra from "../Obras/CRUD/EditObra.jsx";
 import Gestionar from "../Obras/Gestionar.jsx";
+import PedidoCompraPage from "../Obras/PedidoCompraPage.jsx";
 import DiagramaObras from "../Obras/DiagramaObras.jsx";
 import Personas from "../Personas/Personas.jsx";
 import Finanzas from "../Finanzas/Finanzas.jsx";
 import Facturas from "../Finanzas/Facturas.jsx";
+import FacturaPage from "../Finanzas/FacturaPage.jsx";
 import OrdenesDeCompra from "../Finanzas/OrdenesDeCompra.jsx";
 
 function AppRouter() {
@@ -30,8 +32,12 @@ function AppRouter() {
             <Route path="/editarempleado/:id" element={<EditeEmpleado />} />
             <Route path="/documentacionempleado/:id" element={<EditDocument />} />
             <Route path="/obra/:id/gestionar" element={<Gestionar />} />
+            <Route path="/obra/:id/gestionar/pedido/nuevo" element={<PedidoCompraPage />} />
+            <Route path="/obra/:id/gestionar/pedido/:pedidoId" element={<PedidoCompraPage />} />
             <Route path="/finanzas" element={<Finanzas />} />
             <Route path="/finanzas/facturas" element={<Facturas />} />
+            <Route path="/finanzas/facturas/nueva" element={<FacturaPage />} />
+            <Route path="/finanzas/facturas/:nroFactura/editar" element={<FacturaPage />} />
             <Route path="/finanzas/ordenes-de-compra" element={<OrdenesDeCompra />} />
             <Route path="/salir" element={<Navigate to="/home" replace />} />
         </Routes>
