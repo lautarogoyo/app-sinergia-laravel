@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useProveedores } from "../hooks/useProveedores.jsx";
+import Icon from "../Icons/Icons.jsx";
 
 export default function ProveedorSelect({ value = [], onChange }) {
   const { data: proveedores = [] } = useProveedores();
@@ -34,9 +35,9 @@ export default function ProveedorSelect({ value = [], onChange }) {
     <div className="relative" ref={ref}>
       <div className="flex flex-wrap gap-1 mb-1">
         {seleccionados.map(p => (
-          <span key={p.proveedor_id} className="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
+          <span key={p.proveedor_id} className="bg-blue-100 text-blue-800 text-base font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 hover:bg-red-200">
             {p.nombre_apellido}
-            <button type="button" onClick={() => quitar(p.proveedor_id)} className="hover:text-red-500 font-bold">×</button>
+            <button type="button" onClick={() => quitar(p.proveedor_id)} className="hover:text-red-500 font-bold cursor-pointer"><Icon name="cancel" className="w-5 h-5" /></button>
           </span>
         ))}
       </div>

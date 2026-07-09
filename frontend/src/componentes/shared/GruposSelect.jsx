@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useGrupos } from "../hooks/useGrupos.jsx";
+import Icon from "../Icons/Icons.jsx";
 
 export default function GruposSelect({ value = [], onChange }) {
   const { data: grupos = [] } = useGrupos();
@@ -36,10 +37,10 @@ export default function GruposSelect({ value = [], onChange }) {
         {seleccionados.map(g => (
           <span
             key={g.grupo_id}
-            className="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1"
+            className="bg-blue-100 text-blue-800 text-base font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 hover:bg-red-200"
           >
             {g.nombre_apellido}
-            <button type="button" onClick={() => quitar(g.grupo_id)} className="hover:text-red-500 font-bold">×</button>
+            <button type="button" onClick={() => quitar(g.grupo_id)} className="hover:text-red-500 font-bold cursor-pointer"><Icon name="cancel" className="w-5 h-5" /></button>
           </span>
         ))}
       </div>
