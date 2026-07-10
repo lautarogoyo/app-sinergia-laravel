@@ -23,6 +23,7 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
     mutationFn: createComentario,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["comentarios", obra.obra_id] });
+      queryClient.invalidateQueries({ queryKey: ["obras"] });
       reset();
     },
   });
@@ -38,6 +39,7 @@ export default function ComentariosModal({ isOpen, onClose, obra }) {
     mutationFn: updateComentario,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["comentarios", obra.obra_id] });
+      queryClient.invalidateQueries({ queryKey: ["obras"] });
       setEditingId(null);
       setEditingText("");
     },
