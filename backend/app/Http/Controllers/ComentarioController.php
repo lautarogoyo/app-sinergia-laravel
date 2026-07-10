@@ -24,6 +24,8 @@ class ComentarioController extends Controller
 
         $comentario = $obra->comentarios()->create($validated);
 
+        $obra->update(['fecha_visto' => now()]);
+
         return response()->json($comentario->load('obra'), 201);
     }
 
@@ -57,6 +59,8 @@ class ComentarioController extends Controller
         ]);
 
         $comentario->update($validated);
+
+        $obra->update(['fecha_visto' => now()]);
 
         return response()->json([
             'comentario' => $comentario->load('obra'),
