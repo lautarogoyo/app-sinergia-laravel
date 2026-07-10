@@ -81,7 +81,7 @@ const generarPdfAB = (facturas, { mes, anio, tipo_factura, empresa }, doc) => {
         { content: "Importe",      styles: { ...HEAD_2_STYLE, halign: "right" } },
       ],
     ],
-    headStyles: { lineWidth: 0 },
+    headStyles: { lineWidth: 0.2, lineColor: [120, 120, 120] },
     body: rows,
     foot: [[
       { content: "TOTAL", colSpan: 9, styles: FOOT_STYLE },
@@ -105,6 +105,13 @@ const generarPdfAB = (facturas, { mes, anio, tipo_factura, empresa }, doc) => {
       7: { cellWidth: 18, halign: "right" },
       8: { cellWidth: 14, halign: "center" },
       9: { cellWidth: 26, halign: "right" },
+    },
+    didParseCell: (data) => {
+      if (data.section !== "head") return;
+      const zoneEndCols = [2, 4, 7, 9];
+      if (zoneEndCols.includes(data.column.index)) {
+        data.cell.styles.lineWidth = { top: 0.2, bottom: 0.2, left: 0.2, right: 0.6 };
+      }
     },
   });
 

@@ -3,7 +3,7 @@ import autoTable from "jspdf-autotable";
 import Swal from "sweetalert2";
 import { fixMojibake } from "../utils/text";
 
-const SINERGIA_LOGO_URL = "https://static.wixstatic.com/media/739f6f_72ea3433f31a45448cf67888b8f5f6e3~mv2.png/v1/fill/w_89,h_84,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/iczzlYy_edited.png";
+const SINERGIA_LOGO_URL = "/logo.png";
 
 const formatearFecha = (fecha) => {
 	if (!fecha) return "-";
