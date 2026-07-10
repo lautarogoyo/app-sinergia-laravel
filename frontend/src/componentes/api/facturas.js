@@ -1,37 +1,40 @@
-import axios from "axios";
-const base = import.meta.env.VITE_API_URL;
+import { apiClient, ensureCsrfCookie } from "./client.js";
 
 export const fetchFacturasByObra = async (nroObra) => {
-  const { data } = await axios.get(`${base}/api/obras/${nroObra}/facturas`);
+  const { data } = await apiClient.get(`/obras/${nroObra}/facturas`);
   return data.facturas;
 };
 
 export const createFactura = async (nroObra, payload) => {
-  const { data } = await axios.post(`${base}/api/obras/${nroObra}/facturas`, payload);
+  await ensureCsrfCookie();
+  const { data } = await apiClient.post(`/obras/${nroObra}/facturas`, payload);
   return data.factura;
 };
 
 export const updateFactura = async (nroObra, nroFactura, payload) => {
-  const { data } = await axios.put(`${base}/api/obras/${nroObra}/facturas/${nroFactura}`, payload);
+  await ensureCsrfCookie();
+  const { data } = await apiClient.put(`/obras/${nroObra}/facturas/${nroFactura}`, payload);
   return data.factura;
 };
 
 export const deleteFactura = async (nroObra, nroFactura) => {
-  const { data } = await axios.delete(`${base}/api/obras/${nroObra}/facturas/${nroFactura}`);
+  await ensureCsrfCookie();
+  const { data } = await apiClient.delete(`/obras/${nroObra}/facturas/${nroFactura}`);
   return data;
 };
 
 export const fetchFacturasReporteMensual = async (params) => {
-  const { data } = await axios.get(`${base}/api/facturas/reporte-mensual`, { params });
+  const { data } = await apiClient.get("/facturas/reporte-mensual", { params });
   return data;
 };
 
 export const fetchImpuestos = async (nroObra, nroFactura) => {
-    const { data } = await axios.get(`${base}/api/obras/${nroObra}/facturas/${nroFactura}/impuestos`);
+    const { data } = await apiClient.get(`/obras/${nroObra}/facturas/${nroFactura}/impuestos`);
     return data.impuestos;
 };
 
 export const upsertImpuestos = async (nroObra, nroFactura, payload) => {
-    const { data } = await axios.put(`${base}/api/obras/${nroObra}/facturas/${nroFactura}/impuestos`, payload);
+    await ensureCsrfCookie();
+    const { data } = await apiClient.put(`/obras/${nroObra}/facturas/${nroFactura}/impuestos`, payload);
     return data.impuestos;
 };

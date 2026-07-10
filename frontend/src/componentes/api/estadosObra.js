@@ -1,7 +1,6 @@
-import axios from "axios";
-const backendUrl = import.meta.env.VITE_API_URL;
+import { apiClient } from "./client.js";
 
 export const fetchEstadosObra = async () => {
-  const { data } = await axios.get(`${backendUrl}/api/estados_obras`);
+  const { data } = await apiClient.get("/estados_obras");
   return data.estados;
 };

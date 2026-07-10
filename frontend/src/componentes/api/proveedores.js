@@ -1,27 +1,29 @@
-import axios from "axios";
-const backendUrl = import.meta.env.VITE_API_URL;
+import { apiClient, ensureCsrfCookie } from "./client.js";
 
 export const fetchProveedores = async () => {
-  const { data } = await axios.get(`${backendUrl}/api/proveedores`);
+  const { data } = await apiClient.get("/proveedores");
   return data.proveedores;
 };
 
 export const fetchProveedorById = async (id) => {
-  const { data } = await axios.get(`${backendUrl}/api/proveedores/${id}`);
+  const { data } = await apiClient.get(`/proveedores/${id}`);
   return data.proveedor;
 };
 
 export const PostProveedor = async (proveedor) => {
-  const { data } = await axios.post(`${backendUrl}/api/proveedores`, proveedor);
+  await ensureCsrfCookie();
+  const { data } = await apiClient.post("/proveedores", proveedor);
   return data;
 };
 
 export const UpdateProveedor = async (id, proveedor) => {
-  const { data } = await axios.put(`${backendUrl}/api/proveedores/${id}`, proveedor);
+  await ensureCsrfCookie();
+  const { data } = await apiClient.put(`/proveedores/${id}`, proveedor);
   return data;
 };
 
 export const DeleteProveedor = async (id) => {
-  const { data } = await axios.delete(`${backendUrl}/api/proveedores/${id}`);
+  await ensureCsrfCookie();
+  const { data } = await apiClient.delete(`/proveedores/${id}`);
   return data;
 };

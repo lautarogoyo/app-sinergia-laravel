@@ -1,32 +1,34 @@
-import axios from "axios";
-const backendUrl = import.meta.env.VITE_API_URL;
+import { apiClient, ensureCsrfCookie } from "./client.js";
 
 export const fetchGrupos = async () => {
-  const { data } = await axios.get(`${backendUrl}/api/grupos`);
+  const { data } = await apiClient.get("/grupos");
   return data.grupos;
 };
 
 export const fetchGrupoById = async (id) => {
-  const { data } = await axios.get(`${backendUrl}/api/grupos/${id}`);
+  const { data } = await apiClient.get(`/grupos/${id}`);
   return data.grupo;
 };
 
 export const PostGrupo = async (grupo) => {
-    const { data } = await axios.post(`${backendUrl}/api/grupos`, grupo);
-    return data;
+  await ensureCsrfCookie();
+  const { data } = await apiClient.post("/grupos", grupo);
+  return data;
 }
 
 export const UpdateGrupo = async (id, grupo) => {
-  const {data} = await axios.put(`${backendUrl}/api/grupos/${id}`, grupo);
+  await ensureCsrfCookie();
+  const { data } = await apiClient.put(`/grupos/${id}`, grupo);
   return data;
 }
 
 export const DeleteGrupo = async (id) => {
-  const {data} = await axios.delete(`${backendUrl}/api/grupos/${id}`);
+  await ensureCsrfCookie();
+  const { data } = await apiClient.delete(`/grupos/${id}`);
   return data;
 }
 
 export const fetchEstadoGrupo = async () => {
-  const { data } = await axios.get(`${backendUrl}/api/estado_grupos`);
+  const { data } = await apiClient.get("/estado_grupos");
   return data;
 }

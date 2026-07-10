@@ -1,10 +1,8 @@
-import axios from "axios";
-const backendUrl = import.meta.env.VITE_API_URL;
-
+import { apiClient, ensureCsrfCookie } from "./client.js";
 
 export const fetchEmpleadoDocumentaciones = async (empleadoId) => {
-  const { data } = await axios.get(
-    `${backendUrl}/api/empleados/${empleadoId}/documentaciones`
+  const { data } = await apiClient.get(
+    `/empleados/${empleadoId}/documentaciones`
   );
   return data.documentaciones;
 };
@@ -17,8 +15,9 @@ export const updateDocumentacionAPI = async (
 ) => {
   formData.append("_method", "PUT");
 
-  const { data } = await axios.post(
-    `${backendUrl}/api/empleados/${empleadoId}/documentaciones/${documentacionId}`,
+  await ensureCsrfCookie();
+  const { data } = await apiClient.post(
+    `/empleados/${empleadoId}/documentaciones/${documentacionId}`,
     formData
   );
 
@@ -26,8 +25,9 @@ export const updateDocumentacionAPI = async (
 };
 
 export const createDocumentacionAPI = async (empleadoId, formData) => {
-  const { data } = await axios.post(
-    `${backendUrl}/api/empleados/${empleadoId}/documentaciones`,
+  await ensureCsrfCookie();
+  const { data } = await apiClient.post(
+    `/empleados/${empleadoId}/documentaciones`,
     formData
   );
   return data;
@@ -36,8 +36,9 @@ export const createDocumentacionAPI = async (empleadoId, formData) => {
 
 
 export const deleteDocumentacionAPI = async (empleadoId, documentacionId) => {
-  const { data } = await axios.delete(
-    `${backendUrl}/api/empleados/${empleadoId}/documentaciones/${documentacionId}`
+  await ensureCsrfCookie();
+  const { data } = await apiClient.delete(
+    `/empleados/${empleadoId}/documentaciones/${documentacionId}`
   );
   return data;
 };

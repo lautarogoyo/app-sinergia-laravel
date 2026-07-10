@@ -1,32 +1,34 @@
-import axios from "axios";
-const backendUrl = import.meta.env.VITE_API_URL;
+import { apiClient, ensureCsrfCookie } from "./client.js";
 
 export const fetchEmpleados = async () => {
-  const { data } = await axios.get(`${backendUrl}/api/empleados`);
+  const { data } = await apiClient.get("/empleados");
   return data.empleados;
 };
 
 export const fetchEmpleadoById = async (id) => {
-  const { data } = await axios.get(`${backendUrl}/api/empleados/${id}`);
+  const { data } = await apiClient.get(`/empleados/${id}`);
   return data.empleado;
 };
 
 export const PostEmpleado = async (empleado) => {
-    const { data } = await axios.post(`${backendUrl}/api/empleados`, empleado);
-    return data;
+  await ensureCsrfCookie();
+  const { data } = await apiClient.post("/empleados", empleado);
+  return data;
 }
 
 export const UpdateEmpleado = async (id, empleado) => {
-  const {data} = await axios.put(`${backendUrl}/api/empleados/${id}`, empleado);
+  await ensureCsrfCookie();
+  const { data } = await apiClient.put(`/empleados/${id}`, empleado);
   return data;
 }
 
 export const DeleteEmpleado = async (id) => {
-  const {data} = await axios.delete(`${backendUrl}/api/empleados/${id}`);
+  await ensureCsrfCookie();
+  const { data } = await apiClient.delete(`/empleados/${id}`);
   return data;
 }
 
 export const fetchEstadosEmpleado = async () => {
-  const { data } = await axios.get(`${backendUrl}/api/estados_empleados`);
+  const { data } = await apiClient.get("/estados_empleados");
   return data.estados;
 };

@@ -1,23 +1,24 @@
-import axios from "axios";
-const backendUrl = import.meta.env.VITE_API_URL;
-
+import { apiClient, ensureCsrfCookie } from "./client.js";
 
 export const getComentariosByObra = async (obraId) => {
-    const { data } = await axios.get(`${backendUrl}/api/obras/${obraId}/comentarios`);
+    const { data } = await apiClient.get(`/obras/${obraId}/comentarios`);
     return data.comentarios;
 };
 
 export const createComentario = async ({ obraId, detalle }) => {
-    const { data } = await axios.post(`${backendUrl}/api/obras/${obraId}/comentarios`, { detalle });
+    await ensureCsrfCookie();
+    const { data } = await apiClient.post(`/obras/${obraId}/comentarios`, { detalle });
     return data;
 };
 
 export const deleteComentario = async ({ obraId, comentarioId }) => {
-    const { data } = await axios.delete(`${backendUrl}/api/obras/${obraId}/comentarios/${comentarioId}`);
+    await ensureCsrfCookie();
+    const { data } = await apiClient.delete(`/obras/${obraId}/comentarios/${comentarioId}`);
     return data;
 };
 
 export const updateComentario = async ({ obraId, comentarioId, detalle }) => {
-    const { data } = await axios.put(`${backendUrl}/api/obras/${obraId}/comentarios/${comentarioId}`, { detalle });
+    await ensureCsrfCookie();
+    const { data } = await apiClient.put(`/obras/${obraId}/comentarios/${comentarioId}`, { detalle });
     return data;
 };

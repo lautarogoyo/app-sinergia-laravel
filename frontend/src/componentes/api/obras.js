@@ -1,27 +1,29 @@
-import axios from "axios";
-const backendUrl = import.meta.env.VITE_API_URL;
+import { apiClient, ensureCsrfCookie } from "./client.js";
 
 export const fetchObras = async () => {
-  const { data } = await axios.get(`${backendUrl}/api/obras`);
+  const { data } = await apiClient.get("/obras");
   return data.obras;
 };
 
 export const fetchObraById = async (id) => {
-  const { data } = await axios.get(`${backendUrl}/api/obras/${id}`);
+  const { data } = await apiClient.get(`/obras/${id}`);
   return data.obra;
 };
 
 export const PostObra = async (obra) => {
-    const { data } = await axios.post(`${backendUrl}/api/obras`, obra);
-    return data;
+  await ensureCsrfCookie();
+  const { data } = await apiClient.post("/obras", obra);
+  return data;
 }
 
 export const UpdateObra = async (id, obra) => {
-  const {data} = await axios.put(`${backendUrl}/api/obras/${id}`, obra);
+  await ensureCsrfCookie();
+  const { data } = await apiClient.put(`/obras/${id}`, obra);
   return data;
 }
 
 export const DeleteObra = async (id) => {
-  const {data} = await axios.delete(`${backendUrl}/api/obras/${id}`);
+  await ensureCsrfCookie();
+  const { data } = await apiClient.delete(`/obras/${id}`);
   return data;
 }

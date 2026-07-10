@@ -1,15 +1,15 @@
-import axios from "axios";
-const backendUrl = import.meta.env.VITE_API_URL;
+import { apiClient, ensureCsrfCookie } from "./client.js";
 
 // Pedidos de cotización (nested under obra)
 export const fetchPedidosCotizacion = async (obraId) => {
-  const { data } = await axios.get(`${backendUrl}/api/obras/${obraId}/pedidos_cotizacion`);
+  const { data } = await apiClient.get(`/obras/${obraId}/pedidos_cotizacion`);
   return Array.isArray(data.pedidos) ? data.pedidos : [];
 };
 
 export const createPedidoCotizacion = async (obraId, formData) => {
-  const { data } = await axios.post(
-    `${backendUrl}/api/obras/${obraId}/pedidos_cotizacion`,
+  await ensureCsrfCookie();
+  const { data } = await apiClient.post(
+    `/obras/${obraId}/pedidos_cotizacion`,
     formData,
     { headers: { "Content-Type": "multipart/form-data" } }
   );
@@ -17,8 +17,9 @@ export const createPedidoCotizacion = async (obraId, formData) => {
 };
 
 export const updatePedidoCotizacion = async (obraId, pedidoId, formData) => {
-  const { data } = await axios.post(
-    `${backendUrl}/api/obras/${obraId}/pedidos_cotizacion/${pedidoId}`,
+  await ensureCsrfCookie();
+  const { data } = await apiClient.post(
+    `/obras/${obraId}/pedidos_cotizacion/${pedidoId}`,
     formData,
     {
       headers: { "Content-Type": "multipart/form-data" },
@@ -29,8 +30,9 @@ export const updatePedidoCotizacion = async (obraId, pedidoId, formData) => {
 };
 
 export const deletePedidoCotizacion = async (obraId, pedidoId) => {
-  const { data } = await axios.delete(
-    `${backendUrl}/api/obras/${obraId}/pedidos_cotizacion/${pedidoId}`
+  await ensureCsrfCookie();
+  const { data } = await apiClient.delete(
+    `/obras/${obraId}/pedidos_cotizacion/${pedidoId}`
   );
   return data;
 };
