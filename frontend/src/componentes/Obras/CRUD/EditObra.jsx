@@ -1,16 +1,35 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useObraById } from "../../hooks/useObras.jsx";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { UpdateObra } from "../../api/obras.js";
+import { fetchEstadosObra } from "../../api/estadosObra.js";
 import { useForm, useController } from "react-hook-form";
 import { useEffect, useRef } from "react";
 import GruposSelect from "../../shared/GruposSelect.jsx";
+
+const ETIQUETAS_ESTADO = {
+    pedida: "Pedida para cotizar",
+    cotizada: "Cotizada",
+    en_curso: "En Curso",
+    finalizada: "Finalizada",
+};
+
+const normalizeEstadoDescription = (description) => {
+    if (!description) return "Sin definir";
+    return ETIQUETAS_ESTADO[description.toLowerCase()] || description.replace(/_/g, " ").toUpperCase();
+};
 
 export default function EditObra() {
     const { id } = useParams();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const submitLock = useRef(false);
+
+    const { data: estadosObraDisponibles = [] } = useQuery({
+        queryKey: ["estados-obra"],
+        queryFn: fetchEstadosObra,
+        refetchOnWindowFocus: false,
+    });
 
     const { register, handleSubmit, reset, control } = useForm({
         defaultValues: {
@@ -128,10 +147,11 @@ export default function EditObra() {
                                 id="estado_obra_id"
                                 {...register("estado_obra_id")}
                             >
-                                <option value="1">Pedida</option>
-                                <option value="2">Cotizada</option>
-                                <option value="3">En Curso</option>
-                                <option value="4">Finalizada</option>
+                                {estadosObraDisponibles.map((estado) => (
+                                    <option key={estado.estado_obra_id} value={estado.estado_obra_id}>
+                                        {normalizeEstadoDescription(estado.descripcion)}
+                                    </option>
+                                ))}
                             </select>
                         </div>
 

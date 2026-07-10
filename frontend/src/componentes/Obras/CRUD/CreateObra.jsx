@@ -1,15 +1,34 @@
 import { useNavigate } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { PostObra } from "../../api/obras.js";
+import { fetchEstadosObra } from "../../api/estadosObra.js";
 import { useForm, useController } from "react-hook-form";
 import { useRef } from "react";
 import Swal from "sweetalert2";
 import GruposSelect from "../../shared/GruposSelect.jsx";
 
+const ETIQUETAS_ESTADO = {
+    pedida: "Pedida para cotizar",
+    cotizada: "Cotizada",
+    en_curso: "En Curso",
+    finalizada: "Finalizada",
+};
+
+const normalizeEstadoDescription = (description) => {
+    if (!description) return "Sin definir";
+    return ETIQUETAS_ESTADO[description.toLowerCase()] || description.replace(/_/g, " ").toUpperCase();
+};
+
 export default function CreateObra() {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const submitLock = useRef(false);
+
+    const { data: estadosObraDisponibles = [] } = useQuery({
+        queryKey: ["estados-obra"],
+        queryFn: fetchEstadosObra,
+        refetchOnWindowFocus: false,
+    });
 
     // Obtener la fecha de hoy en formato YYYY-MM-DD
     const obtenerFechaHoy = () => {
@@ -96,10 +115,11 @@ export default function CreateObra() {
                                 id="estado_obra_id"
                                 {...register("estado_obra_id", { required: { value: true, message: "El estado es obligatorio" } })}
                             >
-                                <option value="1">Pedida</option>
-                                <option value="2">Cotizada</option>
-                                <option value="3">En Curso</option>
-                                <option value="4">Finalizada</option>
+                                {estadosObraDisponibles.map((estado) => (
+                                    <option key={estado.estado_obra_id} value={estado.estado_obra_id}>
+                                        {normalizeEstadoDescription(estado.descripcion)}
+                                    </option>
+                                ))}
                             </select>
                         </div>
 
