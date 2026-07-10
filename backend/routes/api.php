@@ -16,6 +16,7 @@ use App\Http\Controllers\PedidoCotizacionController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\TipoFacturacionController;
 use App\Http\Controllers\FacturaController;
+use App\Http\Controllers\GastoController;
 use App\Http\Controllers\RubroController;
 use App\Http\Controllers\TipoDocumentacionController;
 use App\Http\Controllers\UsuarioController;
@@ -33,8 +34,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/auth/me', [AuthController::class, 'me']);
 });
 
-// Usuarios
-Route::apiResource('usuarios', UsuarioController::class);
+// Usuarios (solo administradores)
+Route::middleware(['auth:web', 'admin'])->group(function () {
+    Route::apiResource('usuarios', UsuarioController::class);
+});
 
 // Obras
 Route::apiResource('obras', ObraController::class);
@@ -112,7 +115,8 @@ Route::get('obras/{obra}/facturas/{factura}/impuestos', [FacturaImpuestosControl
 Route::put('obras/{obra}/facturas/{factura}/impuestos', [FacturaImpuestosController::class, 'upsert']);
 
 
-// TODO: GastoController         → obras/{obra}/gastos
+Route::get('obras/{obra}/gastos', [GastoController::class, 'show']);
+Route::put('obras/{obra}/gastos/proyeccion', [GastoController::class, 'upsertProyeccion']);
 // TODO: ProveedorRubroController → proveedores/{proveedor}/rubros
 // TODO: ObraGrupoController     → obras/{obra}/grupos
 // TODO: CompraRubroController   → pedidos_compra/{pedido}/rubros

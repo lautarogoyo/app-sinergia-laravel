@@ -36,6 +36,7 @@ class UsuarioController extends Controller
 			'apellido' => 'required|string|max:100',
 			'email' => 'required|email|max:150|unique:Usuario,email',
 			'contrasenia' => 'required|string|min:6',
+			'admin' => 'sometimes|boolean',
 		]);
 
 		$usuario = Usuario::create($validated);
@@ -68,6 +69,7 @@ class UsuarioController extends Controller
 				Rule::unique('Usuario', 'email')->ignore($usuario->usuario_id, 'usuario_id'),
 			],
 			'contrasenia' => 'sometimes|required|string|min:6',
+			'admin' => 'sometimes|boolean',
 		]);
 
 		$usuario->update($validated);

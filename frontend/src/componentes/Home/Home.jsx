@@ -32,6 +32,14 @@ const modules = [
   },
 ];
 
+const adminModule = {
+  name: 'Usuarios',
+  description: 'Panel de administración de usuarios',
+  icon: 'employee',
+  to: '/usuarios',
+  color: 'violet',
+};
+
 const colorMap = {
   indigo: {
     bg: 'bg-indigo-50',
@@ -63,7 +71,9 @@ const colorMap = {
   },
 };
 
-export default function Home() {
+export default function Home({ isAdmin }) {
+  const modulesToShow = isAdmin ? [...modules, adminModule] : modules;
+
   return (
     <div className="flex-1 min-h-screen  bg-gray-50 p-8">
       <div className="mb-10 flex items-center gap-5">
@@ -79,7 +89,7 @@ export default function Home() {
       <div className='flex justify-center w-full'>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {modules.map(({ name, description, icon, to, color }) => {
+          {modulesToShow.map(({ name, description, icon, to, color }) => {
             const c = colorMap[color];
             return (
               <NavLink

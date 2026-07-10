@@ -132,6 +132,10 @@ export default function GrupoDetailModal({ grupo, initialMode, onClose }) {
                   }
                 />
                 <Row label="Rubros" value={grupo?.rubros?.map(r => r.descripcion).join(", ")} />
+                <Row
+                  label="Ingresado por"
+                  value={grupo?.usuario ? `${grupo.usuario.nombre} ${grupo.usuario.apellido}` : null}
+                />
                 <div className="sm:col-span-2">
                   <Row label="Observación" value={grupo?.observacion} />
                 </div>

@@ -17,7 +17,7 @@ class AuthController extends Controller
         ]);
 
         // Buscar el usuario por nombreUsuario (campo único).
-        $user = Usuario::where('nombreUsuario', $validated['usuario'])
+        $user = Usuario::where('nombre_usuario', $validated['usuario'])
             ->first();
 
         if (!$user || !Hash::check($validated['contrasena'], $user->contrasenia)) {
@@ -37,6 +37,7 @@ class AuthController extends Controller
                 'nombre' => $user->nombre,
                 'apellido' => $user->apellido,
                 'email' => $user->email,
+                'admin' => (bool) $user->admin,
             ],
         ]);
     }
@@ -70,6 +71,7 @@ class AuthController extends Controller
             'nombre' => $user->nombre,
             'apellido' => $user->apellido,
             'email' => $user->email,
+            'admin' => (bool) $user->admin,
         ]);
     }
 }

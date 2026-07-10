@@ -39,7 +39,7 @@ export default function Login({ onLoginSuccess }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-blue-950 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-950 via-blue-900 to-slate-900 p-4">
       <div className="w-full max-w-md">
         {/* Card */}
         <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-8">
@@ -49,7 +49,7 @@ export default function Login({ onLoginSuccess }) {
               <Icon name="logo" className="w-12 h-12" />
             </div>
             <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Bienvenido</h1>
-            <p className="text-slate-500 text-sm mt-2">Inicia sesión en tu cuenta</p>
+            <p className="text-slate-500 text-sm mt-2">Inicia sesión con tu usuario</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -77,7 +77,7 @@ export default function Login({ onLoginSuccess }) {
               <input
                 id="usuario"
                 type="text"
-                placeholder="ingresa tu usuario"
+                placeholder="Ingresa tu usuario"
                 disabled={cargando}
                 {...register('usuario', { required: 'El usuario es requerido' })}
                 className="w-full px-4 py-2.5 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder-slate-400 text-sm transition-colors focus:outline-none focus:border-slate-700 focus:ring-1 focus:ring-slate-200 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed"
@@ -91,7 +91,7 @@ export default function Login({ onLoginSuccess }) {
               <input
                 id="contrasena"
                 type="password"
-                placeholder="ingresa tu contraseña"
+                placeholder="Ingresa tu contraseña"
                 disabled={cargando}
                 {...register('contrasena', { required: 'La contraseña es requerida' })}
                 className="w-full px-4 py-2.5 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder-slate-400 text-sm transition-colors focus:outline-none focus:border-slate-700 focus:ring-1 focus:ring-slate-200 disabled:bg-slate-50 disabled:text-slate-500 disabled:cursor-not-allowed"

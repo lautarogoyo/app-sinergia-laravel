@@ -23,10 +23,15 @@ class Usuario extends Authenticatable
         'apellido',
         'email',
         'contrasenia',
+        'admin',
     ];
 
     protected $hidden = [
         'contrasenia',
+    ];
+
+    protected $casts = [
+        'admin' => 'boolean',
     ];
 
     public function setContraseniaAttribute($value): void

@@ -5,7 +5,7 @@ import Icon from '../Icons/Icons';
 
 
 
-export default function Header({ onLogout }) {
+export default function Header({ onLogout, isAdmin }) {
   const navigate = useNavigate();
   const [visible, setVisible] = useState(true);
 
@@ -93,6 +93,17 @@ export default function Header({ onLogout }) {
               <Icon name="finance" className="w-6 h-6 flex-shrink-0" />
               {visible ? <span className="whitespace-nowrap">Finanzas</span> : <span className="sr-only">Finanzas</span>}
             </NavLink>
+
+            {isAdmin && (
+              <NavLink
+                to="/usuarios"
+                className={({ isActive }) =>
+                  `${navLinkBase} ${isActive ? navLinkActive : ''}`}
+              >
+                <Icon name="employee" className="w-6 h-6 flex-shrink-0" />
+                {visible ? <span className="whitespace-nowrap">Usuarios</span> : <span className="sr-only">Usuarios</span>}
+              </NavLink>
+            )}
           </div>
 
           <div className="mt-2 px-3 mb-6">

@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Proveedor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProveedorController extends Controller
 {
     public function index()
     {
-        $proveedores = Proveedor::with(['tipoFacturacion', 'rubros'])->get();
+        $proveedores = Proveedor::with(['tipoFacturacion', 'rubros', 'usuario'])->get();
 
         return response()->json([
             'proveedores' => $proveedores,
@@ -33,7 +34,6 @@ class ProveedorController extends Controller
             'contacto'            => 'sometimes|nullable|string|max:255',
             'observacion'         => 'sometimes|nullable|string|max:1000',
             'fecha_ingreso'       => 'sometimes|nullable|date',
-            'usuario_id'          => 'sometimes|nullable|exists:Usuario,usuario_id',
             'rubros_ids'          => 'nullable|array',
             'rubros_ids.*'        => 'exists:Rubro,rubro_id',
         ]);
@@ -42,6 +42,7 @@ class ProveedorController extends Controller
         unset($validated['rubros_ids']);
 
         $validated['fecha_ingreso'] = $validated['fecha_ingreso'] ?? now()->toDateString();
+        $validated['usuario_id'] = Auth::id();
 
         $proveedor = Proveedor::create($validated);
 
@@ -51,7 +52,7 @@ class ProveedorController extends Controller
 
         return response()->json([
             'message'   => 'Proveedor creado exitosamente',
-            'proveedor' => $proveedor->load(['tipoFacturacion', 'rubros']),
+            'proveedor' => $proveedor->load(['tipoFacturacion', 'rubros', 'usuario']),
             'status'    => 201,
         ], 201);
     }
@@ -59,7 +60,7 @@ class ProveedorController extends Controller
     public function show(Proveedor $proveedor)
     {
         return response()->json([
-            'proveedor' => $proveedor->load(['tipoFacturacion', 'rubros']),
+            'proveedor' => $proveedor->load(['tipoFacturacion', 'rubros', 'usuario']),
             'status'    => 200,
         ]);
     }
@@ -80,7 +81,6 @@ class ProveedorController extends Controller
             'contacto'            => 'sometimes|nullable|string|max:255',
             'observacion'         => 'sometimes|nullable|string|max:1000',
             'fecha_ingreso'       => 'sometimes|nullable|date',
-            'usuario_id'          => 'sometimes|nullable|exists:Usuario,usuario_id',
             'rubros_ids'          => 'nullable|array',
             'rubros_ids.*'        => 'exists:Rubro,rubro_id',
         ]);
@@ -96,7 +96,7 @@ class ProveedorController extends Controller
 
         return response()->json([
             'message'   => 'Proveedor actualizado exitosamente',
-            'proveedor' => $proveedor->load(['tipoFacturacion', 'rubros']),
+            'proveedor' => $proveedor->load(['tipoFacturacion', 'rubros', 'usuario']),
             'status'    => 200,
         ]);
     }

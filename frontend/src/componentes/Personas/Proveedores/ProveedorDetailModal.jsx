@@ -138,6 +138,10 @@ export default function ProveedorDetailModal({ proveedor, initialMode, onClose }
                   label="Rubros"
                   value={proveedor?.rubros?.map(r => r.descripcion).join(", ")}
                 />
+                <Row
+                  label="Ingresado por"
+                  value={proveedor?.usuario ? `${proveedor.usuario.nombre} ${proveedor.usuario.apellido}` : null}
+                />
                 <div className="sm:col-span-2">
                   <Row label="Observación" value={proveedor?.observacion} />
                 </div>
