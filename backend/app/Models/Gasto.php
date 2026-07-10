@@ -9,9 +9,15 @@ class Gasto extends SinergiaModel
     protected $table = 'Gasto';
     protected $primaryKey = 'gasto_id';
 
+    protected $fillable = [
+        'obra_id',
+        'importe_real',
+        'importe_proyeccion',
+    ];
+
     protected $casts = [
-        'importe_real'        => 'decimal:2',
-        'importe_proyeccion'  => 'decimal:2',
+        'importe_real'       => 'decimal:2',
+        'importe_proyeccion' => 'decimal:2',
     ];
 
     public function obra(): BelongsTo

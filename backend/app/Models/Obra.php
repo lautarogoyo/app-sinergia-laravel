@@ -78,6 +78,11 @@ class Obra extends SinergiaModel
         return $this->hasMany(Gasto::class, 'obra_id', 'obra_id');
     }
 
+    public function gasto(): HasOne
+    {
+        return $this->hasOne(Gasto::class, 'obra_id', 'obra_id');
+    }
+
     public function obraGrupos(): HasMany
     {
         return $this->hasMany(ObraGrupo::class, 'obra_id', 'obra_id');

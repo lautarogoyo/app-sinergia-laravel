@@ -297,16 +297,7 @@ export default function Obras() {
 																		<Icon name="setting" className="w-5 h-5" />
 																		Gestionar
 																	</button>
-																	<button
-																		className="flex items-center gap-2 w-full text-left px-4 py-2 text-lg hover:bg-gray-100"
-																		onClick={() => {
-																			navigate(`/obra/${obra.obra_id}/gestionar`);
-																			setMenuAbierto(null);
-																		}}
-																	>
-																		<Icon name="cash" className="w-5 h-5" />
-																		Gastos
-																	</button>
+																	
 																	<button
 																		className="flex items-center gap-2 w-full text-left px-4 py-2 text-lg hover:bg-gray-100"
 																		onClick={() => {
@@ -316,6 +307,16 @@ export default function Obras() {
 																	>
 																		<Icon name="message" className="w-5 h-5" />
 																		Comentarios
+																	</button>
+																	<button
+																		className="flex items-center gap-2 w-full text-left px-4 py-2 text-lg hover:bg-gray-100"
+																		onClick={() => {
+																			navigate(`/obra/${obra.obra_id}/gastos`);
+																			setMenuAbierto(null);
+																		}}
+																	>
+																		<Icon name="cash" className="w-5 h-5" />
+																		Gastos
 																	</button>
 																</div>
 															)}
