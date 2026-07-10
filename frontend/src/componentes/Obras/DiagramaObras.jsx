@@ -23,6 +23,13 @@ const formatDateShort = (date) =>
 		date.getFullYear()
 	).slice(-2)}`;
 
+const MESES = [
+	"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+	"Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre",
+];
+
+const DAY_WIDTH = 34;
+
 const compareNroObraAsc = (a, b) =>
 	String(a.nro_obra ?? "").localeCompare(String(b.nro_obra ?? ""), undefined, {
 		numeric: true,
@@ -71,6 +78,19 @@ export default function DiagramaObras() {
 		return { timelineInicio: inicio, timelineFin: fin, dias: listadoDias };
 	}, [obrasConRango]);
 
+	const meses = useMemo(() => {
+		const grupos = [];
+		dias.forEach((dia) => {
+			const ultimo = grupos[grupos.length - 1];
+			if (ultimo && ultimo.mes === dia.getMonth() && ultimo.anio === dia.getFullYear()) {
+				ultimo.dias += 1;
+			} else {
+				grupos.push({ mes: dia.getMonth(), anio: dia.getFullYear(), dias: 1 });
+			}
+		});
+		return grupos;
+	}, [dias]);
+
 	if (isLoading) {
 		return (
 			<div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center z-50">
@@ -114,53 +134,69 @@ export default function DiagramaObras() {
 						No hay obras con fecha programacion inicio y fecha recepcion provisoria para mostrar en el diagrama.
 					</div>
 				) : (
-					<div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-						<div className="overflow-x-auto">
+					<div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
+						<div className="overflow-auto max-h-[75vh]">
 							<div className="min-w-max">
-								<div className="flex border-b border-gray-300 bg-gray-50 sticky top-0 z-10">
-									<div className="w-80 min-w-80 px-4 py-3 font-semibold text-gray-800 border-r border-gray-300">
+								<div className="flex sticky top-0 z-10 bg-white">
+									<div className="w-56 min-w-56 px-4 flex items-center font-semibold text-gray-800 border-b-2 border-gray-300">
 										Obra
 									</div>
-									<div
-										className="grid"
-										style={{ gridTemplateColumns: `repeat(${dias.length}, minmax(40px, 40px))` }}
-									>
-										{dias.map((dia) => (
-											<div
-												key={`h-${dia.toISOString()}`}
-												className="h-12 px-1 border-r border-gray-200 text-[11px] text-gray-600 flex items-center justify-center"
-												title={dia.toISOString().split("T")[0]}
-											>
-												{formatLabel(dia)}
-											</div>
-										))}
+									<div className="flex flex-col">
+										<div className="flex border-b border-l border-gray-200">
+											{meses.map((grupo, idx) => (
+												<div
+													key={`m-${grupo.anio}-${grupo.mes}-${idx}`}
+													className="h-8 border-r border-gray-200 text-xs font-semibold text-gray-700 flex items-center justify-center bg-gray-50"
+													style={{ width: `${grupo.dias * DAY_WIDTH}px` }}
+												>
+													{MESES[grupo.mes]} {grupo.anio}
+												</div>
+											))}
+										</div>
+										<div
+											className="grid border-b-2 border-l border-gray-300"
+											style={{ gridTemplateColumns: `repeat(${dias.length}, minmax(${DAY_WIDTH}px, ${DAY_WIDTH}px))` }}
+										>
+											{dias.map((dia) => (
+												<div
+													key={`h-${dia.toISOString()}`}
+													className="h-7 border-r border-gray-200 text-[10px] text-gray-600 flex items-center justify-center"
+													title={dia.toISOString().split("T")[0]}
+												>
+													{formatLabel(dia)}
+												</div>
+											))}
+										</div>
 									</div>
 								</div>
 
-								{obrasConRango.map((obra) => {
+								{obrasConRango.map((obra, idx) => {
 									const offsetInicio = diffDays(timelineInicio, obra.inicio);
 									const duracionDias = diffDays(obra.inicio, obra.fin) + 1;
 									const leftPct = (offsetInicio / dias.length) * 100;
 									const widthPct = (duracionDias / dias.length) * 100;
 
 									return (
-										<div key={obra.id} className="flex border-b border-gray-200 last:border-b-0">
-											<div className="w-80 min-w-80 px-4 py-3 border-r border-gray-200 bg-white">
-												<div className="font-semibold text-gray-900">#{obra.nro_obra ?? "-"}</div>
-												<div className="text-sm text-gray-600">{obra.detalle || "Sin detalle"}</div>
+										<div
+											key={obra.id}
+											className={`flex ${idx % 2 === 1 ? "bg-gray-50/60" : "bg-white"}`}
+										>
+											<div className="w-56 min-w-56 px-4 py-3 flex flex-col justify-center border-b border-gray-200">
+												<div className="font-semibold text-gray-900 text-sm">#{obra.nro_obra ?? "-"}</div>
+												<div className="text-xs text-gray-500 truncate">{obra.detalle || "Sin detalle"}</div>
 											</div>
 
-											<div className="relative h-16" style={{ width: `${dias.length * 40}px` }}>
+											<div className="relative h-14 border-b border-l border-gray-200" style={{ width: `${dias.length * DAY_WIDTH}px` }}>
 												<div
 													className="absolute inset-0 grid"
-													style={{ gridTemplateColumns: `repeat(${dias.length}, minmax(40px, 40px))` }}
+													style={{ gridTemplateColumns: `repeat(${dias.length}, minmax(${DAY_WIDTH}px, ${DAY_WIDTH}px))` }}
 												>
 													{dias.map((dia) => (
 														<div key={`g-${obra.id}-${dia.toISOString()}`} className="border-r border-gray-100" />
 													))}
 												</div>
 												<div
-													className="absolute top-1/2 -translate-y-1/2 h-9 rounded-md bg-blue-500 text-white text-xl font-semibold flex items-center justify-center px-2 truncate"
+													className="absolute top-1/2 -translate-y-1/2 h-7 rounded-lg bg-blue-500 shadow-sm text-white text-xs font-semibold flex items-center justify-center px-3 truncate"
 													style={{ left: `${leftPct}%`, width: `${widthPct}%` }}
 													title={obra.gruposTexto}
 												>
