@@ -67,12 +67,12 @@ return new class extends Migration
         });
 
         // ── Gasto ─────────────────────────────────────────────────────────────
-        // Gasto real vs proyección de una obra.
-        // importe_real se deriva de la suma de facturas de la obra (regla de negocio).
+        // Proyección de gasto de una obra.
+        // El gasto real no se persiste: se calcula como la suma de las facturas
+        // de la obra (regla de negocio).
         Schema::create('Gasto', function (Blueprint $table) {
             $table->unsignedInteger('gasto_id')->autoIncrement();
             $table->unsignedInteger('obra_id');
-            $table->decimal('importe_real', 15, 2);
             $table->decimal('importe_proyeccion', 15, 2);
 
             $table->foreign('obra_id')

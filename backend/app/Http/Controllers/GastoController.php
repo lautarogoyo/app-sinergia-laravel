@@ -28,10 +28,7 @@ class GastoController extends Controller
         $gastoMaterial = $facturasMaterial->sum($importeNeto);
         $gastoTotal = $gastoManoObra + $gastoMaterial;
 
-        $gasto = Gasto::updateOrCreate(
-            ['obra_id' => $obra->obra_id],
-            ['importe_real' => $gastoTotal]
-        );
+        $gasto = Gasto::firstOrNew(['obra_id' => $obra->obra_id]);
 
         return response()->json([
             'obra' => [

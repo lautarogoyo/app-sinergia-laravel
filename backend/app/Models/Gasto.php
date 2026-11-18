@@ -11,12 +11,10 @@ class Gasto extends SinergiaModel
 
     protected $fillable = [
         'obra_id',
-        'importe_real',
         'importe_proyeccion',
     ];
 
     protected $casts = [
-        'importe_real'       => 'decimal:2',
         'importe_proyeccion' => 'decimal:2',
     ];
 

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Gasto;
 use App\Models\Obra;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -52,6 +53,11 @@ class ObraController extends Controller
         unset($validated['grupo_id']);
 
         $obra = Obra::create($validated);
+
+        Gasto::create([
+            'obra_id' => $obra->obra_id,
+            'importe_proyeccion' => 0,
+        ]);
 
         if (!empty($grupoIds)) {
             $obra->grupos()->attach($grupoIds);
