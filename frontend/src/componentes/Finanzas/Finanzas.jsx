@@ -47,7 +47,7 @@ export default function Finanzas() {
 
       <div className="h-px bg-gradient-to-r from-indigo-200 via-gray-200 to-transparent mb-10" />
 
-      <div className="flex justify-center w-full">
+      <div className="flex  w-full">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {modules.map(({ name, description, icon, to, color, customIcon }) => {
             const c = colorMap[color];
