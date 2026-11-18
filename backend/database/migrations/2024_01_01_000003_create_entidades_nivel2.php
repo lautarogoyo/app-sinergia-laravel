@@ -37,12 +37,13 @@ return new class extends Migration
         });
 
         // ── Comentario ───────────────────────────────────────────────────────
-        // Comentarios libres sobre una obra. Con timestamps.
+        // Comentarios libres sobre una obra. Con timestamps y soft delete.
         Schema::create('Comentario', function (Blueprint $table) {
             $table->unsignedInteger('comentario_id')->autoIncrement();
             $table->unsignedInteger('obra_id');
             $table->text('detalle');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('obra_id')
                   ->references('obra_id')->on('Obra');
