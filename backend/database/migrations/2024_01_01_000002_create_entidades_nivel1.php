@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
@@ -16,7 +17,7 @@ return new class extends Migration
     public function up(): void
     {
         // ── Usuario ──────────────────────────────────────────────────────────
-        // Sin FK externas. Base para Grupo, Proveedor y auth futura.
+        // Sin FK externas. Base para Grupo, Proveedor y autenticación.
         Schema::create('Usuario', function (Blueprint $table) {
             $table->unsignedInteger('usuario_id')->autoIncrement();
             $table->string('nombre_usuario', 100)->unique();
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->string('contrasenia');
             $table->string('nombre', 100);
             $table->string('apellido', 100);
+            $table->boolean('admin')->default(false);
         });
 
         // ── Obra ─────────────────────────────────────────────────────────────
@@ -47,12 +49,15 @@ return new class extends Migration
         });
 
         // ── Grupo ─────────────────────────────────────────────────────────────
-        // Contratista / grupo de trabajo. Referencia Usuario, Tipo_Facturacion,
-        // Estado_Grupo (todos L0/L1).
+        // Contratista / grupo de trabajo. Referencia Usuario, Tipo_Facturacion
+        // y Estado_Grupo.
         Schema::create('Grupo', function (Blueprint $table) {
             $table->unsignedInteger('grupo_id')->autoIncrement();
             $table->unsignedInteger('usuario_id');
             $table->string('nombre_apellido', 200);
+            $table->string('cuit', 13)->nullable();
+            $table->string('cbu', 22)->nullable();
+            $table->string('alias', 100)->nullable();
             $table->string('telefono', 50)->nullable();
             $table->string('email', 150)->nullable();
             $table->string('ciudad', 100)->nullable();
@@ -60,6 +65,8 @@ return new class extends Migration
             $table->string('contacto', 150)->nullable();
             $table->string('observacion')->nullable();
             $table->date('fecha_ingreso')->default(DB::raw('(CURDATE())'));
+            $table->boolean('rol_profesional')->nullable();
+            $table->string('especialidad', 100)->nullable();
             $table->unsignedInteger('tipo_facturacion_id');
             $table->unsignedInteger('estado_grupo_id');
 
@@ -72,12 +79,15 @@ return new class extends Migration
         });
 
         // ── Proveedor ─────────────────────────────────────────────────────────
-        // Proveedor de materiales/servicios. Misma estructura base que Grupo
-        // pero sin estado_grupo (los proveedores no tienen ciclo de estado propio).
+        // Proveedor de materiales/servicios. Sin ciclo de estado propio.
+        // usuario_id es opcional (puede cargarse sin usuario asociado).
         Schema::create('Proveedor', function (Blueprint $table) {
             $table->unsignedInteger('proveedor_id')->autoIncrement();
-            $table->unsignedInteger('usuario_id');
+            $table->unsignedInteger('usuario_id')->nullable();
             $table->string('nombre_apellido', 200);
+            $table->string('cuit', 13)->nullable();
+            $table->string('cbu', 22)->nullable();
+            $table->string('alias', 100)->nullable();
             $table->string('telefono', 50)->nullable();
             $table->string('email', 150)->nullable();
             $table->string('direccion', 255)->nullable();

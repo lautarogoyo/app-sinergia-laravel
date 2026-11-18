@@ -9,8 +9,8 @@ use Illuminate\Support\Facades\Schema;
  * Referencian Obra, Grupo, Proveedor y/o catálogos (L0).
  *
  * Tablas:
- *   Empleado, Comentario, Pedido_Cotizacion, Orden_Compra,
- *   Pedido_Compra, Proveedor_Rubro, Obra_Grupo
+ *   Empleado, Comentario, Pedido_Cotizacion, Orden_Compra, Pedido_Compra,
+ *   Proveedor_Rubro, Grupo_Rubro, Obra_Grupo
  */
 return new class extends Migration
 {
@@ -37,11 +37,12 @@ return new class extends Migration
         });
 
         // ── Comentario ───────────────────────────────────────────────────────
-        // Comentarios libres sobre una obra.
+        // Comentarios libres sobre una obra. Con timestamps.
         Schema::create('Comentario', function (Blueprint $table) {
             $table->unsignedInteger('comentario_id')->autoIncrement();
             $table->unsignedInteger('obra_id');
             $table->text('detalle');
+            $table->timestamps();
 
             $table->foreign('obra_id')
                   ->references('obra_id')->on('Obra');
@@ -86,12 +87,11 @@ return new class extends Migration
 
         // ── Pedido_Compra ─────────────────────────────────────────────────────
         // Pedido de compra de materiales para una obra.
-        // Incluye estados: contratista, pedido, registro y rol del pedido.
+        // Los presupuestos adjuntos viven en la tabla Presupuesto (L3).
         Schema::create('Pedido_Compra', function (Blueprint $table) {
             $table->unsignedInteger('pedido_compra_id')->autoIncrement();
             $table->unsignedInteger('obra_id');
             $table->unsignedInteger('rol_pedido_id');
-            $table->string('path_presupuesto')->nullable();
             $table->string('path_material')->nullable();
             $table->date('fecha_pedido');
             $table->date('fecha_entrega_estimada')->nullable();
@@ -99,6 +99,7 @@ return new class extends Migration
             $table->unsignedInteger('estado_pedido_id');
             $table->unsignedInteger('estado_registro_id');
             $table->string('observaciones')->nullable();
+            $table->date('archivado_at')->nullable();
 
             $table->foreign('obra_id')
                   ->references('obra_id')->on('Obra');
@@ -113,7 +114,7 @@ return new class extends Migration
         });
 
         // ── Proveedor_Rubro ───────────────────────────────────────────────────
-        // Rubros/especialidades que ofrece un proveedor (many-to-many).
+        // Rubros que ofrece un proveedor (many-to-many).
         Schema::create('Proveedor_Rubro', function (Blueprint $table) {
             $table->unsignedInteger('proveedor_id');
             $table->unsignedInteger('rubro_id');
@@ -124,6 +125,20 @@ return new class extends Migration
                   ->references('proveedor_id')->on('Proveedor');
             $table->foreign('rubro_id')
                   ->references('rubro_id')->on('Rubro');
+        });
+
+        // ── Grupo_Rubro ───────────────────────────────────────────────────────
+        // Rubros en los que trabaja un grupo (many-to-many).
+        Schema::create('Grupo_Rubro', function (Blueprint $table) {
+            $table->unsignedInteger('grupo_id');
+            $table->unsignedInteger('rubro_id');
+
+            $table->primary(['grupo_id', 'rubro_id']);
+
+            $table->foreign('grupo_id')
+                  ->references('grupo_id')->on('Grupo')->cascadeOnDelete();
+            $table->foreign('rubro_id')
+                  ->references('rubro_id')->on('Rubro')->cascadeOnDelete();
         });
 
         // ── Obra_Grupo ────────────────────────────────────────────────────────
@@ -144,6 +159,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('Obra_Grupo');
+        Schema::dropIfExists('Grupo_Rubro');
         Schema::dropIfExists('Proveedor_Rubro');
         Schema::dropIfExists('Pedido_Compra');
         Schema::dropIfExists('Orden_Compra');
