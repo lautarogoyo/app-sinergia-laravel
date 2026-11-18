@@ -48,6 +48,7 @@ export default function PedidoCompraPage() {
   const volver = () => navigate(`/obra/${id}/gestionar`);
 
   const onGuardar = async () => {
+    console.log("Guardando pedido:", pedidoForm);
     await handleGuardarPedido();
     volver();
   };
@@ -74,6 +75,8 @@ export default function PedidoCompraPage() {
     actualizarPedidoCampo("archivos_presupuesto", files);
   };
 
+  pedidoForm.estado_registro_id = 1; // Valor por defecto para estado_registro_id
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-100 via-gray-50 to-white">
       <div className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-gray-200">
