@@ -26,8 +26,8 @@ return new class extends Migration
             $table->string('cbu', 22)->nullable();
             $table->string('alias', 100)->nullable();
             $table->unsignedInteger('grupo_id');
-            $table->dateTime('archivado_at')->nullable();
-            $table->dateTime('cancelado_at')->nullable();
+            $table->dateTime('archived_at')->nullable();
+            $table->dateTime('canceled_at')->nullable();
             $table->unsignedInteger('estado_empleado_id');
 
             $table->foreign('grupo_id')
@@ -100,8 +100,8 @@ return new class extends Migration
             $table->unsignedInteger('estado_pedido_id');
             $table->unsignedInteger('estado_registro_id');
             $table->string('observaciones')->nullable();
-            $table->date('archivado_at')->nullable();
-
+            $table->datetime('archived_at')->nullable();
+            $table->datetime('deleted_at')->nullable();
             $table->foreign('obra_id')
                   ->references('obra_id')->on('Obra');
             $table->foreign('rol_pedido_id')
