@@ -26,13 +26,15 @@ class PedidoCompra extends SinergiaModel
         'estado_pedido_id',
         'estado_registro_id',
         'observaciones',
-        'archivado_at',
+        'archived_at',
+        'deleted_at',
     ];
 
     protected $casts = [
         'fecha_pedido'           => 'date',
         'fecha_entrega_estimada' => 'date',
-        'archivado_at'           => 'date',
+        'archived_at'           => 'datetime',
+        'deleted_at'             => 'datetime',
     ];
 
     public function resolveRouteBinding($value, $field = null): ?self

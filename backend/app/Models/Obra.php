@@ -26,6 +26,7 @@ class Obra extends SinergiaModel
         'fecha_inicio_orden_compra',
         'fecha_finalizacion_orden_compra',
         'detalle_caratula',
+        'deleted_at',
     ];
 
     protected $casts = [
@@ -36,6 +37,7 @@ class Obra extends SinergiaModel
         'fecha_recepcion_definitiva'      => 'date',
         'fecha_inicio_orden_compra'       => 'date',
         'fecha_finalizacion_orden_compra' => 'date',
+        'deleted_at'                      => 'datetime',
     ];
 
     public function estadoObra(): BelongsTo

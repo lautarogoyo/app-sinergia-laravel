@@ -45,6 +45,7 @@ class ObraController extends Controller
             'fecha_inicio_orden_compra'        => 'nullable|date',
             'fecha_finalizacion_orden_compra'  => 'nullable|date',
             'detalle_caratula'                 => 'nullable|string',
+            'deleted_at'                       => 'nullable|datetime',
             'grupo_id'                         => 'nullable|array',
             'grupo_id.*'                       => 'exists:Grupo,grupo_id',
         ]);
@@ -103,6 +104,7 @@ class ObraController extends Controller
             'fecha_inicio_orden_compra'        => 'sometimes|nullable|date',
             'fecha_finalizacion_orden_compra'  => 'sometimes|nullable|date',
             'detalle_caratula'                 => 'sometimes|nullable|string',
+            'deleted_at'                       => 'sometimes|nullable|datetime',
             'grupo_id'                         => 'sometimes|nullable|array',
             'grupo_id.*'                       => 'exists:Grupo,grupo_id',
         ]);

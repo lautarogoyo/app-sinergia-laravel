@@ -18,13 +18,13 @@ class Empleado extends SinergiaModel
         'alias',
         'grupo_id',
         'estado_empleado_id',
-        'archivado_at',
-        'cancelado_at',
+        'archived_at',
+        'canceled_at',
     ];
 
     protected $casts = [
-        'archivado_at' => 'datetime',
-        'cancelado_at' => 'datetime',
+        'archived_at' => 'datetime',
+        'canceled_at' => 'datetime',
     ];
 
     public function grupo(): BelongsTo
