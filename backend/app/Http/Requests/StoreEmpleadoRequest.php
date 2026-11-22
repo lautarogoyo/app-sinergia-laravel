@@ -35,8 +35,8 @@ class StoreEmpleadoRequest extends FormRequest
                 $isUpdate ? 'sometimes' : 'required',
                 'exists:Estado_Empleado,estado_empleado_id',
             ],
-            'archivado_at' => 'sometimes|nullable|date_format:Y-m-d',
-            'cancelado_at' => 'sometimes|nullable|date_format:Y-m-d',
+            'archived_at' => 'sometimes|nullable|date_format:Y-m-d',
+            'canceled_at' => 'sometimes|nullable|date_format:Y-m-d',
         ];
     }
 }

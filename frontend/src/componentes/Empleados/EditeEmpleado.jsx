@@ -39,8 +39,8 @@ export default function EditeEmpleado() {
                 alias: empleado.alias || "",
                 estado_empleado_id: empleado.estado_empleado_id,
                 grupo_id: empleado.grupo?.grupo_id ?? "", 
-                archivado: !!empleado.archivado_at,
-                cancelado: !!empleado.cancelado_at,
+                archivado: !!empleado.archived_at,
+                cancelado: !!empleado.canceled_at,
             });
     }
     }, [empleado, reset]);
@@ -61,8 +61,8 @@ export default function EditeEmpleado() {
         ...data,
         estado_empleado_id: Number(data.estado_empleado_id),
         grupo_id: data.grupo_id ? Number(data.grupo_id) : null,
-        archivado_at: data.archivado ? today : null,
-        cancelado_at: data.cancelado ? today : null,
+        archived_at: data.archivado ? today : null,
+        canceled_at: data.cancelado ? today : null,
     });
     });
     

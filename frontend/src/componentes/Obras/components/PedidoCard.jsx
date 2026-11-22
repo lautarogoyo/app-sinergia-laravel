@@ -19,7 +19,7 @@ export default function PedidoCard({ pedido, onEditar, onArchivar, onEliminar, o
         </div>
         <div className="flex items-center gap-2">
           <span className="px-2 py-1 rounded text-xs font-bold bg-blue-100 text-blue-700 uppercase">
-            {pedido.archivado_at ? "archivado" : (pedido.estadoPedido?.descripcion ?? pedido.estado_pedido ?? "pendiente")}
+            {pedido.archived_at ? "archivado" : (pedido.estadoPedido?.descripcion ?? pedido.estado_pedido ?? "pendiente")}
           </span>
           <button type="button" onClick={(e) => { e.stopPropagation(); onEditar?.(pedido); }} className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded" title="Editar">
             <Icon name="pencil" className="w-6 h-6" />

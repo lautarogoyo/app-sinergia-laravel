@@ -13,7 +13,7 @@ class ObraController extends Controller
 {
     public function index()
     {
-        $obras = Obra::whereNull('deleted_at')->with([
+        $obras = Obra::with([
             'estadoObra',
             'grupos.estadoGrupo',
             'pedidosCotizacion.estadoCotizacion',
@@ -21,7 +21,7 @@ class ObraController extends Controller
             // CORRECCIÓN: ordenCompra (hasOne) y pedidoCompra (hasMany) consistentes
             'ordenCompra',
             'comentarios',
-            'pedidoCompra' => fn($q) => $q->whereNull('deleted_at'),
+            'pedidoCompra',
             'pedidoCompra.grupos',
             'pedidoCompra.rubros',  
             'pedidoCompra.proveedores',
@@ -45,7 +45,6 @@ class ObraController extends Controller
             'fecha_inicio_orden_compra'        => 'nullable|date',
             'fecha_finalizacion_orden_compra'  => 'nullable|date',
             'detalle_caratula'                 => 'nullable|string',
-            'deleted_at'                       => 'nullable|datetime',
             'grupo_id'                         => 'nullable|array',
             'grupo_id.*'                       => 'exists:Grupo,grupo_id',
         ]);
@@ -80,7 +79,7 @@ class ObraController extends Controller
                 'pedidosCotizacion.estadoComparativa',
                 'comentarios',
                 'ordenCompra',
-                'pedidoCompra' => fn($q) => $q->whereNull('deleted_at'),
+                'pedidoCompra',
                 'pedidoCompra.grupos',
                 'pedidoCompra.rubros',
                 'pedidoCompra.proveedores',
@@ -104,7 +103,6 @@ class ObraController extends Controller
             'fecha_inicio_orden_compra'        => 'sometimes|nullable|date',
             'fecha_finalizacion_orden_compra'  => 'sometimes|nullable|date',
             'detalle_caratula'                 => 'sometimes|nullable|string',
-            'deleted_at'                       => 'sometimes|nullable|datetime',
             'grupo_id'                         => 'sometimes|nullable|array',
             'grupo_id.*'                       => 'exists:Grupo,grupo_id',
         ]);
@@ -129,7 +127,7 @@ class ObraController extends Controller
                 'pedidosCotizacion',
                 'comentarios',
                 'ordenCompra',
-                'pedidoCompra' => fn($q) => $q->whereNull('deleted_at'),
+                'pedidoCompra',
                 'pedidoCompra.grupos',
                 'pedidoCompra.rubros',
                 'pedidoCompra.proveedores',
@@ -185,8 +183,7 @@ class ObraController extends Controller
     } */
    public function destroy(Obra $obra)
 {
-    $obra->deleted_at = now();
-    $obra->save();
+    $obra->delete();
 
     return response()->json([
         'message' => 'Obra eliminada exitosamente',

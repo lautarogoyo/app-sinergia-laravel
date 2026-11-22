@@ -43,7 +43,8 @@ return new class extends Migration
             $table->date('fecha_inicio_orden_compra')->nullable();
             $table->date('fecha_finalizacion_orden_compra')->nullable();
             $table->string('detalle_caratula')->nullable();
-            $table->datetime('deleted_at')->nullable();
+            $table->softDeletes()->index();
+
             $table->foreign('estado_obra_id')
                   ->references('estado_obra_id')->on('Estado_Obra');
         });

@@ -100,8 +100,9 @@ return new class extends Migration
             $table->unsignedInteger('estado_pedido_id');
             $table->unsignedInteger('estado_registro_id');
             $table->string('observaciones')->nullable();
-            $table->datetime('archived_at')->nullable();
-            $table->datetime('deleted_at')->nullable();
+            $table->date('archived_at')->nullable();
+            $table->softDeletes()->index();
+
             $table->foreign('obra_id')
                   ->references('obra_id')->on('Obra');
             $table->foreign('rol_pedido_id')

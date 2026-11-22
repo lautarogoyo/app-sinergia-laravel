@@ -288,13 +288,13 @@ export default function useGestionarObra() {
   };
 
   const handleArchivarPedido = async (pedido) => {
-    const estaArchivado = Boolean(pedido.archivado_at);
+    const estaArchivado = Boolean(pedido.archived_at);
     const msg = estaArchivado ? "¿Desarchivar este pedido?" : "¿Archivar este pedido?";
     const result = await Swal.fire({ icon: "question", title: "Confirmar acción", text: msg, showCancelButton: true, confirmButtonText: "Sí, continuar", cancelButtonText: "Cancelar" });
     if (!result.isConfirmed) return;
     try {
       const formData = new FormData();
-      formData.append("archivado_at", estaArchivado ? "" : new Date().toISOString().split("T")[0]);
+      formData.append("archived_at", estaArchivado ? "" : new Date().toISOString().split("T")[0]);
       await updatePedidoCompraMutation.mutateAsync({ pedidoId: pedido.pedido_compra_id, formData });
     } catch (err) {
       await Swal.fire({ icon: "error", title: "Error", text: err.response?.data?.message || err.message });
@@ -351,9 +351,9 @@ export default function useGestionarObra() {
   };
 
   const pedidosCompra = obraData?.pedido_compra || [];
-  const pedidosFiltrados = pedidosCompra.filter((p) => (mostrarArchivados ? Boolean(p.archivado_at) : !p.archivado_at));
-  const pedidosActivosCount = pedidosCompra.filter((p) => !p.archivado_at).length;
-  const pedidosArchivadosCount = pedidosCompra.filter((p) => Boolean(p.archivado_at)).length;
+  const pedidosFiltrados = pedidosCompra.filter((p) => (mostrarArchivados ? Boolean(p.archived_at) : !p.archived_at));
+  const pedidosActivosCount = pedidosCompra.filter((p) => !p.archived_at).length;
+  const pedidosArchivadosCount = pedidosCompra.filter((p) => Boolean(p.archived_at)).length;
 
   return {
     id,

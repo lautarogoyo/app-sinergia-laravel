@@ -86,9 +86,9 @@ export default function Empleados() {
       (e.grupo?.nombre_apellido?.toLowerCase().includes(val) ?? false)
     );
     const matchVista =
-      vista === "archivados" ? !!e.archivado_at :
-        vista === "cancelados" ? !!e.cancelado_at :
-          !e.archivado_at && !e.cancelado_at;
+      vista === "archivados" ? !!e.archived_at :
+        vista === "cancelados" ? !!e.canceled_at :
+          !e.archived_at && !e.canceled_at;
 
     return matchTexto && matchVista;
   })

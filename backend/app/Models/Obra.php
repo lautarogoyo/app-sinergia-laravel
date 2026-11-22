@@ -6,9 +6,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Obra extends SinergiaModel
 {
+    use SoftDeletes;
+
     protected $table = 'Obra';
     protected $primaryKey = 'obra_id';
     public $incrementing = true;
@@ -26,7 +29,6 @@ class Obra extends SinergiaModel
         'fecha_inicio_orden_compra',
         'fecha_finalizacion_orden_compra',
         'detalle_caratula',
-        'deleted_at',
     ];
 
     protected $casts = [
@@ -37,7 +39,6 @@ class Obra extends SinergiaModel
         'fecha_recepcion_definitiva'      => 'date',
         'fecha_inicio_orden_compra'       => 'date',
         'fecha_finalizacion_orden_compra' => 'date',
-        'deleted_at'                      => 'datetime',
     ];
 
     public function estadoObra(): BelongsTo

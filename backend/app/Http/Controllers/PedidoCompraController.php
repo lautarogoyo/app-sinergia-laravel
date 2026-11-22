@@ -90,7 +90,7 @@ class PedidoCompraController extends Controller
 
     public function index()
     {
-        $pedidos = PedidoCompra::whereNull('deleted_at')->with([
+        $pedidos = PedidoCompra::with([
             'rubros',
             'grupos',
             'proveedores',
@@ -200,8 +200,7 @@ class PedidoCompraController extends Controller
     } */
    public function destroy(PedidoCompra $pedido)
 {
-    $pedido->deleted_at = now();
-    $pedido->save();
+    $pedido->delete();
 
     return response()->json(['message' => 'Pedido eliminado', 'status' => 200]);
 }

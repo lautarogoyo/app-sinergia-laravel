@@ -6,11 +6,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 
 
 class PedidoCompra extends SinergiaModel
 {
+    use SoftDeletes;
+
     protected $table = 'Pedido_Compra';
     protected $primaryKey = 'pedido_compra_id';
     public $incrementing = true;
@@ -27,14 +30,12 @@ class PedidoCompra extends SinergiaModel
         'estado_registro_id',
         'observaciones',
         'archived_at',
-        'deleted_at',
     ];
 
     protected $casts = [
         'fecha_pedido'           => 'date',
         'fecha_entrega_estimada' => 'date',
-        'archived_at'           => 'datetime',
-        'deleted_at'             => 'datetime',
+        'archived_at'            => 'date',
     ];
 
     public function resolveRouteBinding($value, $field = null): ?self
