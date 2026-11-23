@@ -206,7 +206,7 @@ export default function Gastos() {
                           ? Number(f.impuestos.neto_gral)
                           : Number(f.importe_total);
                       return (
-                        <tr key={f.nro_factura} className="hover:bg-gray-200 transition-colors duration-150">
+                        <tr key={f.factura_id} className="hover:bg-gray-200 transition-colors duration-150">
                           <td className="px-6 py-4 whitespace-nowrap">{fmtFecha(f.fecha)}</td>
                           <td className="px-6 py-4 whitespace-nowrap">{f.nro_factura}</td>
                           <td className="px-6 py-4 whitespace-nowrap">{f.tipo_factura}</td>

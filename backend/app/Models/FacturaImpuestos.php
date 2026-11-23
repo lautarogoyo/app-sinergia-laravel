@@ -7,13 +7,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class FacturaImpuestos extends Model
 {
     protected $table      = 'Factura_Impuestos';
-    protected $primaryKey = 'nro_factura';
-    public $incrementing  = false;
-    protected $keyType    = 'string';
+    protected $primaryKey = 'factura_id';
+    public $incrementing  = false; // PK = FK a Factura (1 a 1): se asigna desde la factura
     public $timestamps    = false;
 
     protected $fillable = [
-        'nro_factura',
+        'factura_id',
         'neto_gral', 'neto_dif', 'neto_spub',
         'iva_gral_alicuota', 'iva_gral_importe',
         'iva_dif_alicuota',  'iva_dif_importe',
@@ -26,6 +25,6 @@ class FacturaImpuestos extends Model
 
     public function factura(): BelongsTo
     {
-        return $this->belongsTo(Factura::class, 'nro_factura', 'nro_factura');
+        return $this->belongsTo(Factura::class, 'factura_id', 'factura_id');
     }
 }

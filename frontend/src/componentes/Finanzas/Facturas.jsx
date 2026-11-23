@@ -41,7 +41,7 @@ export default function Facturas() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: ({ obraId, nroFactura }) => deleteFactura(obraId, nroFactura),
+    mutationFn: ({ obraId, facturaId }) => deleteFactura(obraId, facturaId),
     onSuccess: (_, { obraId }) => queryClient.invalidateQueries({ queryKey: ["facturas", obraId] }),
     onError: (e) => Swal.fire({ icon: "error", title: "Error", text: e.response?.data?.message || e.message }),
   });
@@ -55,7 +55,7 @@ export default function Facturas() {
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
     });
-    if (res.isConfirmed) deleteMutation.mutate({ obraId: f.obra_id, nroFactura: f.nro_factura });
+    if (res.isConfirmed) deleteMutation.mutate({ obraId: f.obra_id, facturaId: f.factura_id });
   };
 
   const handleSort = (key) => {
@@ -197,7 +197,7 @@ export default function Facturas() {
                   </tr>
                 ) : (
                   facturasPage.paginatedItems.map((f, i) => (
-                    <tr key={f.nro_factura} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                    <tr key={f.factura_id} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
                       <td className={tdClass}>
                         <div className="flex gap-2 justify-center">
                           {f.tipo_factura !== "C" && (
@@ -214,7 +214,7 @@ export default function Facturas() {
                           )}
                           <button
                             className="group bg-yellow-300 hover:bg-yellow-400 hover:cursor-pointer text-white p-3 rounded shadow transition duration-150 flex items-center justify-center"
-                            onClick={() => navigate(`/finanzas/facturas/${encodeURIComponent(f.nro_factura)}/editar`, { state: { obraId: f.obra_id } })}
+                            onClick={() => navigate(`/finanzas/facturas/${f.factura_id}/editar`, { state: { obraId: f.obra_id } })}
                           >
                             <Icon name="pencil" className="h-6 w-6 text-white group-hover:text-blue-200 transition-colors" />
                           </button>

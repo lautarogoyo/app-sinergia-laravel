@@ -17,12 +17,12 @@ const inputClass = "w-full border border-gray-300 rounded-lg px-3 py-2 text-sm f
 const labelClass = "block text-xs font-semibold text-gray-600 mb-1";
 
 export default function FacturaPage() {
-  const { nroFactura } = useParams();
+  const { facturaId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
 
-  const mode = nroFactura ? "edit" : "create";
+  const mode = facturaId ? "edit" : "create";
   const obraIdInicial = location.state?.obraId ?? "";
 
   const [obraIdLocal, setObraIdLocal] = useState(obraIdInicial);
@@ -59,7 +59,7 @@ export default function FacturaPage() {
   });
 
   const factura = mode === "edit"
-    ? facturasObra.find((f) => String(f.nro_factura) === String(nroFactura))
+    ? facturasObra.find((f) => String(f.factura_id) === String(facturaId))
     : null;
 
   const { data: ordenesCompra = [] } = useQuery({
@@ -117,7 +117,7 @@ export default function FacturaPage() {
     refetchOnWindowFocus: false,
     select: (data) => data.filter((f) =>
       f.nro_oc === nroOcSeleccionada &&
-      f.nro_factura !== factura?.nro_factura
+      f.factura_id !== factura?.factura_id
     ),
   });
 
@@ -136,7 +136,7 @@ export default function FacturaPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ obraId, nroFactura, payload }) => updateFactura(obraId, nroFactura, payload),
+    mutationFn: ({ obraId, facturaId, payload }) => updateFactura(obraId, facturaId, payload),
     onSuccess: (_, { obraId }) => {
       queryClient.invalidateQueries({ queryKey: ["facturas", obraId] });
       volver();
@@ -159,7 +159,7 @@ export default function FacturaPage() {
     if (mode === "create") {
       createMutation.mutate({ obraId: obraIdLocal, payload });
     } else {
-      updateMutation.mutate({ obraId: obraIdLocal, nroFactura: factura.nro_factura, payload });
+      updateMutation.mutate({ obraId: obraIdLocal, facturaId: factura.factura_id, payload });
     }
   };
 

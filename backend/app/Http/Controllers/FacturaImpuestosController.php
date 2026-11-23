@@ -48,7 +48,7 @@ class FacturaImpuestosController extends Controller
         ]);
 
         $impuestos = FacturaImpuestos::updateOrCreate(
-            ['nro_factura' => $factura->nro_factura],
+            ['factura_id' => $factura->factura_id],
             $validated
         );
 

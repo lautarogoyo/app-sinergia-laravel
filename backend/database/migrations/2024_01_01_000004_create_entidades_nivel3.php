@@ -42,7 +42,8 @@ return new class extends Migration
         //
         // cantidad_dias y email se usan solo si forma_pago = ECHEQ.
         Schema::create('Factura', function (Blueprint $table) {
-            $table->string('nro_factura', 50)->primary();
+            $table->unsignedInteger('factura_id')->autoIncrement();
+            $table->string('nro_factura', 50);
             $table->unsignedInteger('obra_id');
             $table->string('nro_oc', 50)->nullable();
             $table->unsignedInteger('proveedor_id')->nullable();

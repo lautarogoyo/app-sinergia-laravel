@@ -17,7 +17,8 @@ return new class extends Migration
         // ── Factura_Impuestos ─────────────────────────────────────────────────
         // Detalle impositivo de una factura (relación 1 a 1 con Factura).
         Schema::create('Factura_Impuestos', function (Blueprint $table) {
-            $table->string('nro_factura', 50)->primary();
+            // PK = FK a Factura: el valor se copia de Factura.factura_id, no se autogenera.
+            $table->unsignedInteger('factura_id')->primary();
 
             // Neto gravado
             $table->decimal('neto_gral', 12, 2)->nullable();
@@ -31,7 +32,7 @@ return new class extends Migration
             $table->decimal('iva_dif_importe', 12, 2)->nullable();
             $table->decimal('iva_spub_alicuota', 5, 2)->nullable();
             $table->decimal('iva_spub_importe', 12, 2)->nullable();
-
+    
             // No gravados
             $table->decimal('no_gravado_monotrib', 12, 2)->nullable();
             $table->decimal('no_gravado_exento', 12, 2)->nullable();
@@ -52,8 +53,8 @@ return new class extends Migration
             $table->decimal('itc', 12, 2)->nullable();
             $table->decimal('varios', 12, 2)->nullable();
 
-            $table->foreign('nro_factura')
-                  ->references('nro_factura')->on('Factura')
+            $table->foreign('factura_id')
+                  ->references('factura_id')->on('Factura')
                   ->cascadeOnDelete();
         });
     }

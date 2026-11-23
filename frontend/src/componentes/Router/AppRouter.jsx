@@ -50,7 +50,7 @@ function AppRouter({ isAuthenticated, isAdmin, onLoginSuccess }) {
                 <Route path="/finanzas" element={<Finanzas />} />
                 <Route path="/finanzas/facturas" element={<Facturas />} />
                 <Route path="/finanzas/facturas/nueva" element={<FacturaPage />} />
-                <Route path="/finanzas/facturas/:nroFactura/editar" element={<FacturaPage />} />
+                <Route path="/finanzas/facturas/:facturaId/editar" element={<FacturaPage />} />
                 <Route path="/finanzas/ordenes-de-compra" element={<OrdenesDeCompra />} />
                 <Route path="/salir" element={<Navigate to="/login" replace />} />
             </Route>

@@ -34,8 +34,8 @@ export default function FacturaImpuestosModal({ factura, obraId, onClose }) {
     const queryClient = useQueryClient();
 
     const { data: impuestos } = useQuery({
-        queryKey: ["impuestos", factura.nro_factura],
-        queryFn: () => fetchImpuestos(obraId, factura.nro_factura),
+        queryKey: ["impuestos", factura.factura_id],
+        queryFn: () => fetchImpuestos(obraId, factura.factura_id),
         refetchOnWindowFocus: false,
     });
 
@@ -48,10 +48,10 @@ export default function FacturaImpuestosModal({ factura, obraId, onClose }) {
     }, [impuestos]);
 
     const mutation = useMutation({
-        mutationFn: (payload) => upsertImpuestos(obraId, factura.nro_factura, payload),
+        mutationFn: (payload) => upsertImpuestos(obraId, factura.factura_id, payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["facturas", obraId] });
-            queryClient.invalidateQueries({ queryKey: ["impuestos", factura.nro_factura] });
+            queryClient.invalidateQueries({ queryKey: ["impuestos", factura.factura_id] });
             Swal.fire({ icon: "success", title: "Datos fiscales guardados", timer: 1500, showConfirmButton: false });
             onClose();
         },

@@ -6,6 +6,7 @@ use App\Models\Factura;
 use App\Models\Obra;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class FacturaController extends Controller
 {
@@ -23,7 +24,7 @@ class FacturaController extends Controller
     public function store(Request $request, Obra $obra)
     {
         $validated = $request->validate([
-            'nro_factura'   => 'required|string|max:50|unique:Factura,nro_factura',
+            'nro_factura'   => 'required|string|max:50',
             'nro_oc'        => [
                 'nullable',
                 'numeric',
@@ -45,6 +46,13 @@ class FacturaController extends Controller
         if (!empty($validated['proveedor_id']) && !empty($validated['grupo_id'])) {
             abort(422, 'La factura no puede tener proveedor y grupo al mismo tiempo.');
         }
+
+        $this->validarFacturaNoDuplicada(
+            $validated['nro_factura'],
+            $validated['tipo_factura'],
+            $validated['proveedor_id'] ?? null,
+            $validated['grupo_id'] ?? null
+        );
 
         if (!empty($validated['nro_oc'])) {
             $this->validarMontoOC($obra, $validated['nro_oc'], (float) $validated['importe_total']);
@@ -105,12 +113,22 @@ class FacturaController extends Controller
             abort(422, 'La factura no puede tener proveedor y grupo al mismo tiempo.');
         }
 
+        // Cambiar emisor o tipo puede chocar con otra factura del mismo número.
+        $datos = array_merge($factura->only(['tipo_factura', 'proveedor_id', 'grupo_id']), $validated);
+        $this->validarFacturaNoDuplicada(
+            $factura->nro_factura,
+            $datos['tipo_factura'],
+            $datos['proveedor_id'] ?? null,
+            $datos['grupo_id'] ?? null,
+            $factura->factura_id
+        );
+
         if (!empty($validated['nro_oc'])) {
             $this->validarMontoOC(
                 $obra,
                 $validated['nro_oc'] ?? $factura->nro_oc,
                 (float) ($validated['importe_total'] ?? $factura->importe_total),
-                $factura->nro_factura
+                $factura->factura_id
             );
         }
 
@@ -139,7 +157,25 @@ class FacturaController extends Controller
             'status'  => 200,
         ], 200);
     }
-    private function validarMontoOC(Obra $obra, string $nroOc, float $importeNuevo, ?string $nroFacturaExcluir = null): void
+    // Un emisor (proveedor o grupo) no puede repetir número y tipo de factura.
+    // Sin emisor, se compara contra las facturas que tampoco tienen emisor.
+    private function validarFacturaNoDuplicada(string $nroFactura, string $tipoFactura, $proveedorId, $grupoId, ?int $excluirFacturaId = null): void
+    {
+        $existe = Factura::where('nro_factura', $nroFactura)
+            ->where('tipo_factura', $tipoFactura)
+            ->where(fn ($q) => $proveedorId ? $q->where('proveedor_id', $proveedorId) : $q->whereNull('proveedor_id'))
+            ->where(fn ($q) => $grupoId ? $q->where('grupo_id', $grupoId) : $q->whereNull('grupo_id'))
+            ->when($excluirFacturaId, fn ($q) => $q->where('factura_id', '!=', $excluirFacturaId))
+            ->exists();
+
+        if ($existe) {
+            throw ValidationException::withMessages([
+                'nro_factura' => 'Ya existe una factura con ese número y tipo para el mismo emisor.',
+            ]);
+        }
+    }
+
+    private function validarMontoOC(Obra $obra, string $nroOc, float $importeNuevo, ?int $facturaIdExcluir = null): void
     {
         $oc = \App\Models\OrdenCompra::where('nro_oc', $nroOc)
             ->where('obra_id', $obra->obra_id)
@@ -148,8 +184,8 @@ class FacturaController extends Controller
         $query = \App\Models\Factura::where('nro_oc', $nroOc)
             ->where('obra_id', $obra->obra_id);
 
-        if ($nroFacturaExcluir) {
-            $query->where('nro_factura', '!=', $nroFacturaExcluir);
+        if ($facturaIdExcluir) {
+            $query->where('factura_id', '!=', $facturaIdExcluir);
         }
 
         $sumaActual = $query->sum('importe_total');

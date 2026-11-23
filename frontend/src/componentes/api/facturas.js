@@ -11,15 +11,15 @@ export const createFactura = async (nroObra, payload) => {
   return data.factura;
 };
 
-export const updateFactura = async (nroObra, nroFactura, payload) => {
+export const updateFactura = async (nroObra, facturaId, payload) => {
   await ensureCsrfCookie();
-  const { data } = await apiClient.put(`/obras/${nroObra}/facturas/${nroFactura}`, payload);
+  const { data } = await apiClient.put(`/obras/${nroObra}/facturas/${facturaId}`, payload);
   return data.factura;
 };
 
-export const deleteFactura = async (nroObra, nroFactura) => {
+export const deleteFactura = async (nroObra, facturaId) => {
   await ensureCsrfCookie();
-  const { data } = await apiClient.delete(`/obras/${nroObra}/facturas/${nroFactura}`);
+  const { data } = await apiClient.delete(`/obras/${nroObra}/facturas/${facturaId}`);
   return data;
 };
 
@@ -28,13 +28,13 @@ export const fetchFacturasReporteMensual = async (params) => {
   return data;
 };
 
-export const fetchImpuestos = async (nroObra, nroFactura) => {
-    const { data } = await apiClient.get(`/obras/${nroObra}/facturas/${nroFactura}/impuestos`);
+export const fetchImpuestos = async (nroObra, facturaId) => {
+    const { data } = await apiClient.get(`/obras/${nroObra}/facturas/${facturaId}/impuestos`);
     return data.impuestos;
 };
 
-export const upsertImpuestos = async (nroObra, nroFactura, payload) => {
+export const upsertImpuestos = async (nroObra, facturaId, payload) => {
     await ensureCsrfCookie();
-    const { data } = await apiClient.put(`/obras/${nroObra}/facturas/${nroFactura}/impuestos`, payload);
+    const { data } = await apiClient.put(`/obras/${nroObra}/facturas/${facturaId}/impuestos`, payload);
     return data.impuestos;
 };

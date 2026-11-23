@@ -8,9 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class Factura extends SinergiaModel
 {
     protected $table = 'Factura';
-    protected $primaryKey = 'nro_factura';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    protected $primaryKey = 'factura_id';
 
     protected $fillable = [
         'nro_factura',
@@ -59,8 +57,9 @@ class Factura extends SinergiaModel
             ->where('obra_id', $this->obra_id)
             ->first();
     }
+
     public function impuestos(): HasOne
-{
-    return $this->hasOne(FacturaImpuestos::class, 'nro_factura', 'nro_factura');
-}
+    {
+        return $this->hasOne(FacturaImpuestos::class, 'factura_id', 'factura_id');
+    }
 }
