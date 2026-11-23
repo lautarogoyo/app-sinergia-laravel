@@ -13,17 +13,18 @@ class AdminSeeder extends Seeder
 
         if (empty($cfg['username']) || empty($cfg['email']) || empty($cfg['password'])) {
             $this->command->warn('AdminSeeder: faltan ADMIN_USERNAME / ADMIN_EMAIL / ADMIN_PASSWORD. No se creó nada.');
+
             return;
         }
 
         $usuario = Usuario::firstOrCreate(
             ['nombre_usuario' => $cfg['username']],
             [
-                'email'       => $cfg['email'],
+                'email' => $cfg['email'],
                 'contrasenia' => $cfg['password'],
-                'nombre'      => $cfg['nombre'],
-                'apellido'    => $cfg['apellido'],
-                'admin'       => true,
+                'nombre' => $cfg['nombre'],
+                'apellido' => $cfg['apellido'],
+                'admin' => true,
             ]
         );
 

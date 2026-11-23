@@ -1,61 +1,61 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sinergia CCI: backend
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+API en Laravel para Sinergia CCI. El frontend (React + Vite) está en `../frontend`.
 
-## About Laravel
+## Puesta en marcha
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Completá en `.env` la conexión a la base de datos (`DB_*`) y las variables del administrador (ver abajo). Después:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+php artisan migrate:fresh --seed
+php artisan serve
+```
 
-## Learning Laravel
+## Base de datos
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Las migraciones están consolidadas en cinco archivos base, uno por nivel de dependencia (`database/migrations/2024_01_01_00000{1..5}_*`). Los 13 archivos de migración anteriores se eliminaron.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+**Una base creada con las migraciones anteriores no se puede actualizar con `migrate`.** Hay que recrearla:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```bash
+php artisan migrate:fresh --seed
+```
 
-## Laravel Sponsors
+`migrate:fresh` borra todas las tablas. No lo corras contra una base con datos que necesites conservar sin antes hacer un backup.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Seeders
 
-### Premium Partners
+`php artisan db:seed` (o `--seed`) ejecuta `DatabaseSeeder`, que llama a:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+| Seeder | Qué carga |
+|---|---|
+| `CatalogoSeeder` | Valores iniciales de las tablas de catálogo (estados, tipos, etc.). No es idempotente: correrlo dos veces duplica filas. |
+| `AdminSeeder` | El usuario administrador, a partir de las variables `ADMIN_*`. Si ya existe un usuario con ese `nombre_usuario`, no lo modifica. |
 
-## Contributing
+### Variables del administrador
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Variable | Obligatoria | Default |
+|---|---|---|
+| `ADMIN_USERNAME` | Sí | – |
+| `ADMIN_EMAIL` | Sí | – |
+| `ADMIN_PASSWORD` | Sí | – |
+| `ADMIN_NOMBRE` | No | `Admin` |
+| `ADMIN_APELLIDO` | No | `Sistema` |
 
-## Code of Conduct
+Si falta alguna obligatoria, `AdminSeeder` avisa y no crea el usuario. La contraseña se guarda hasheada.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+En producción, quitá `ADMIN_PASSWORD` del `.env` después del primer seed y volvé a correr `php artisan config:cache`, para que no quede en texto plano en la configuración cacheada.
 
-## Security Vulnerabilities
+## Tests
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan test
+```
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Los tests usan SQLite en memoria (ver `phpunit.xml`).
